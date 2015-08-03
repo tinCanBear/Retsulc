@@ -30,7 +30,7 @@ def plot_knn(points, file_directory, name, x = None, y = None, show=False):
     t16 = [p[16] for p in distances]
     t16.sort()
 
-    plt.plot(t10, 'r--', t12, 'bs', t16, 'g^')
+    plt.plot( t16, 'g^', t12, 'bs', t10, 'r--', alpha = 0.8, ls = '-', lw = 2, ms = 5)
 
     if x != None:
         plt.xlim(x)

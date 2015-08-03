@@ -60,13 +60,13 @@ class Point:
    def __init__(self, x = 0, y = 0,z = 0, visited = False, isnoise = False,
                 intensity = 1, color = None):
      self.point = np.array([x, y, z], dtype=np.float)
-     self.intensity = 1
+     self.intensity = 1  # N/A
      self.cluster = -1
      self.p2cluster = -1
      self.green_cluster = -1
      self.red_cluster = -1
      self.color = color
-     self.ditance_from_center=0
+     self.ditance_from_center= 0
      self.opposite_clusters = 0
 
 #***-----------------------SAMPLE----------------------------------***#
@@ -391,7 +391,7 @@ class Cluster:
         center = sum(x)/len(x), sum(y)/len(y), sum(z)/len(z)
         self.center = center
 
-    def outliers(self):
+    def outliers(self): # ???? what does this do?
         distances = [dist(x, self.center) for x in self.points]
         mean_dist = sum(distances)/len(distances)
         std_dist = np.std(distances)
@@ -412,6 +412,7 @@ class Cluster:
             min_sig = 1./min_sig
         self.shape_2d = min_sig
         self.large_diameter = max(self.pca.sigma[0],self.pca.sigma[1])*2
+        self.size = (self.pca.sigma[0]*self.pca.sigma[1])*2.0
         # else:
         #     self.get_centroid()
 

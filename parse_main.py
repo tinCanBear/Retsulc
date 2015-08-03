@@ -59,6 +59,7 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, name, file
     core_samples_mask_r[db_r.core_sample_indices_] = True
     r_labels = db_r.labels_
 
+        # assign labels
     s.labels = labels
     s.green_labels = g_labels
     s.red_labels = r_labels
@@ -70,6 +71,7 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, name, file
     s.green_clusters = [Cluster() for i in range(ng_clusters_)]
     s.red_clusters = [Cluster() for i in range(nr_clusters_)]
 
+        # assign points to clusters
 
     for i in range(len(labels)):
         if labels[i] != -1:
@@ -93,6 +95,8 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, name, file
 
         else:
             s.unclustered_points.append(s.red_points[j])
+
+    # make output folder
     if not os.path.exists(file_directory):
         os.mkdir(file_directory)
 
@@ -109,7 +113,7 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, name, file
     # PCA analysis
 
     s.green_clusters = [x for x in s.green_clusters if len(x.points) > 3] # dillute small clusters
-    s.red_clusters = [x for x in s.red_clusters if len(x.points) > 3] # because they can cause problems in pca
+    s.red_clusters = [x for x in s.red_clusters if len(x.points) > 3] # (because they can cause problems in pca)
 
     for i in s.green_clusters:
         i.pca_analysis(dimension)
