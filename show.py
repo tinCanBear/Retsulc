@@ -31,7 +31,7 @@ def plot_knn(points, file_directory, name, x = None, y = None, show=False):
     t16.sort()
 
     plt.plot( t16, 'g^', t12, 'bs', t10, 'r--', alpha = 0.8, ls = '-', lw = 2, ms = 5)
-
+# bla bla
     if x != None:
         plt.xlim(x)
 
