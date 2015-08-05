@@ -1,0 +1,26 @@
+Traceback (most recent call last):
+  File "main_with_gui.py", line 4, in <module>
+  File "C:\Users\גלעד\Documents\GitHub\Retsulc\parse_detect_files.py", line 4, in <module>
+    from parse_main import main
+  File "C:\Users\גלעד\Documents\GitHub\Retsulc\parse_main.py", line 4, in <module>
+    from show import *
+  File "C:\Users\גלעד\Documents\GitHub\Retsulc\show.py", line 6, in <module>
+    import matplotlib.pyplot as plt
+  File "C:\Users\גלעד\Anaconda3\lib\site-packages\matplotlib\pyplot.py", line 109, in <module>
+    _backend_mod, new_figure_manager, draw_if_interactive, _show = pylab_setup()
+  File "C:\Users\גלעד\Anaconda3\lib\site-packages\matplotlib\backends\__init__.py", line 32, in pylab_setup
+    globals(),locals(),[backend_name],0)
+ImportError: No module named 'matplotlib.backends.backend_qt4agg'
+Traceback (most recent call last):
+  File "main_with_gui.py", line 4, in <module>
+  File "C:\Users\גלעד\Documents\GitHub\Retsulc\parse_detect_files.py", line 4, in <module>
+    from parse_main import main
+  File "C:\Users\גלעד\Documents\GitHub\Retsulc\parse_main.py", line 4, in <module>
+    from show import *
+  File "C:\Users\גלעד\Documents\GitHub\Retsulc\show.py", line 6, in <module>
+    import matplotlib.pyplot as plt
+  File "C:\Users\גלעד\Anaconda3\lib\site-packages\matplotlib\pyplot.py", line 109, in <module>
+    _backend_mod, new_figure_manager, draw_if_interactive, _show = pylab_setup()
+  File "C:\Users\גלעד\Anaconda3\lib\site-packages\matplotlib\backends\__init__.py", line 32, in pylab_setup
+    globals(),locals(),[backend_name],0)
+ImportError: No module named 'matplotlib.backends.backend_qt4agg'

@@ -11,6 +11,7 @@ def dist(p1, p2, d3=True):
     a = (p1[0] - p2[0])**2
     b = (p1[1] - p2[1])**2
     c = (p1[2] - p2[2])**2
+
     if d3==True:
         return math.sqrt(a+b+c)
     else:
@@ -413,16 +414,12 @@ class Cluster:
         self.shape_2d = min_sig
         self.large_diameter = max(self.pca.sigma[0],self.pca.sigma[1])*2
         self.size = (self.pca.sigma[0]*self.pca.sigma[1])*2.0
-        # else:
-        #     self.get_centroid()
-
     def clean_outliers(self, dim=3):
         """"returns a list of points that survived the
                 filtering of 2.5 sigma."""
         ok_points = []
         not_ok_points = []
-#        if len(self.points) <= 3:
-#            return self.points, not_ok_points
+
         if dim != 3:
             distances = [dist(x.point, self.center, d3=False) for x in self.points]
         else:
