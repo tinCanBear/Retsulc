@@ -4,7 +4,6 @@ from tkinter import messagebox
 from parse_detect_files import go
 
 fields = ('Session Name', 'Epsilon', 'Minimum Neighbors', 'Data Type')
-# path = StringVar()
 def gogo(entries):
    name = (entries['Session Name'].get())
    epsilon = (int(entries['Epsilon'].get()))
