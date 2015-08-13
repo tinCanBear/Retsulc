@@ -413,7 +413,7 @@ class Cluster:
             min_sig = 1./min_sig
         self.shape_2d = min_sig
         self.large_diameter = max(self.pca.sigma[0],self.pca.sigma[1])*2
-        self.size = (self.pca.sigma[0]*self.pca.sigma[1])*2.0
+        self.size = math.sqrt((self.pca.sigma[0]*self.pca.sigma[1])*2.0)
     def clean_outliers(self, dim=3):
         """"returns a list of points that survived the
                 filtering of 2.5 sigma."""

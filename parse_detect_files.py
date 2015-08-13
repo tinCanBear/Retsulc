@@ -1,6 +1,9 @@
 __author__ = 'UriA12'
 import os
 import re
+import statistics
+import math
+import numpy as np
 from parse_main import main
 
 # main function, get info from "main_with_gui"
@@ -105,71 +108,91 @@ def go(nam, eps, min_ngbs, d_type, pth):
     session_data.close()
     print("END")
 
+
+# ("color, #points, #red points, #green points, sphere score, angle_x, angle_y, size, density\n")
 def get_res(red_list, green_list, cntr):
-    avg_per_green_in_red = 0.0
-    red_average_sphere_score = 0.0
-    red_average_angle_x = 0.0
-    red_average_angle_y = 0.0
-    red_average_size = 0.0
-    red_avg_naive_density = 0.0
+    len_r = len(red_list)
+    len_g = len(green_list)
+    for i in range(len_r):
+        red_list[i] = red_list[i].split(",")[2:] # now we got: #red points, #green points, sphere score, angle_x, angle_y, size, density
+        for j in range(len(red_list[i])):
+            red_list[i][j] = float(red_list[i][j])
+    for i in range(len_g):
+        green_list[i] = green_list[i].split(",")[2:] # now we got: #red points, #green points, sphere score, angle_x, angle_y, size, density
+        for j in range(len(green_list[i])):
+            green_list[i][j] = float(green_list[i][j])
 
-    avg_per_red_in_green = 0.0
-    green_average_sphere_score = 0.0
-    green_average_angle_x = 0.0
-    green_average_angle_y = 0.0
-    green_average_size = 0.0
-    green_avg_naive_density = 0.0
+    # RED CLUSTERS
+    g_in_r_list = []
+    for a_list in red_list:
+        g_in_r_list.append(a_list[1]/(a_list[0]+a_list[1]))
+    avg_per_green_in_red = np.mean(g_in_r_list)
+    std_per_green_in_red = statistics.stdev(g_in_r_list)
 
-    number_of_red_clusters = len(red_list)
-    for line in red_list:
-        break_line = line.split(",")
-        avg_per_green_in_red += float(break_line[3])/(float(break_line[2]) +\
-            float(break_line[3]))
-        red_average_sphere_score += float(break_line[4])
-        red_average_angle_x += float(break_line[5])
-        red_average_angle_y += float(break_line[6])
-        red_average_size += float(break_line[7])
-        red_avg_naive_density += float(break_line[8])
-    avg_per_green_in_red /= number_of_red_clusters
-    red_average_sphere_score /= number_of_red_clusters
-    red_average_angle_x /= number_of_red_clusters
-    red_average_angle_y /= number_of_red_clusters
-    red_average_size /= number_of_red_clusters
-    red_avg_naive_density /= number_of_red_clusters
+    red_average_sphere_score = np.mean(zip(*red_list)[2])
+    red_std_sphere_score = statistics.stdev(zip(*red_list)[2])
 
+    red_average_angle_x = np.mean(zip(*red_list)[3])
+    red_std_angle_x = statistics.stdev(zip(*red_list)[3])
 
-    number_of_green_clusters = len(green_list)
-    for line in green_list:
-        break_line = line.split(",")
-        avg_per_red_in_green += float(break_line[2])/(float(break_line[3]) +\
-            float(break_line[2]))
-        green_average_sphere_score += float(break_line[4])
-        green_average_angle_x += float(break_line[5])
-        green_average_angle_y += float(break_line[6])
-        green_average_size += float(break_line[7])
-        green_avg_naive_density += float(break_line[8])
-    avg_per_red_in_green /= number_of_green_clusters
-    green_average_sphere_score /= number_of_green_clusters
-    green_average_angle_x /= number_of_green_clusters
-    green_average_angle_y /= number_of_green_clusters
-    green_average_size /= number_of_green_clusters
-    green_avg_naive_density /= number_of_green_clusters
+    red_average_angle_y = np.mean(zip(*red_list)[4])
+    red_std_angle_y = statistics.stdev(zip(*red_list)[4])
 
-    # write to summary file
+    red_average_size = np.mean(zip(*red_list)[5])
+    red_std_size = statistics.stdev(zip(*red_list)[5])
 
-    avgd_line = "{},{},{},{},{},{},{},{},{},{},{},{},{}\n".format(cntr\
+    red_avg_naive_density = np.mean(zip(*red_list)[6])
+    red_std_naive_density = statistics.stdev(zip(*red_list)[6])
+
+    # GREEN CLUSTERS
+    r_in_g_list = []
+    for a_list in green_list:
+        r_in_g_list.append(a_list[0]/(a_list[0]+a_list[1]))
+    avg_per_red_in_green = np.mean(r_in_g_list)
+    std_per_red_in_green = statistics.stdev(r_in_g_list)
+
+    green_average_sphere_score = np.mean(zip(*green_list)[2])
+    green_std_sphere_score = statistics.stdev(zip(*green_list)[2])
+
+    green_average_angle_x = np.mean(zip(*green_list)[3])
+    green_std_angle_x = statistics.stdev(zip(*green_list)[3])
+
+    green_average_angle_y = np.mean(zip(*green_list)[4])
+    green_std_angle_y = statistics.stdev(zip(*green_list)[4])
+
+    green_average_size = np.mean(zip(*green_list)[5])
+    green_std_size = statistics.stdev(zip(*green_list)[5])
+
+    green_avg_naive_density = np.mean(zip(*green_list)[6])
+    green_std_naive_density = statistics.stdev(zip(*green_list)[6])
+
+    avgd_line = "{},{},{},{},{},{},{},{},{},{},{},{},{},\
+                {},{},{},{},{},{},{},{},{},{},{},{}\n".format(cntr\
                                                                   , avg_per_green_in_red\
+                                                                  , std_per_green_in_red\
                                                                   , avg_per_red_in_green\
+                                                                  , std_per_red_in_green\
                                                                   , red_average_sphere_score\
+                                                                  , red_std_sphere_score\
                                                                   , green_average_sphere_score\
+                                                                  , green_std_sphere_score\
                                                                   , red_average_angle_x\
+                                                                  , red_std_angle_x\
                                                                   , red_average_angle_y\
+                                                                  , red_std_angle_y\
                                                                   , green_average_angle_x\
+                                                                  , green_std_angle_x\
                                                                   , green_average_angle_y\
+                                                                  , green_std_angle_y\
                                                                   , red_average_size\
+                                                                  , red_std_size\
                                                                   , green_average_size\
+                                                                  , green_std_size\
                                                                   , red_avg_naive_density\
-                                                                  , green_avg_naive_density)
+                                                                  , red_std_naive_density\
+                                                                  , green_avg_naive_density\
+                                                                  , green_std_naive_density)
+
     return avgd_line
 
 

@@ -1,9 +1,7 @@
-import re
+import statistics
+import numpy as np
 
-
-a = "D:/Gilad/120214\\H_12months_Plac\\2015-02-12_H_12months_Plac_m1_green.csv"
-b = "D:/Gilad/120214\\H_12months_Plac\\2015-02-12_H_12months_Plac_m1_red.csv"
-
-
-
-print(a[:4])
+a = statistics.stdev([1.5, 2.5, 2.5, 2.75, 3.25, 4.75])
+print(a)
+b = np.std([1.5, 2.5, 2.5, 2.75, 3.25, 4.75])
+print(b)
