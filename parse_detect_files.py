@@ -34,19 +34,19 @@ def go(nam, eps, min_ngbs, d_type, pth):
     prtcls_cntr = 0
     for root, dirs, files in os.walk(main_folder, topdown=True):
         for name in files:
-            if re.findall(r".*?green.csv", name, re.DOTALL):  # changed from 'r".*?green.*?.csv"'
+            if re.findall(r".*?green\.csv", name, re.DOTALL):  # changed from 'r".*?green.*?.csv"'
                 green_filess.append(os.path.join(root, name))
                 nrm_cntr += 1
                 print("normal counter: {}".format(nrm_cntr))
-            if re.findall(r".*?red.csv", name, re.DOTALL):  # changed from 'r".*?red.*?.csv"'
+            if re.findall(r".*?red\.csv", name, re.DOTALL):  # changed from 'r".*?red.*?.csv"'
                 red_filess.append(os.path.join(root, name))
-            if re.findall(r".*?green_r[ao]w.csv", name, re.DOTALL):
+            if re.findall(r".*?green_r[ao]w\.csv", name, re.DOTALL):
                 raw_green_filess.append(os.path.join(root, name))
                 raw_cntr += 1
                 print("raw counter: {}".format(raw_cntr))
-            if re.findall(r".*?red_r[ao]w.csv", name, re.DOTALL):
+            if re.findall(r".*?red_r[ao]w\.csv", name, re.DOTALL):
                 raw_red_filess.append(os.path.join(root, name))
-            if re.findall(r"particles.csv", name):
+            if re.findall(r"particles\.csv", name):
                 if not os.path.join(root, name) in final_particles_files:
                     particles_filess.append(os.path.join(root, name))
                     prtcls_cntr += 1
@@ -71,7 +71,8 @@ def go(nam, eps, min_ngbs, d_type, pth):
                             continue  # do not enter loop
                     cntr += 1
                     print(cntr)
-                    file_directory = main_folder + "/analysis{}".format(cntr) + "/"
+                    pre_name = get_name(green_name, cntr)
+                    file_directory = main_folder + "/analysis{}".format(pre_name) + "/"
                     print(file_directory)
                     green_file_name = green_name
                     red_file_name = red_name
@@ -80,24 +81,23 @@ def go(nam, eps, min_ngbs, d_type, pth):
                     return_list = main(data_type, epsilon, minimum_neighbors, green_file_name, red_file_name, proj_name, file_directory)
                     red_list = return_list[0]
                     green_list = return_list[1]
-                    avgd_line = get_res(red_list, green_list)
+                    avgd_line = get_res(red_list, green_list, cntr)
                     session_data.write(avgd_line)
                     print("END A FILE")
-if len(raw_green_filess) > 0:
+    if len(raw_green_filess) > 0:
+        print("something exists")
         for green_name in raw_green_filess:
             for red_name in raw_red_filess:
-                g = re.findall(r"green_r[ao]w.csv", green_name).start()  ###HERE!!!!!
-                r = re.findall(r"red_r[ao]w.csv", red_name).start()
+                g = max(green_name.find("green_row.csv") ,green_name.find("green_raw.csv"))  ###HERE!!!!!
+                print(g)
+                r = max(green_name.find("red_row.csv") ,red_name.find("red_raw.csv"))  ###HERE!!!!!
                 slesh = green_name.rfind('/')
                 green_str = green_name[:g]
                 red_str = red_name[:r]
                 if green_str == red_str:
-                    if green_name.find('row') > 0:
-                        if red_name.find('row') < 0:
-                            continue  # do not enter loop
                     cntr += 1
                     print(cntr)
-                    file_directory = main_folder + "/analysis{}".format(cntr) + "/"
+                    file_directory = main_folder + "/raw_analysis{}".format(cntr) + "/"
                     print(file_directory)
                     green_file_name = green_name
                     red_file_name = red_name
@@ -106,7 +106,7 @@ if len(raw_green_filess) > 0:
                     return_list = main(data_type, epsilon, minimum_neighbors, green_file_name, red_file_name, proj_name, file_directory)
                     red_list = return_list[0]
                     green_list = return_list[1]
-                    avgd_line = get_res(red_list, green_list)
+                    avgd_line = get_res(red_list, green_list, cntr)
                     session_data.write(avgd_line)
                     print("END A FILE")
     # for file in particles_filess:
@@ -116,7 +116,7 @@ if len(raw_green_filess) > 0:
     session_data.close()
     print("END")
 
-def get_res(red_list, green_list):
+def get_res(red_list, green_list, cntr):
     avg_per_green_in_red = 0.0
     red_average_sphere_score = 0.0
     red_average_angle_x = 0.0
@@ -182,3 +182,12 @@ def get_res(red_list, green_list):
                                                                   , red_avg_naive_density\
                                                                   , green_avg_naive_density)
     return avgd_line
+
+def get_name(file_name, cntr):
+    pre = file_name.split('/')[-1]
+    pre = pre.split('\\')[-1]
+    name = str(cntr)
+    if pre is not None:
+        pre_bott = pre.rfind("_")
+        name = pre[:pre_bott]
+    return name
