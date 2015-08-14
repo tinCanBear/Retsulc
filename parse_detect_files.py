@@ -17,14 +17,6 @@ def go(nam, eps, min_ngbs, d_type, pth):
     main_folder = pth    # where all the sub_folders are at #should be session folder
     session_name = nam
 
-
-
-
-    # for root, dirs, files in os.walk(main_folder, topdown=True):
-    #     for name in dirs:
-    #         direrctories.append(os.path.join(root, name))
-    # print(direrctories)
-    #
     particles_filess = []
     cntr = 0
     green_filess = []
@@ -50,15 +42,17 @@ def go(nam, eps, min_ngbs, d_type, pth):
             if re.findall(r".*?red_r[ao]w\.csv", name, re.DOTALL):
                 raw_red_filess.append(os.path.join(root, name))
             if re.findall(r"particles\.csv", name):
-                if not os.path.join(root, name) in final_particles_files:
+                if not os.path.join(root, name) in final_particles_files: # NOTICE!!! NOT SUPPORTED YET!
                     particles_filess.append(os.path.join(root, name))
                     prtcls_cntr += 1
                     print("particles counter: {}".format(prtcls_cntr))
 
     session_data = open(main_folder + '/' + session_name + "_summary.csv", "w")
-    session_data.write("test#, avg green in red clusters,avg red in green clusters,avg red sphericity,\
-    avg green sphericity, avg red Xangl,avg red Yangl, avg green Xangl,avg green Yangl,\
-    avg red size, avg green size, avg red density, avg green density\n")
+    session_data.write("test#, avg green in red clusters, std green in red clusters, avg red in green clusters,\
+    std red in green clusters,avg red sphericity, std red sphericity, avg green sphericity,std green sphericity,\
+    avg red Xangl, std red Xangl, avg red Yangl, std red Yangl, avg green Xangl, std green Xangl, avg green Yangl,\
+    std green Yangl, avg red size, std red size, avg green size, std green size, avg red density, std red density,\
+    avg green density, std green density\n")
 
     if len(green_filess) > 0:
         for green_name in green_filess:
@@ -129,20 +123,26 @@ def get_res(red_list, green_list, cntr):
     avg_per_green_in_red = np.mean(g_in_r_list)
     std_per_green_in_red = statistics.stdev(g_in_r_list)
 
-    red_average_sphere_score = np.mean(zip(*red_list)[2])
-    red_std_sphere_score = statistics.stdev(zip(*red_list)[2])
+    red_array = np.array(red_list)
+    red_means = np.mean(red_array, axis=0)
+    red_stds = np.std(red_array, ddof=1, axis=0)
 
-    red_average_angle_x = np.mean(zip(*red_list)[3])
-    red_std_angle_x = statistics.stdev(zip(*red_list)[3])
+    # red_average_sphere_score = np.mean(zip(*red_list)[2])
+    # red_std_sphere_score = statistics.stdev(zip(*red_list)[2])
+    red_average_sphere_score = red_means[2]
+    red_std_sphere_score = red_stds[2]
 
-    red_average_angle_y = np.mean(zip(*red_list)[4])
-    red_std_angle_y = statistics.stdev(zip(*red_list)[4])
+    red_average_angle_x = red_means[3]
+    red_std_angle_x = red_stds[3]
 
-    red_average_size = np.mean(zip(*red_list)[5])
-    red_std_size = statistics.stdev(zip(*red_list)[5])
+    red_average_angle_y = red_means[4]
+    red_std_angle_y = red_stds[4]
 
-    red_avg_naive_density = np.mean(zip(*red_list)[6])
-    red_std_naive_density = statistics.stdev(zip(*red_list)[6])
+    red_average_size = red_means[5]
+    red_std_size = red_stds[5]
+
+    red_avg_naive_density = red_means[6]
+    red_std_naive_density = red_stds[6]
 
     # GREEN CLUSTERS
     r_in_g_list = []
@@ -151,20 +151,26 @@ def get_res(red_list, green_list, cntr):
     avg_per_red_in_green = np.mean(r_in_g_list)
     std_per_red_in_green = statistics.stdev(r_in_g_list)
 
-    green_average_sphere_score = np.mean(zip(*green_list)[2])
-    green_std_sphere_score = statistics.stdev(zip(*green_list)[2])
+    green_array = np.array(green_list)
+    green_means = np.mean(green_array, axis=0)
+    green_stds = np.std(green_array, ddof=1, axis=0)
 
-    green_average_angle_x = np.mean(zip(*green_list)[3])
-    green_std_angle_x = statistics.stdev(zip(*green_list)[3])
+    # green_average_sphere_score = np.mean(zip(*green_list)[2])
+    # green_std_sphere_score = statistics.stdev(zip(*green_list)[2])
+    green_average_sphere_score = green_means[2]
+    green_std_sphere_score = green_stds[2]
 
-    green_average_angle_y = np.mean(zip(*green_list)[4])
-    green_std_angle_y = statistics.stdev(zip(*green_list)[4])
+    green_average_angle_x = green_means[3]
+    green_std_angle_x = green_stds[3]
 
-    green_average_size = np.mean(zip(*green_list)[5])
-    green_std_size = statistics.stdev(zip(*green_list)[5])
+    green_average_angle_y = green_means[4]
+    green_std_angle_y = green_stds[4]
 
-    green_avg_naive_density = np.mean(zip(*green_list)[6])
-    green_std_naive_density = statistics.stdev(zip(*green_list)[6])
+    green_average_size = green_means[5]
+    green_std_size = green_stds[5]
+
+    green_avg_naive_density = green_means[6]
+    green_std_naive_density = green_stds[6]
 
     avgd_line = "{},{},{},{},{},{},{},{},{},{},{},{},{},\
                 {},{},{},{},{},{},{},{},{},{},{},{}\n".format(cntr\
