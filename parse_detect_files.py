@@ -54,6 +54,7 @@ def go(nam, eps, min_ngbs, d_type, pth):
     std green Yangl, avg red size, std red size, avg green size, std green size, avg red density, std red density,\
     avg green density, std green density\n")
 
+    # Filtered files:
     if len(green_filess) > 0:
         for green_name in green_filess:
             for red_name in red_filess:
@@ -70,12 +71,17 @@ def go(nam, eps, min_ngbs, d_type, pth):
                     red_file_name = red_name
                     proj_name = "test_m{}".format(cntr)
 
+                    # Execute main function
                     return_list = main(data_type, epsilon, minimum_neighbors, green_file_name, red_file_name, proj_name, file_directory)
+                    # Separate return list to Red and Green
                     red_list = return_list[0]
                     green_list = return_list[1]
+                    # Write to file
                     avgd_line = get_res(red_list, green_list, cntr)
                     session_data.write(avgd_line)
-                    print("END A FILE")
+                    print("END A FILE") # end of one execution
+
+    # Raw files
     if len(raw_green_filess) > 0:
         for green_name in raw_green_filess:
             for red_name in raw_red_filess:
@@ -123,24 +129,23 @@ def get_res(red_list, green_list, cntr):
     avg_per_green_in_red = np.mean(g_in_r_list)
     std_per_green_in_red = statistics.stdev(g_in_r_list)
 
+    # Easier handling numpy arrays
     red_array = np.array(red_list)
     red_means = np.mean(red_array, axis=0)
     red_stds = np.std(red_array, ddof=1, axis=0)
-
-    # red_average_sphere_score = np.mean(zip(*red_list)[2])
-    # red_std_sphere_score = statistics.stdev(zip(*red_list)[2])
+    # Sphere score
     red_average_sphere_score = red_means[2]
     red_std_sphere_score = red_stds[2]
-
+    # X angle
     red_average_angle_x = red_means[3]
     red_std_angle_x = red_stds[3]
-
+    # Y angle
     red_average_angle_y = red_means[4]
     red_std_angle_y = red_stds[4]
-
+    # Size
     red_average_size = red_means[5]
     red_std_size = red_stds[5]
-
+    # Density
     red_avg_naive_density = red_means[6]
     red_std_naive_density = red_stds[6]
 
@@ -150,28 +155,35 @@ def get_res(red_list, green_list, cntr):
         r_in_g_list.append(a_list[0]/(a_list[0]+a_list[1]))
     avg_per_red_in_green = np.mean(r_in_g_list)
     std_per_red_in_green = statistics.stdev(r_in_g_list)
-
+    # Transform to numpy
     green_array = np.array(green_list)
-    green_means = np.mean(green_array, axis=0)
-    green_stds = np.std(green_array, ddof=1, axis=0)
-
-    # green_average_sphere_score = np.mean(zip(*green_list)[2])
-    # green_std_sphere_score = statistics.stdev(zip(*green_list)[2])
+    green_means = np.mean(green_array, axis=0)   # calculates the avgof all the columns of the array
+    green_stds = np.std(green_array, ddof=1, axis=0)  # calculates the std (sample; ddof =1) of all the columns of the array
+    # Sphere score
     green_average_sphere_score = green_means[2]
     green_std_sphere_score = green_stds[2]
-
+    # X angle
     green_average_angle_x = green_means[3]
     green_std_angle_x = green_stds[3]
-
+    # Y angle
     green_average_angle_y = green_means[4]
     green_std_angle_y = green_stds[4]
-
+    # Size
     green_average_size = green_means[5]
     green_std_size = green_stds[5]
-
+    # Density
     green_avg_naive_density = green_means[6]
     green_std_naive_density = green_stds[6]
 
+    # Sample density
+    sample_size = float(2000*2000) # this is for 2d
+    clstrs_tot = 0
+    for clst_size in green_array.T[:,5]:
+        clstrs_tot += clst_size*(math.pi)
+    for clst_size in red_array.T[:,5]:
+        clstrs_tot += clst_size*(math.pi)
+    smpl_density = clstrs_tot/sample_size # need to add this to the summary file
+    # create the line to be written to .csv file
     avgd_line = "{},{},{},{},{},{},{},{},{},{},{},{},{},\
                 {},{},{},{},{},{},{},{},{},{},{},{}\n".format(cntr\
                                                                   , avg_per_green_in_red\
@@ -203,6 +215,11 @@ def get_res(red_list, green_list, cntr):
 
 
 def get_name(file_name, cntr):
+    """
+    :param file_name: the path of the file containing the name of the test
+    :param cntr:  default return if not successful
+    :return: the name of the test clean of unrelevant info and file path
+    """
     pre = file_name.split('/')[-1]
     pre = pre.split('\\')[-1]
     name = str(cntr)
