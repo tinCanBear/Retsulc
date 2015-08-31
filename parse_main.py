@@ -9,8 +9,7 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name,
     green_file_name = green_name
     red_file_name = red_name
     name = proj_name
-    clusters_file = name + "_clusters"
-    csv_file = name
+    clusters_file = "clusters_" + name
     remarks = "....."
     file_directory = file_dir
     #------------------------$$$$$$$$$$$----------------------------------------#
@@ -22,7 +21,7 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name,
     ##               !!!!FROM HERE: DO NOT TOUCH!!!!                           ##
 
     s = Sample(green_file_name,red_file_name, epsilon = epsilon, min_n = minimum_neighbors, path=file_directory, \
-               data_type=data_type)
+               data_type=data_type, name=name)
 
 
     s.get_points(s.data_type)
@@ -266,25 +265,45 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name,
     s.print_f("Mean green shape: {}%.\n".format(mean_green_shape), s.f)
     s.print_f("Mean red shape: {}%.\n".format(mean_red_shape), s.f)
 
-    s.print_f("color, #points, #red points, #green points, sphere score, angle_x, angle_y, size, density\n", s.f_clusters)
+    s.print_f("color, #points, #red points, #green points, sphere score, angle_x, angle_y, size, density, median cluster size\n", s.f_clusters)
+
+    # save sizes to compute histograms
+    green_hist = []
+    red_hist = []
+
     for red_cluster in s.red_clusters:
-        red_line = "red" + ", "+ str(len(red_cluster.points))+", "\
-        + str(sum([1 for x in red_cluster.points if x.color == "red"])) + ", " +\
-        str(sum([1 for x in red_cluster.points if x.color == "green"])) + ", " +\
-        str(red_cluster.shape_2d) + ", " + str(red_cluster.angle_x) + ", " +  str(red_cluster.angle_y) + ", " +\
-                  str(red_cluster.size) + ", " + str(len(red_cluster.points)/red_cluster.size) + "\n"
+        red_hist.append(red_cluster.size)
+        if red_cluster.size == 0:
+            continue
+        red_line = "red" + ", "+\
+                    str(len(red_cluster.points))+", "+\
+                    str(sum([1 for x in red_cluster.points if x.color == "red"])) + ", " +\
+                    str(sum([1 for x in red_cluster.points if x.color == "green"])) + ", " +\
+                    str(red_cluster.shape_2d) + ", " +\
+                    str(red_cluster.angle_x) + ", " +\
+                    str(red_cluster.angle_y) + ", " +\
+                    str(red_cluster.size) + ", " +\
+                    str(len(red_cluster.points)/float(red_cluster.size)) + "\n"
         s.print_f(red_line, s.f_clusters)
         red_output_list.append(red_line)
     for green_cluster in s.green_clusters:
-        green_line = "green" + ", "+ str(len(green_cluster.points))+", "\
-        + str(sum([1 for x in green_cluster.points if x.color == "red"])) + ", " +\
-        str(sum([1 for x in green_cluster.points if x.color == "green"])) + ", " +\
-        str(green_cluster.shape_2d) + ", " + str(green_cluster.angle_x) + ", " +  str(green_cluster.angle_y) + ", " +\
-                  str(green_cluster.size) + ", " + str(len(green_cluster.points)/green_cluster.size) + "\n"
+        if green_cluster.size == 0:
+            continue
+
+        green_hist.append(green_cluster.size)
+        green_line = "green" + ", "+\
+                        str(len(green_cluster.points))+", "+\
+                        str(sum([1 for x in green_cluster.points if x.color == "red"])) + ", " +\
+                        str(sum([1 for x in green_cluster.points if x.color == "green"])) + ", " +\
+                        str(green_cluster.shape_2d) + ", " + str(green_cluster.angle_x) + ", " +\
+                        str(green_cluster.angle_y) + ", " +\
+                        str(green_cluster.size) + ", " +\
+                        str(len(green_cluster.points)/float(green_cluster.size)) + "\n"
         s.print_f(green_line, s.f_clusters)
         green_output_list.append(green_line)
 
-
+    make_histogram(s, red_hist, "red")
+    make_histogram(s, green_hist, "green")
     s.print_f(remarks, s.f)
     s.print_f("That's it. Thank you and Bye Bye.", s.f)
     s.f.close()
@@ -292,3 +311,4 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name,
     s.f_csv.close()
 
     return red_output_list, green_output_list
+

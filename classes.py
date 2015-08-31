@@ -74,9 +74,9 @@ class Point:
 
 class Sample:
 
-    def __init__(self, green_path, red_path, epsilon = 90, min_n=8, path="D:/Gilad/pyxy", data_type="3d"):
+    def __init__(self, green_path, red_path, epsilon = 90, min_n=8, path="D:/Gilad/pyxy", data_type="3d", name=""):
 
-        self.name = ""
+        self.name = name
         self.path = path
         self.green_path = green_path
         self.red_path = red_path
@@ -408,8 +408,8 @@ class Cluster:
         self.angle_x = angle(v1, [1,0,0])
         self.angle_y= angle(v1, [0,1,0])
         self.angle_z = angle(v1, [0,0,1])
-        min_sig = float(self.pca.sigma[0])/self.pca.sigma[1]
-        if min_sig > 1:
+        min_sig = float(self.pca.sigma[0])/self.pca.sigma[1] if self.pca.sigma[1] != 0 else np.nan
+        if min_sig != np.nan and min_sig > 1:
             min_sig = 1./min_sig
         self.shape_2d = min_sig
         self.large_diameter = max(self.pca.sigma[0],self.pca.sigma[1])*2
