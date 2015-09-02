@@ -47,5 +47,5 @@ if __name__ == '__main__':
    ents = makeform(root, fields)
    b2 = Button(root, text='GO!', command=(lambda e=ents: gogo(e)))
    b2.pack(side=LEFT, padx=5, pady=5)
-   root.iconbitmap(r'c:\Users\guloo\Documents\GitHub\Retsulc\big_flower.ico')
+   root.iconbitmap(r'big_flower.ico')
    root.mainloop()
