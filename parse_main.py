@@ -265,7 +265,7 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name,
     s.print_f("Mean green shape: {}%.\n".format(mean_green_shape), s.f)
     s.print_f("Mean red shape: {}%.\n".format(mean_red_shape), s.f)
 
-    s.print_f("color, #points, #red points, #green points, sphere score, angle_x, angle_y, size, density, median cluster size\n", s.f_clusters)
+    s.print_f("color, #points, #red points, #green points, sphere score, angle_x, angle_y, size, density\n", s.f_clusters)
 
     # save sizes to compute histograms
     green_hist = []

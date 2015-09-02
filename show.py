@@ -232,7 +232,7 @@ def show_picture(list_of_points, list_of_features=[], factor=50, dim=2):
 
 def make_histogram(s, list, color):
     out_file_name = s.path + "/" +"hist_" + color + ".png"
-    plt.hist(list, bins=[0,5,10,25, 50, 100, 150, 200, 300, 400, 500, 600])
+    plt.hist(list, bins=[0,5,10,25, 50, 100, 150, 200, 300, 400, 500, 600, 1000, 2000])
     plt.title("{}_{}".format(s.name, color))
     plt.savefig(out_file_name)
     plt.clf()

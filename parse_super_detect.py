@@ -61,11 +61,11 @@ def go(eps, min_ngbs, d_type, pth):
                     print("particles counter: {}".format(prtcls_cntr))
 
         session_data = open(os.path.normcase(os.path.join(directory, session_name + "_summary.csv")) , "w")
-        session_data.write("test#, avg green in red clusters, std green in red clusters, avg red in green clusters,\
+        session_data.write("test#, #clusters, #red clusters, #green clusters, avg green in red clusters, std green in red clusters, avg red in green clusters,\
         std red in green clusters,avg red sphericity, std red sphericity, avg green sphericity,std green sphericity,\
         avg red Xangl, std red Xangl, avg red Yangl, std red Yangl, avg green Xangl, std green Xangl, avg green Yangl,\
-        std green Yangl, avg red size, std red size, avg green size, std green size, avg red density, std red density,\
-        avg green density, std green density, avg red median size, std red median size, avg green median size, std green median size,\
+        std green Yangl, avg red size, std red size, avg green size, std green size, sample density, avg red density, std red density,\
+        avg green density, std green density, red median size, green median size,\
         avg red pts size, std red pts size, avg green pts size, std green pts size\n")
 
         # Filtered files:
@@ -212,18 +212,27 @@ def get_res(red_list, green_list, cntr):
     # size  in points
     green_avg_size_pts = green_means[0]
     green_std_size_pts = green_stds[0]
+    # How many clusters?
+    number_red = len(red_list)
+    number_green = len(green_list)
+    total_clusters = len(red_list) + len(green_list)
 
     # Sample density
     sample_size = float(2000*2000) # this is for 2d
     clstrs_tot = 0
-    # for clst_size in green_array.T[:,5]:
-    #     clstrs_tot += clst_size*(math.pi)
-    # for clst_size in red_array.T[:,5]:
-    #     clstrs_tot += clst_size*(math.pi)
+
+    for clst_size in green_array[:,6]: # the 'size' column of the array
+        clstrs_tot += clst_size*(math.pi)
+    for clst_size in red_array[:,6]: # the 'size' column of the array
+        clstrs_tot += clst_size*(math.pi)
+    clstrs_tot /= sample_size # should be the sample density
     smpl_density = clstrs_tot/sample_size # need to add this to the summary file
     # create the line to be written to .csv file
-    avgd_line = "{},{},{},{},{},{},{},{},{},{},{},{},{},\
+    avgd_line = "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},\
                 {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n".format(cntr\
+                                                                  , total_clusters\
+                                                                  , number_red\
+                                                                  , number_green\
                                                                   , avg_per_green_in_red\
                                                                   , std_per_green_in_red\
                                                                   , avg_per_red_in_green\
@@ -244,6 +253,7 @@ def get_res(red_list, green_list, cntr):
                                                                   , red_std_size\
                                                                   , green_average_size\
                                                                   , green_std_size\
+                                                                  , clstrs_tot\
                                                                   , red_avg_naive_density\
                                                                   , red_std_naive_density\
                                                                   , green_avg_naive_density\
