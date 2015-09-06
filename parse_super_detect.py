@@ -79,7 +79,7 @@ def go(eps, min_ngbs, d_type, pth):
                     if green_str == red_str:
                         cntr += 1
                         print(cntr)
-                        file_directory = directory + "/analysis{}".format(get_name(green_name, cntr)) + "/"
+                        file_directory = directory + "/analysis_{}".format(get_name(green_name, cntr)) + "/"
                         print(file_directory)
                         green_file_name = green_name
                         red_file_name = red_name
@@ -107,7 +107,7 @@ def go(eps, min_ngbs, d_type, pth):
                     if green_str == red_str:
                         cntr += 1
                         print(cntr)
-                        file_directory = directory + "/raw_analysis{}".format(get_name(green_name,cntr)) + "/"
+                        file_directory = directory + "/raw_analysis_{}".format(get_name(green_name,cntr)) + "/"
                         print(file_directory)
                         green_file_name = green_name
                         red_file_name = red_name
@@ -268,7 +268,6 @@ def get_res(red_list, green_list, cntr):
 
     return avgd_line
 
-
 def get_name(file_name, cntr):
     """
     :param file_name: the path of the file containing the name of the test
@@ -281,7 +280,22 @@ def get_name(file_name, cntr):
     if pre is not None:
         ind_bott = pre.rfind('_')
         pre = pre[:ind_bott] if ind_bott != -1 else pre
-        if pre.find("green") != -1:
+        name = pre
+    return name
+
+def get_name2(file_name, cntr):
+    """
+    :param file_name: the path of the file containing the name of the test
+    :param cntr:  default return if not successful
+    :return: the name of the test clean of unrelevant info and file path
+    """
+    pre = file_name.split('/')[-1]
+    pre = pre.split('\\')[-1]
+    name = str(cntr)
+    if pre is not None:
+        ind_bott = pre.rfind('_')
+        pre = pre[:ind_bott] if ind_bott != -1 else pre
+        if pre.rfind("green") != -1:
             ind_bott = pre.rfind('_')
             pre = pre[:ind_bott] if ind_bott != -1 else pre
         name = pre

@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.neighbors import NearestNeighbors
 
-def plot_knn(points, file_directory, name, x = None, y = None, show=False):
+def plot_knn(points, file_directory, name, x = None, y = [0,850], show=False):
     plt.clf()
 
     nbrs = NearestNeighbors(n_neighbors=20, algorithm='ball_tree').fit(points)
@@ -30,7 +30,7 @@ def plot_knn(points, file_directory, name, x = None, y = None, show=False):
     t16 = [p[16] for p in distances]
     t16.sort()
 
-    plt.plot( t16, 'g^', t12, 'bs', t10, 'r--', alpha = 0.8, ls = '-', lw = 2, ms = 5)
+    plt.plot( t16, 'g^', lw = 2, ms = 5)
 # bla bla
     if x != None:
         plt.xlim(x)
@@ -42,7 +42,7 @@ def plot_knn(points, file_directory, name, x = None, y = None, show=False):
 
     if show==True:
         plt.show()
-
+    plt.title("16th Neighbor")
     plt.savefig(file_directory+name+".png")
     plt.clf()
 
