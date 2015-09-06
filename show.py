@@ -145,7 +145,7 @@ def rainbow(s, other=False):
             for y in s.red_clusters[i].points], dtype = np.float)), axis=0)
             c_allr = np.concatenate((c_allr, np.array([color for k in range(l)], dtype=np.float)), axis=0)
             s_allr= np.concatenate((s_allr, np.array([90 for k in range(l)], dtype=np.float)), axis=0)
-            color = (color+0.17)%1
+            color = (color+0.07)%1
 
         plt.scatter(x_allr, y_allr, c=c_allr, marker='^', s=s_allr, alpha=0.5)
 
@@ -232,8 +232,12 @@ def show_picture(list_of_points, list_of_features=[], factor=50, dim=2):
 
 def make_histogram(s, list, color):
     out_file_name = s.path + "/" +"hist_" + color + ".png"
-    plt.hist(list, bins=[0,5,10,25, 50, 100, 150, 200, 300, 400, 500, 600, 1000, 2000])
-    plt.title("{}_{}".format(s.name, color))
+    if len(list) < 2: # no plotting in this case
+        plt.title("less than 2 clusters")
+    else:
+        plt.hist(list, normed=True)
+    # plt.hist(list, bins=[0,5,10,25, 50, 100, 150, 200, 300, 400, 500, 600, 1000], normed=True)
+        plt.title("{}_{}".format(s.name, color))
     plt.savefig(out_file_name)
     plt.clf()
     plt.close()

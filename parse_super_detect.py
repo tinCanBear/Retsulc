@@ -60,13 +60,18 @@ def go(eps, min_ngbs, d_type, pth):
                     prtcls_cntr += 1
                     print("particles counter: {}".format(prtcls_cntr))
 
-        session_data = open(os.path.normcase(os.path.join(directory, session_name + "_summary.csv")) , "w")
-        session_data.write("test#, #clusters, #red clusters, #green clusters, avg green in red clusters, std green in red clusters, avg red in green clusters,\
+        session_data = open(os.path.normcase(os.path.join(directory, session_name + "_final_summary.csv")) , "w")
+        session_data_pre = open(os.path.normcase(os.path.join(directory, session_name + "_pre_summary.csv")) , "w")
+
+        csv_titles = "test#, #clusters, #red clusters, #green clusters, avg green in red clusters, std green in red clusters, avg red in green clusters,\
         std red in green clusters,avg red sphericity, std red sphericity, avg green sphericity,std green sphericity,\
         avg red Xangl, std red Xangl, avg red Yangl, std red Yangl, avg green Xangl, std green Xangl, avg green Yangl,\
         std green Yangl, avg red size, std red size, avg green size, std green size, sample density, avg red density, std red density,\
         avg green density, std green density, red median size, green median size,\
-        avg red pts size, std red pts size, avg green pts size, std green pts size\n")
+        avg red pts size, std red pts size, avg green pts size, std green pts size\n"
+
+        session_data.write(csv_titles)
+        session_data_pre.write(csv_titles)
 
         # Filtered files:
         if len(green_filess) > 0:
@@ -90,10 +95,14 @@ def go(eps, min_ngbs, d_type, pth):
                         # Separate return list to Red and Green
                         red_list = return_list[0]
                         green_list = return_list[1]
+                        red_list_pre = return_list[2]
+                        green_list_pre = return_list[3]
                         # Write to file
                         avgd_line = get_res(red_list, green_list, cntr)
+                        avgd_line_pre = get_res(red_list_pre, green_list_pre, cntr)
                         print(avgd_line)
                         session_data.write(avgd_line)
+                        session_data_pre.write(avgd_line_pre)
                         print("END A FILE") # end of one execution
 
         # Raw files
@@ -116,12 +125,17 @@ def go(eps, min_ngbs, d_type, pth):
                         return_list = main(data_type, epsilon, minimum_neighbors, green_file_name, red_file_name, proj_name, file_directory)
                         red_list = return_list[0]
                         green_list = return_list[1]
+                        red_list_pre = return_list[2]
+                        green_list_pre = return_list[3]
                         avgd_line = get_res(red_list, green_list, cntr)
+                        avgd_line_pre = get_res(red_list_pre, green_list_pre, cntr)
                         print(avgd_line)
                         session_data.write(avgd_line)
+                        session_data_pre.write(avgd_line_pre)
                         print("END A FILE")
 
         session_data.close()
+        session_data_pre.close()
         print("END")
 
 
@@ -220,13 +234,12 @@ def get_res(red_list, green_list, cntr):
     # Sample density
     sample_size = float(2000*2000) # this is for 2d
     clstrs_tot = 0
-
     for clst_size in green_array[:,6]: # the 'size' column of the array
         clstrs_tot += clst_size*(math.pi)
     for clst_size in red_array[:,6]: # the 'size' column of the array
         clstrs_tot += clst_size*(math.pi)
     clstrs_tot /= sample_size # should be the sample density
-    smpl_density = clstrs_tot/sample_size # need to add this to the summary file
+
     # create the line to be written to .csv file
     avgd_line = "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},\
                 {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n".format(cntr\

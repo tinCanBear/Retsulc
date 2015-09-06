@@ -9,16 +9,18 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name,
     green_file_name = green_name
     red_file_name = red_name
     name = proj_name
-    clusters_file = "clusters_" + name
+    clusters_file_final = "clusters_final_" + name
+    clusters_file_pre = "clusters_pre_" + name
+
     remarks = "....."
     file_directory = file_dir
-    #------------------------$$$$$$$$$$$----------------------------------------#
+    #------------------------Dimension----------------------------------------#
     if data_type != "3d" and data_type != "raw_3d":
         dimension = 2
     else:
         dimension = 3
 
-    ##               !!!!FROM HERE: DO NOT TOUCH!!!!                           ##
+    ##               create sample object: 's'                           ##
 
     s = Sample(green_file_name,red_file_name, epsilon = epsilon, min_n = minimum_neighbors, path=file_directory, \
                data_type=data_type, name=name)
@@ -77,7 +79,6 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name,
             s.clusters[labels[i]].add_point(s.points[i])
             s.points[i].cluster = labels[i]
 
-
     for k in range(len(g_labels)):
         if g_labels[k] != -1:
             s.green_clusters[g_labels[k]].add_point(s.green_points[k])
@@ -91,17 +92,16 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name,
             s.red_clusters[r_labels[j]].add_point(s.red_points[j])
             s.red_points[j].red_cluster = r_labels[j]
             s.clustered_points.append(s.red_points[j])
-
         else:
             s.unclustered_points.append(s.red_points[j])
 
-    # make output folder
+    # make output folder and open files
     if not os.path.exists(file_directory):
         os.mkdir(file_directory)
 
     s.f = open(file_directory + name + "_summary.txt", "w")
-    s.f_clusters = open(file_directory + clusters_file + ".csv", "w")
-    s.f_csv = open(file_directory + name + ".csv", "w")
+    s.f_clusters_final = open(file_directory + clusters_file_final + ".csv", "w")
+    s.f_clusters_pre = open(file_directory + clusters_file_pre + ".csv", "w")
     s.print_f("the green file is: \n", s.f)
     s.print_f(green_file_name + "\n", s.f)
     s.print_f("the red file is: \n", s.f)
@@ -111,6 +111,7 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name,
 
     # PCA analysis
 
+    s.clusters = [x for x in s.clusters if len(x.points) > 3] # dillute small clusters
     s.green_clusters = [x for x in s.green_clusters if len(x.points) > 3] # dillute small clusters
     s.red_clusters = [x for x in s.red_clusters if len(x.points) > 3] # (because they can cause problems in pca)
 
@@ -118,6 +119,8 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name,
         i.pca_analysis(dimension)
     for j in s.red_clusters:
         j.pca_analysis(dimension)
+    for k in s.clusters:
+        k.pca_analysis
 
     # plot k-distances
 
@@ -127,6 +130,53 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name,
     # make rainbow pic.
     rainbow(s)
 
+    csv_clusters_titles = "color, #points, #red points, #green points, sphere score, angle_x, angle_y, size, density\n"
+    s.print_f(csv_clusters_titles, s.f_clusters_pre)
+    s.print_f(csv_clusters_titles, s.f_clusters_final)
+
+    # ____need to return the clusters now 'as-is'_____#
+    red_output_list_pre = []
+    green_output_list_pre = []
+    null_list = []
+    for red_cluster in s.red_clusters:
+        line, changed = get_line(null_list, red_cluster, "red", append=False)
+        s.print_f(line, s.f_clusters_pre)
+        red_output_list_pre.append(line)
+
+    for green_cluster in s.green_clusters:
+        line, changed = get_line(null_list, green_cluster, "green", append=False)
+        s.print_f(line, s.f_clusters_pre)
+        green_output_list_pre.append(line)
+
+    # for red_cluster in s.red_clusters:
+    #     if red_cluster.size == 0:
+    #         continue
+    #     red_line_pre = "red" + ", "+\
+    #                 str(len(red_cluster.points))+", "+\
+    #                 str(sum([1 for x in red_cluster.points if x.color == "red"])) + ", " +\
+    #                 str(sum([1 for x in red_cluster.points if x.color == "green"])) + ", " +\
+    #                 str(red_cluster.shape_2d) + ", " +\
+    #                 str(red_cluster.angle_x) + ", " +\
+    #                 str(red_cluster.angle_y) + ", " +\
+    #                 str(red_cluster.size) + ", " +\
+    #                 str(len(red_cluster.points)/float(red_cluster.size)) + "\n"
+    #     s.print_f(red_line_pre, s.f_clusters_pre)
+    #     red_output_list_pre.append(red_line_pre)
+    # for green_cluster in s.green_clusters:
+    #     if green_cluster.size == 0:
+    #         continue
+    #     green_line_pre = "green" + ", "+\
+    #                     str(len(green_cluster.points))+", "+\
+    #                     str(sum([1 for x in green_cluster.points if x.color == "red"])) + ", " +\
+    #                     str(sum([1 for x in green_cluster.points if x.color == "green"])) + ", " +\
+    #                     str(green_cluster.shape_2d) + ", " + str(green_cluster.angle_x) + ", " +\
+    #                     str(green_cluster.angle_y) + ", " +\
+    #                     str(green_cluster.size) + ", " +\
+    #                     str(len(green_cluster.points)/float(green_cluster.size)) + "\n"
+    #     s.print_f(green_line_pre, s.f_clusters_pre)
+    #     green_output_list_pre.append(green_line_pre)
+
+    # ____need to return the clusters now 'as-is'_____#
     s.print_f("\n\n-----------------END OF PART I------------------------\n\n", s.f)
 
     added_points = []
@@ -251,9 +301,9 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name,
     s.red_clusters = [x for x in s.red_clusters if len(x.points) > 3] # because they can cause problems in pca
 
     for i in s.green_clusters:
-        i.pca_analysis(dimension)
+        i.pca_analysis(dimension, sphere=False)
     for j in s.red_clusters:
-        j.pca_analysis(dimension)
+        j.pca_analysis(dimension, sphere=False)
 
     # calculate mean shape
 
@@ -265,50 +315,98 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name,
     s.print_f("Mean green shape: {}%.\n".format(mean_green_shape), s.f)
     s.print_f("Mean red shape: {}%.\n".format(mean_red_shape), s.f)
 
-    s.print_f("color, #points, #red points, #green points, sphere score, angle_x, angle_y, size, density\n", s.f_clusters)
 
     # save sizes to compute histograms
     green_hist = []
     red_hist = []
+    hist_lists = [red_hist, green_hist]
+    # assign lists to pick up the clusters that changed their color (used to be 'red' but now has more green points)
 
     for red_cluster in s.red_clusters:
-        red_hist.append(red_cluster.size)
-        if red_cluster.size == 0:
-            continue
-        red_line = "red" + ", "+\
-                    str(len(red_cluster.points))+", "+\
-                    str(sum([1 for x in red_cluster.points if x.color == "red"])) + ", " +\
-                    str(sum([1 for x in red_cluster.points if x.color == "green"])) + ", " +\
-                    str(red_cluster.shape_2d) + ", " +\
-                    str(red_cluster.angle_x) + ", " +\
-                    str(red_cluster.angle_y) + ", " +\
-                    str(red_cluster.size) + ", " +\
-                    str(len(red_cluster.points)/float(red_cluster.size)) + "\n"
-        s.print_f(red_line, s.f_clusters)
-        red_output_list.append(red_line)
+        line, changed = get_line(hist_lists, red_cluster, "red")
+        s.print_f(line, s.f_clusters_final)
+        if changed:
+           green_output_list.append(line)
+        else:
+            red_output_list.append(line)
+
     for green_cluster in s.green_clusters:
-        if green_cluster.size == 0:
-            continue
+        line, changed = get_line(hist_lists, green_cluster, "green")
+        s.print_f(line, s.f_clusters_final)
+        if changed:
+            red_output_list.append(line)
+        else:
+            green_output_list.append(line)
+        # if red_cluster.size == 0:
+        #     continue
+        # gs = sum([1 for x in red_cluster.points if x.color == "green"])
+        # rds = sum([1 for x in red_cluster.points if x.color == "red"])
+        # if gs > rds: # change of dominant color!!
+        #     leftovers_red.append(red_cluster)
+        #     continue
+        # red_hist.append(red_cluster.size)
+        # red_line = "red" + ", "+\
+        #             str(len(red_cluster.points))+", "+\
+        #             str(sum([1 for x in red_cluster.points if x.color == "red"])) + ", " +\
+        #             str(sum([1 for x in red_cluster.points if x.color == "green"])) + ", " +\
+        #             str(red_cluster.shape_2d) + ", " +\
+        #             str(red_cluster.angle_x) + ", " +\
+        #             str(red_cluster.angle_y) + ", " +\
+        #             str(red_cluster.size) + ", " +\
+        #             str(len(red_cluster.points)/float(red_cluster.size)) + "\n"
+        # s.print_f(red_line, s.f_clusters_final)
+        # red_output_list.append(red_line)
+        # if green_cluster.size == 0:
+        #     continue
+        # gs = sum([1 for x in red_cluster.points if x.color == "green"])
+        # rds = sum([1 for x in red_cluster.points if x.color == "red"])
+        # if gs < rds: # change of dominant color!!
+        #     leftovers_green.append(red_cluster)
+        #     continue
+        # green_hist.append(green_cluster.size)
+        # green_line = "green" + ", "+\
+        #                 str(len(green_cluster.points))+", "+\
+        #                 str(sum([1 for x in green_cluster.points if x.color == "red"])) + ", " +\
+        #                 str(sum([1 for x in green_cluster.points if x.color == "green"])) + ", " +\
+        #                 str(green_cluster.shape_2d) + ", " + str(green_cluster.angle_x) + ", " +\
+        #                 str(green_cluster.angle_y) + ", " +\
+        #                 str(green_cluster.size) + ", " +\
+        #                 str(len(green_cluster.points)/float(green_cluster.size)) + "\n"
+        # s.print_f(green_line, s.f_clusters_final)
+        # green_output_list.append(green_line)
 
-        green_hist.append(green_cluster.size)
-        green_line = "green" + ", "+\
-                        str(len(green_cluster.points))+", "+\
-                        str(sum([1 for x in green_cluster.points if x.color == "red"])) + ", " +\
-                        str(sum([1 for x in green_cluster.points if x.color == "green"])) + ", " +\
-                        str(green_cluster.shape_2d) + ", " + str(green_cluster.angle_x) + ", " +\
-                        str(green_cluster.angle_y) + ", " +\
-                        str(green_cluster.size) + ", " +\
-                        str(len(green_cluster.points)/float(green_cluster.size)) + "\n"
-        s.print_f(green_line, s.f_clusters)
-        green_output_list.append(green_line)
-
-    make_histogram(s, red_hist, "red")
-    make_histogram(s, green_hist, "green")
+    make_histogram(s, hist_lists[0], "red")
+    make_histogram(s, hist_lists[1], "green")
     s.print_f(remarks, s.f)
     s.print_f("That's it. Thank you and Bye Bye.", s.f)
     s.f.close()
-    s.f_clusters.close()
-    s.f_csv.close()
+    s.f_clusters_pre.close()
+    s.f_clusters_final.close()
 
-    return red_output_list, green_output_list
+    return red_output_list, green_output_list, red_output_list_pre, green_output_list_pre
 
+def get_line(hist_lists, cluster, color, append=True):
+    index_hists = 0 if color == "red" else 1 #hist_lists[0] = red_hist
+    changed = False
+    other_color = "green" if color=="red" else "red"
+    this_color = color
+    if cluster.size == 0:
+        return 0
+    other_color_count = sum([1 for x in cluster.points if x.color == other_color])
+    color_count = sum([1 for x in cluster.points if x.color == color])
+    if other_color_count > color_count: # change of dominant color!!
+        this_color = other_color
+        index_hists = (index_hists + 1)%2 # add to the other list
+        changed = True
+    if append:
+        hist_lists[index_hists].append(cluster.size)
+    line = this_color + ", "+\
+                str(len(cluster.points))+", "+\
+                str(sum([1 for x in cluster.points if x.color == "red"])) + ", " +\
+                str(sum([1 for x in cluster.points if x.color == "green"])) + ", " +\
+                str(cluster.shape_2d) + ", " +\
+                str(cluster.angle_x) + ", " +\
+                str(cluster.angle_y) + ", " +\
+                str(cluster.size) + ", " +\
+                str(len(cluster.points)/float(cluster.size)) + "\n"
+    return line, changed

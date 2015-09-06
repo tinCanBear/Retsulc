@@ -381,6 +381,7 @@ class Cluster:
         self.angle_y = 0
         self.angle_z = 0
         self.is_mixed = False
+        self.final_color = "no_color_yet" # is the color of the cluster after the appendage of points from the 2nd color.
 
     def add_point(self, point):
         self.points.append(point)
@@ -397,7 +398,7 @@ class Cluster:
         mean_dist = sum(distances)/len(distances)
         std_dist = np.std(distances)
 
-    def pca_analysis(self, dim=3):
+    def pca_analysis(self, dim=3, sphere=True): # if sphere is True (default) also updates the sphere score of the cluster.
         if dim > 2:
             self.pca = PCA(np.array([x.point for x in self.points], dtype=np.float))
         else:
@@ -411,9 +412,11 @@ class Cluster:
         min_sig = float(self.pca.sigma[0])/self.pca.sigma[1] if self.pca.sigma[1] != 0 else np.nan
         if min_sig != np.nan and min_sig > 1:
             min_sig = 1./min_sig
-        self.shape_2d = min_sig
+        if sphere:
+            self.shape_2d = min_sig
         self.large_diameter = max(self.pca.sigma[0],self.pca.sigma[1])*2
         self.size = math.sqrt((self.pca.sigma[0]*self.pca.sigma[1])*2.0)
+
     def clean_outliers(self, dim=3):
         """"returns a list of points that survived the
                 filtering of 2.5 sigma."""
