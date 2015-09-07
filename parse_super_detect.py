@@ -54,21 +54,21 @@ def go(eps, min_ngbs, d_type, pth):
                 print("raw counter: {}".format(raw_cntr))
             if re.findall(r".*?red_r[ao]w\.csv", name, re.DOTALL):
                 raw_red_filess.append(os.path.join(root, name))
-            if re.findall(r"particles\.csv", name):
-                if not os.path.join(root, name) in final_particles_files: # NOTICE!!! NOT SUPPORTED YET!
-                    particles_filess.append(os.path.join(root, name))
-                    prtcls_cntr += 1
-                    print("particles counter: {}".format(prtcls_cntr))
+            # if re.findall(r"particles\.csv", name):
+            #     if not os.path.join(root, name) in final_particles_files: # NOTICE!!! NOT SUPPORTED YET!
+            #         particles_filess.append(os.path.join(root, name))
+            #         prtcls_cntr += 1
+            #         print("particles counter: {}".format(prtcls_cntr))
 
         session_data = open(os.path.normcase(os.path.join(directory, session_name + "_final_summary.csv")) , "w")
         session_data_pre = open(os.path.normcase(os.path.join(directory, session_name + "_pre_summary.csv")) , "w")
 
-        csv_titles = "test#, #clusters, #red clusters, #green clusters, avg green in red clusters, std green in red clusters, avg red in green clusters,\
-        std red in green clusters,avg red sphericity, std red sphericity, avg green sphericity,std green sphericity,\
-        avg red Xangl, std red Xangl, avg red Yangl, std red Yangl, avg green Xangl, std green Xangl, avg green Yangl,\
-        std green Yangl, avg red size, std red size, avg green size, std green size, sample density, avg red density, std red density,\
-        avg green density, std green density, red median size, green median size,\
-        avg red pts size, std red pts size, avg green pts size, std green pts size\n"
+        csv_titles = "test#,#clusters,#red clusters,#green clusters,avg green in red clusters,std green in red clusters,avg red in green clusters,\
+        std red in green clusters,avg red sphericity,std red sphericity,avg green sphericity,std green sphericity,\
+        avg red Xangl,std red Xangl,avg red Yangl,std red Yangl,avg green Xangl,std green Xangl,avg green Yangl,\
+        std green Yangl,avg red size,std red size,avg green size,std green size,sample density,avg red density,std red density,\
+        avg green density,std green density,red median size,green median size,\
+        avg red pts size,std red pts size,avg green pts size,std green pts size,colocalization %green in red,colocalization %red in green\n"
 
         session_data.write(csv_titles)
         session_data_pre.write(csv_titles)
@@ -189,6 +189,9 @@ def get_res(red_list, green_list, cntr):
     # size  in points
     red_avg_size_pts = red_means[0]
     red_std_size_pts = red_stds[0]
+    # colocalization percentage
+    sum_of_coloc_r = np.sum(red_array[:,8])
+    per_g_in_r_col = sum_of_coloc_r/len(red_array)
 
     # GREEN CLUSTERS
     r_in_g_list = []
@@ -226,6 +229,9 @@ def get_res(red_list, green_list, cntr):
     # size  in points
     green_avg_size_pts = green_means[0]
     green_std_size_pts = green_stds[0]
+    sum_of_coloc_g = np.sum(red_array[:,8])
+    per_r_in_g_col = sum_of_coloc_g/len(green_array)
+
     # How many clusters?
     number_red = len(red_list)
     number_green = len(green_list)
@@ -242,7 +248,7 @@ def get_res(red_list, green_list, cntr):
 
     # create the line to be written to .csv file
     avgd_line = "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},\
-                {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n".format(cntr\
+                {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n".format(cntr\
                                                                   , total_clusters\
                                                                   , number_red\
                                                                   , number_green\
@@ -270,13 +276,15 @@ def get_res(red_list, green_list, cntr):
                                                                   , red_avg_naive_density\
                                                                   , red_std_naive_density\
                                                                   , green_avg_naive_density\
-                                                                  , green_std_naive_density
+                                                                  , green_std_naive_density\
                                                                   , red_average_med_size\
                                                                   , green_average_med_size\
                                                                   , red_avg_size_pts\
                                                                   , red_std_size_pts\
                                                                   , green_avg_size_pts\
-                                                                  , green_std_size_pts)
+                                                                  , green_std_size_pts\
+                                                                  , per_g_in_r_col\
+                                                                  , per_r_in_g_col)
 
 
     return avgd_line

@@ -130,7 +130,7 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name,
     # make rainbow pic.
     rainbow(s)
 
-    csv_clusters_titles = "color, #points, #red points, #green points, sphere score, angle_x, angle_y, size, density\n"
+    csv_clusters_titles = "color,#points,#red points,#green points,sphere score,angle_x,angle_y,size,density,colocalized\n"
     s.print_f(csv_clusters_titles, s.f_clusters_pre)
     s.print_f(csv_clusters_titles, s.f_clusters_final)
 
@@ -398,6 +398,9 @@ def get_line(hist_lists, cluster, color, append=True):
         this_color = other_color
         index_hists = (index_hists + 1)%2 # add to the other list
         changed = True
+    ending = ",0\n"
+    if append: # use this variable to distinguish between 1st part and 2nd.
+        ending = ",1\n" if is_good_colocalized(cluster, this_color) else ",0\n"
     if append:
         hist_lists[index_hists].append(cluster.size)
     line = this_color + ", "+\
@@ -408,5 +411,35 @@ def get_line(hist_lists, cluster, color, append=True):
                 str(cluster.angle_x) + ", " +\
                 str(cluster.angle_y) + ", " +\
                 str(cluster.size) + ", " +\
-                str(len(cluster.points)/float(cluster.size)) + "\n"
+                str(len(cluster.points)/float(cluster.size)) + ending
     return line, changed
+
+def is_good_colocalized(cluster, color):
+    other_color = "green" if color == "red" else "red"
+    cnt = 0
+    points = []
+    for point in cluster.points:
+        if point.color == other_color:
+            cnt += 1
+            points.append(point.point)
+    if cnt < 10:
+        return 0
+    else:
+        mini_c = Sample("","", epsilon = 50, min_n = 8, path="", \
+           data_type="2d", name="")
+        mini_c.points = points
+        all_points = np.array(mini_c.points)
+        db = DBSCAN(eps = mini_c.epsilon, min_samples = mini_c.min_n).fit(all_points)
+        core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
+        core_samples_mask[db.core_sample_indices_] = True
+        labels = db.labels_
+        mini_c.labels = labels
+        n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
+        mini_c.clusters = [Cluster() for i in range(n_clusters_)]
+        for i in range(len(labels)):
+            if labels[i] != -1:
+                mini_c.clusters[labels[i]].add_point(mini_c.points[i])
+        for mini_cluster in mini_c.clusters:
+            if len(mini_cluster.points) >= 10:
+                return 1 # there exists a cluster of the other color by itself!
+        return 0 # clusters are not big enough
