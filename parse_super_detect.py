@@ -1,6 +1,7 @@
 __author__ = 'UriA12'
 import os
 import re
+import time
 import statistics
 import math
 import numpy as np
@@ -43,6 +44,9 @@ def go(eps, min_ngbs,mini_eps, mini_min_ngbs, d_type, pth):
         raw_cntr = 0
         prtcls_cntr = 0
         for name in files:
+            if re.findall(r".*?done\.txt", name, re.DOTALL):
+                print("Done file found!")
+                break
             if re.findall(r".*?green\.csv", name, re.DOTALL):  # changed from 'r".*?green.*?.csv"'
                 green_filess.append(os.path.join(root, name))
                 nrm_cntr += 1
@@ -62,10 +66,14 @@ def go(eps, min_ngbs,mini_eps, mini_min_ngbs, d_type, pth):
             #         print("particles counter: {}".format(prtcls_cntr))
 
         if (len(green_filess) + len(raw_green_filess)) > 0:
+            new_directory = directory + "/test_{}_eps{}_min{}".format(time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime()), epsilon, minimum_neighbors)
+            # make output folder and open files
+            if not os.path.exists(new_directory):
+                os.mkdir(new_directory)
 
-            session_data = open(os.path.normcase(os.path.join(directory, session_name + "_final_summary.csv")) , "w")
-            session_data_pre = open(os.path.normcase(os.path.join(directory, session_name + "_pre_summary.csv")) , "w")
-
+            session_data = open(os.path.normcase(os.path.join(new_directory, session_name + "_final_summary.csv")), "w")
+            session_data_pre = open(os.path.normcase(os.path.join(new_directory, session_name + "_pre_summary.csv")), "w")
+            done_file = open(os.path.normcase(os.path.join(new_directory, "done.txt")), "w")
             csv_titles = "test#,#clusters,#red clusters,#green clusters,avg green in red clusters,std green in red clusters,avg red in green clusters,\
             std red in green clusters,avg red sphericity,std red sphericity,avg green sphericity,std green sphericity,\
             avg red Xangl,std red Xangl,avg red Yangl,std red Yangl,avg green Xangl,std green Xangl,avg green Yangl,\
@@ -75,7 +83,8 @@ def go(eps, min_ngbs,mini_eps, mini_min_ngbs, d_type, pth):
 
             session_data.write(csv_titles)
             session_data_pre.write(csv_titles)
-
+            done_file.write("This folder is done with.\n")
+            done_file.close()
         # Filtered files:
         if len(green_filess) > 0:
             for green_name in green_filess:
@@ -87,7 +96,7 @@ def go(eps, min_ngbs,mini_eps, mini_min_ngbs, d_type, pth):
                     if green_str == red_str:
                         cntr += 1
                         print(cntr)
-                        file_directory = directory + "/analysis_{}".format(get_name(green_name, cntr)) + "/"
+                        file_directory = new_directory + "/analysis_{}".format(get_name(green_name, cntr)) + "/"
                         print(file_directory)
                         green_file_name = green_name
                         red_file_name = red_name
@@ -119,7 +128,7 @@ def go(eps, min_ngbs,mini_eps, mini_min_ngbs, d_type, pth):
                     if green_str == red_str:
                         cntr += 1
                         print(cntr)
-                        file_directory = directory + "/raw_analysis_{}".format(get_name(green_name,cntr)) + "/"
+                        file_directory = new_directory + "/raw_analysis_{}".format(get_name(green_name,cntr)) + "/"
                         print(file_directory)
                         green_file_name = green_name
                         red_file_name = red_name
@@ -137,8 +146,8 @@ def go(eps, min_ngbs,mini_eps, mini_min_ngbs, d_type, pth):
                         session_data_pre.write(avgd_line_pre)
                         print("END A FILE")
 
-        session_data.close()
-        session_data_pre.close()
+            session_data.close()
+            session_data_pre.close()
         print("END")
 
 

@@ -129,7 +129,16 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
     plot_knn(s.red_points_dbscan, file_directory, "kdist_red")
 
     # make rainbow pic.
-    rainbow(s)
+    rainbow(s, "_pre")
+    green_hist = []
+    red_hist = []
+    for green_cluster in s.green_clusters:
+        green_hist.append(green_cluster.size)
+    for red_cluster in s.red_clusters:
+        red_hist.append(red_cluster.size)
+    make_histogram(s, red_hist, "red", other="_pre")
+    make_histogram(s, green_hist, "green", other="_pre")
+
 
     csv_clusters_titles = "color,#points,#red points,#green points,sphere score,angle_x,angle_y,size,density,colocalized\n"
     s.print_f(csv_clusters_titles, s.f_clusters_pre)
@@ -306,6 +315,8 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
     for j in s.red_clusters:
         j.pca_analysis(dimension, sphere=False)
 
+    rainbow(s, "_final")
+
     # calculate mean shape
 
     green_output_list = []
@@ -376,8 +387,8 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
         # s.print_f(green_line, s.f_clusters_final)
         # green_output_list.append(green_line)
 
-    make_histogram(s, hist_lists[0], "red")
-    make_histogram(s, hist_lists[1], "green")
+    make_histogram(s, hist_lists[0], "red", other="_final")
+    make_histogram(s, hist_lists[1], "green", other="_final")
     s.print_f(remarks, s.f)
     s.print_f("That's it. Thank you and Bye Bye.", s.f)
     s.f.close()

@@ -45,7 +45,7 @@ def makeform(root, fields):
 
 if __name__ == '__main__':
    root = Tk()
-   root.wm_title("Retsulc (ver 0.1) - Get clusters!")
+   root.wm_title("Retsulc (ver 0.2) - Get clusters!")
    img = Image.open(pic_path)
    photo = ImageTk.PhotoImage(img)
    panel = Label(root, image = photo)
