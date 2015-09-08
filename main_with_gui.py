@@ -5,16 +5,18 @@ from tkinter import filedialog
 from tkinter import messagebox
 from parse_super_detect import go
 pic_path = "openclust.jpg"
-fields = ('Epsilon', 'Minimum Neighbors', 'Data Type')
+fields = ('Epsilon', 'Minimum Neighbors', 'Mini Epsilon', 'Mini Minimum Neighbors', 'Data Type')
 def gogo(entries):
 #   name = (entries['Session Name'].get())
    epsilon = (int(entries['Epsilon'].get()))
    min_neighbors = (int(entries['Minimum Neighbors'].get()))
+   mini_epsilon = (int(entries['Mini Epsilon'].get()))
+   mini_min_neighbors = (int(entries['Mini Minimum Neighbors'].get()))
    d_type = (entries['Data Type'].get())
    path = filedialog.askdirectory()
    print(path)
    messagebox.showinfo("Work in progress", "Please wait till' it's done... You'll get a message (for now just click OK).")
-   go(epsilon, min_neighbors, d_type, path)
+   go(epsilon, min_neighbors, mini_epsilon, mini_min_neighbors, d_type, path)
    messagebox.showinfo("Work is DONE!", "You may now enter another session folder.")
 
 def makeform(root, fields):
@@ -29,6 +31,10 @@ def makeform(root, fields):
       elif cntr == 1:
          ent.insert(0, "10")
       elif cntr == 2:
+         ent.insert(0, "50")
+      elif cntr == 3:
+         ent.insert(0, "8")
+      elif cntr == 4:
          ent.insert(0, "2d")
       row.pack(side=TOP, fill=X, padx=5, pady=5)
       lab.pack(side=LEFT)

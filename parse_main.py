@@ -5,7 +5,7 @@ from show import *
 import numpy as np
 from sklearn.cluster import DBSCAN
 
-def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name, file_dir):
+def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors, green_name, red_name, proj_name, file_dir):
     green_file_name = green_name
     red_file_name = red_name
     name = proj_name
@@ -25,7 +25,8 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name,
     s = Sample(green_file_name,red_file_name, epsilon = epsilon, min_n = minimum_neighbors, path=file_directory, \
                data_type=data_type, name=name)
 
-
+    s.mini_eps = mini_eps
+    s.mini_minimum_ngbs = mini_minimum_neighbors
     s.get_points(s.data_type)
 
     # prepare samples
@@ -139,12 +140,12 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name,
     green_output_list_pre = []
     null_list = []
     for red_cluster in s.red_clusters:
-        line, changed = get_line(null_list, red_cluster, "red", append=False)
+        line, changed = get_line(s, null_list, red_cluster, "red", append=False)
         s.print_f(line, s.f_clusters_pre)
         red_output_list_pre.append(line)
 
     for green_cluster in s.green_clusters:
-        line, changed = get_line(null_list, green_cluster, "green", append=False)
+        line, changed = get_line(s, null_list, green_cluster, "green", append=False)
         s.print_f(line, s.f_clusters_pre)
         green_output_list_pre.append(line)
 
@@ -202,8 +203,8 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name,
     reds = [c for c in s.red_clusters if c.is_mixed is True]
     greens = [c for c in s.green_clusters if c.is_mixed is True]
 
-    p_green_clstrs_with_red_points = float(len(greens))*100/len(s.green_clusters)
-    p_red_clstrs_with_green_points = float(len(reds))*100/len(s.red_clusters)
+    p_green_clstrs_with_red_points = float(len(greens))*100/len(s.green_clusters) if len(s.green_clusters) > 0 else 0
+    p_red_clstrs_with_green_points = float(len(reds))*100/len(s.red_clusters) if len(s.red_clusters) > 0 else 0
 
     red_5 = []
     red_10 = []
@@ -234,8 +235,8 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name,
                 green_10.append(green)
          red_in_green_total += cntr
 
-    avg_green_in_red = float(green_in_red_total)/len(s.red_clusters)
-    avg_red_in_green = float(red_in_green_total)/len(s.green_clusters)
+    avg_green_in_red = float(green_in_red_total)/len(s.red_clusters) if len(s.red_clusters) > 0 else 0
+    avg_red_in_green = float(red_in_green_total)/len(s.green_clusters) if len(s.green_clusters) > 0 else 0
     s.print_f("\n_______green clusters__vs.__red points____________\n\n", s.f)
     s.print_f("The average number of red points in a green cluster is: {} \n".format(avg_red_in_green), s.f)
     s.print_f("The total number of red points in green clusters: {} \n".format(red_in_green_total), s.f)
@@ -310,8 +311,8 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name,
     green_output_list = []
     red_output_list = []
 
-    mean_green_shape = float(sum([x.shape_2d for x in s.green_clusters]))/len(s.green_clusters)
-    mean_red_shape = float(sum([x.shape_2d for x in s.red_clusters]))/len(s.red_clusters)
+    mean_green_shape = float(sum([x.shape_2d for x in s.green_clusters]))/len(s.green_clusters) if len(s.green_clusters) > 0 else 0
+    mean_red_shape = float(sum([x.shape_2d for x in s.red_clusters]))/len(s.red_clusters) if len(s.red_clusters) > 0 else 0
     s.print_f("Mean green shape: {}%.\n".format(mean_green_shape), s.f)
     s.print_f("Mean red shape: {}%.\n".format(mean_red_shape), s.f)
 
@@ -323,7 +324,7 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name,
     # assign lists to pick up the clusters that changed their color (used to be 'red' but now has more green points)
 
     for red_cluster in s.red_clusters:
-        line, changed = get_line(hist_lists, red_cluster, "red")
+        line, changed = get_line(s, hist_lists, red_cluster, "red")
         s.print_f(line, s.f_clusters_final)
         if changed:
            green_output_list.append(line)
@@ -331,7 +332,7 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name,
             red_output_list.append(line)
 
     for green_cluster in s.green_clusters:
-        line, changed = get_line(hist_lists, green_cluster, "green")
+        line, changed = get_line(s, hist_lists, green_cluster, "green")
         s.print_f(line, s.f_clusters_final)
         if changed:
             red_output_list.append(line)
@@ -385,7 +386,7 @@ def main(data_type, epsilon, minimum_neighbors, green_name, red_name, proj_name,
 
     return red_output_list, green_output_list, red_output_list_pre, green_output_list_pre
 
-def get_line(hist_lists, cluster, color, append=True):
+def get_line(s, hist_lists, cluster, color, append=True):
     index_hists = 0 if color == "red" else 1 #hist_lists[0] = red_hist
     changed = False
     other_color = "green" if color=="red" else "red"
@@ -400,7 +401,7 @@ def get_line(hist_lists, cluster, color, append=True):
         changed = True
     ending = ",0\n"
     if append: # use this variable to distinguish between 1st part and 2nd.
-        ending = ",1\n" if is_good_colocalized(cluster, this_color) else ",0\n"
+        ending = ",1\n" if is_good_colocalized(s, cluster, this_color) else ",0\n"
     if append:
         hist_lists[index_hists].append(cluster.size)
     line = this_color + ", "+\
@@ -414,7 +415,7 @@ def get_line(hist_lists, cluster, color, append=True):
                 str(len(cluster.points)/float(cluster.size)) + ending
     return line, changed
 
-def is_good_colocalized(cluster, color):
+def is_good_colocalized(s, cluster, color):
     other_color = "green" if color == "red" else "red"
     cnt = 0
     points = []
@@ -425,7 +426,7 @@ def is_good_colocalized(cluster, color):
     if cnt < 10:
         return 0
     else:
-        mini_c = Sample("","", epsilon = 50, min_n = 8, path="", \
+        mini_c = Sample("","", epsilon = s.mini_eps, min_n = s.mini_minimum_ngbs, path="", \
            data_type="2d", name="")
         mini_c.points = points
         all_points = np.array(mini_c.points)

@@ -8,12 +8,13 @@ from parse_main import main
 
 # main function, get info from "main_with_gui"
 
-def go(eps, min_ngbs, d_type, pth):
-    print(eps, min_ngbs, d_type, pth)
+def go(eps, min_ngbs,mini_eps, mini_min_ngbs, d_type, pth):
+    print(eps, min_ngbs, mini_eps, mini_min_ngbs, d_type, pth)
     data_type = d_type # "2d", etc.
     epsilon = eps
     minimum_neighbors = min_ngbs
-
+    mini_epsilon = mini_eps
+    mini_minimum_neighbors = mini_min_ngbs
 
     main_folder = pth    # where all the sub_folders are at #should be session folder
     directories = []
@@ -60,18 +61,20 @@ def go(eps, min_ngbs, d_type, pth):
             #         prtcls_cntr += 1
             #         print("particles counter: {}".format(prtcls_cntr))
 
-        session_data = open(os.path.normcase(os.path.join(directory, session_name + "_final_summary.csv")) , "w")
-        session_data_pre = open(os.path.normcase(os.path.join(directory, session_name + "_pre_summary.csv")) , "w")
+        if (len(green_filess) + len(raw_green_filess)) > 0:
 
-        csv_titles = "test#,#clusters,#red clusters,#green clusters,avg green in red clusters,std green in red clusters,avg red in green clusters,\
-        std red in green clusters,avg red sphericity,std red sphericity,avg green sphericity,std green sphericity,\
-        avg red Xangl,std red Xangl,avg red Yangl,std red Yangl,avg green Xangl,std green Xangl,avg green Yangl,\
-        std green Yangl,avg red size,std red size,avg green size,std green size,sample density,avg red density,std red density,\
-        avg green density,std green density,red median size,green median size,\
-        avg red pts size,std red pts size,avg green pts size,std green pts size,colocalization %green in red,colocalization %red in green\n"
+            session_data = open(os.path.normcase(os.path.join(directory, session_name + "_final_summary.csv")) , "w")
+            session_data_pre = open(os.path.normcase(os.path.join(directory, session_name + "_pre_summary.csv")) , "w")
 
-        session_data.write(csv_titles)
-        session_data_pre.write(csv_titles)
+            csv_titles = "test#,#clusters,#red clusters,#green clusters,avg green in red clusters,std green in red clusters,avg red in green clusters,\
+            std red in green clusters,avg red sphericity,std red sphericity,avg green sphericity,std green sphericity,\
+            avg red Xangl,std red Xangl,avg red Yangl,std red Yangl,avg green Xangl,std green Xangl,avg green Yangl,\
+            std green Yangl,avg red size,std red size,avg green size,std green size,sample density,avg red density,std red density,\
+            avg green density,std green density,red median size,green median size,\
+            avg red pts size,std red pts size,avg green pts size,std green pts size,colocalization %green in red,colocalization %red in green\n"
+
+            session_data.write(csv_titles)
+            session_data_pre.write(csv_titles)
 
         # Filtered files:
         if len(green_filess) > 0:
@@ -91,7 +94,7 @@ def go(eps, min_ngbs, d_type, pth):
                         proj_name = "test_{}".format(get_name(green_name,cntr))
 
                         # Execute main function
-                        return_list = main(data_type, epsilon, minimum_neighbors, green_file_name, red_file_name, proj_name, file_directory)
+                        return_list = main(data_type, epsilon, minimum_neighbors, mini_epsilon, mini_minimum_neighbors, green_file_name, red_file_name, proj_name, file_directory)
                         # Separate return list to Red and Green
                         red_list = return_list[0]
                         green_list = return_list[1]
@@ -191,7 +194,7 @@ def get_res(red_list, green_list, cntr):
     red_std_size_pts = red_stds[0]
     # colocalization percentage
     sum_of_coloc_r = np.sum(red_array[:,8])
-    per_g_in_r_col = sum_of_coloc_r/len(red_array)
+    per_g_in_r_col = sum_of_coloc_r/len(red_array)  if len(red_array) > 0 else 0
 
     # GREEN CLUSTERS
     r_in_g_list = []
@@ -230,7 +233,7 @@ def get_res(red_list, green_list, cntr):
     green_avg_size_pts = green_means[0]
     green_std_size_pts = green_stds[0]
     sum_of_coloc_g = np.sum(red_array[:,8])
-    per_r_in_g_col = sum_of_coloc_g/len(green_array)
+    per_r_in_g_col = sum_of_coloc_g/len(green_array) if len(green_array) > 0 else 0
 
     # How many clusters?
     number_red = len(red_list)

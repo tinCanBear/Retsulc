@@ -113,6 +113,8 @@ class Sample:
 
         self.epsilon = epsilon
         self.min_n = min_n
+        self.mini_eps = 50
+        self.mini_minimum_ngbs = 8
         self.parse = ""
 
     def get_points(self, which="3d"):
