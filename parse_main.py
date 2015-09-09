@@ -5,12 +5,14 @@ from show import *
 import numpy as np
 from sklearn.cluster import DBSCAN
 
+new_stuff = False
+
 def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors, green_name, red_name, proj_name, file_dir):
     green_file_name = green_name
     red_file_name = red_name
     name = proj_name
-    clusters_file_final = "clusters_final_" + name
-    clusters_file_pre = "clusters_pre_" + name
+    clusters_file_final = "clusters_final" #+ name
+    clusters_file_pre = "clusters_pre" #+ name
 
     remarks = "....."
     file_directory = file_dir
@@ -100,7 +102,7 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
     if not os.path.exists(file_directory):
         os.mkdir(file_directory)
 
-    s.f = open(file_directory + name + "_summary.txt", "w")
+    s.f = open(file_directory + "summary.txt", "w")
     s.f_clusters_final = open(file_directory + clusters_file_final + ".csv", "w")
     s.f_clusters_pre = open(file_directory + clusters_file_pre + ".csv", "w")
     s.print_f("the green file is: \n", s.f)
@@ -395,6 +397,45 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
     s.f_clusters_pre.close()
     s.f_clusters_final.close()
 
+    if new_stuff:
+        ##----OPTION-1----##
+        mixed_clusters = s.red_clusters + s.green_clusters
+        for c1 in mixed_clusters:
+            for c2 in mixed_clusters:
+                if c1 is c2:
+                    continue
+                biggest = 0 if c1.size > c2.size else 1
+                big_radius = c1.size if c1.size > c2.size else c2.size
+                if dist(c1.center, c2.center) < big_radius:
+                    if not biggest:
+                        c1.points = c1.points + c2.points
+                        c2.size = 0
+                        c2.points = []
+                        c1.pca_analysis(dim=2)
+                    else:
+                        c2.points = c1.points + c2.points
+                        c1.size = 0
+                        c1.points = []
+                        c2.pca_analysis(dim=2)
+        mixed_clusters = s.red_clusters + s.green_clusters
+        for c1 in mixed_clusters:
+            for c2 in mixed_clusters:
+                if c1 is c2:
+                    continue
+                biggest = 0 if c1.size > c2.size else 1
+                big_radius = c1.size if c1.size > c2.size else c2.size
+                if dist(c1.center, c2.center) < big_radius:
+                    if not biggest:
+                        c1.points = c1.points + c2.points
+                        c2.size = 0
+                        c2.points = []
+                        c1.pca_analysis(dim=2)
+                    else:
+                        c2.points = c1.points + c2.points
+                        c1.size = 0
+                        c1.points = []
+                        c2.pca_analysis(dim=2)
+        rainbow(s, other="_option1")
     return red_output_list, green_output_list, red_output_list_pre, green_output_list_pre
 
 def get_line(s, hist_lists, cluster, color, append=True):
