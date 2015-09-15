@@ -134,7 +134,7 @@ def go(eps, min_ngbs,mini_eps, mini_min_ngbs, d_type, pth):
                         red_file_name = red_name
                         proj_name = "test_{}".format(get_name(green_name,cntr))
 
-                        return_list = main(data_type, epsilon, minimum_neighbors, green_file_name, red_file_name, proj_name, file_directory)
+                        return_list = main(data_type, epsilon, minimum_neighbors, mini_epsilon, mini_minimum_neighbors, green_file_name, red_file_name, proj_name, file_directory)
                         red_list = return_list[0]
                         green_list = return_list[1]
                         red_list_pre = return_list[2]
