@@ -255,10 +255,10 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
     s.print_f("which are {}% of the green clusters. \n\n".format(p_green_clstrs_with_red_points), s.f)
 
     s.print_f("The number of green clusters containing at least three red points is: {} \n".format(len(green_5)), s.f)
-    s.print_f("which are {}% of the green clusters. \n\n".format(float(len(green_5))*100/len(s.green_clusters)), s.f)
+    s.print_f("which are {}% of the green clusters. \n\n".format(float(len(green_5))*100/len(s.green_clusters) if len(s.green_clusters) else '0'), s.f)
 
     s.print_f("The number of green clusters containing at least six red points is: {} \n".format(len(green_10)), s.f)
-    s.print_f("which are {}% of the green clusters. \n\n".format(float(len(green_10))*100/len(s.green_clusters)), s.f)
+    s.print_f("which are {}% of the green clusters. \n\n".format(float(len(green_10))*100/len(s.green_clusters) if len(s.green_clusters) else '0'), s.f)
 
     s.print_f("\n_______red clusters__vs.__green points____________\n\n", s.f)
 
@@ -266,10 +266,10 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
     s.print_f("which are {}% of the red clusters. \n\n".format(p_red_clstrs_with_green_points), s.f)
 
     s.print_f("The number of red clusters containing at least three green points is: {} \n".format(len(red_5)), s.f)
-    s.print_f("which are {}% of the red clusters. \n\n".format(float(len(red_5))*100/len(s.red_clusters)), s.f)
+    s.print_f("which are {}% of the red clusters. \n\n".format(float(len(red_5))*100/len(s.red_clusters) if len(s.red_clusters) else '0'), s.f)
 
     s.print_f("The number of red clusters containing at least six green points is: {} \n".format(len(red_10)), s.f)
-    s.print_f("which are {}% of the red clusters. \n\n".format(float(len(red_10))*100/len(s.red_clusters)), s.f)
+    s.print_f("which are {}% of the red clusters. \n\n".format(float(len(red_10))*100/len(s.red_clusters) if len(s.red_clusters) else '0'), s.f)
 
     s.print_f("The average number of green points in a red cluster is: {} \n".format(avg_green_in_red), s.f)
     s.print_f("The total number of green points in red clusters: {} \n".format(green_in_red_total), s.f)
@@ -304,7 +304,7 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
     s.part2_points = new_red_points + new_green_points
     s.part2_points_dbscan = to_np(s.part2_points)
     antr_line = "cleaning process is over. Excluded {} points, which constitue {}% of all points.\n"\
-        .format(len(excluded), (float(len(excluded))/len(s.part2_points))*100 )
+        .format(len(excluded), (float(len(excluded))/len(s.part2_points))*100 if len(s.part2_points) else '0' )
     s.print_f(antr_line, s.f)
 
     # PCA analysis of 2nd part clusters
