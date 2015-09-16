@@ -46,6 +46,48 @@ def plot_knn(points, file_directory, name, x = None, y = [0,850], show=False):
     plt.savefig(file_directory+name+".png")
     plt.clf()
 
+def get_cluster_picture(s, factor=50, name=""):
+    plt.clf()
+    out_file_name = s.path + "/" + name + ".png"
+
+    colors = []
+    points = []
+
+    for cluster in s.red_clusters:
+        for point in cluster.points:
+            colors.append((0, 1, 0) if point.color == "green" else (1, 0, 0))
+            points.append(point)
+    for cluster in s.green_clusters:
+        for point in cluster.points:
+            colors.append((0, 1, 0) if point.color == "green" else (1, 0, 0))
+            points.append(point)
+
+    x_all = np.array([])
+    y_all = np.array([])
+    c_all = np.array([])
+    s_all = np.array([])
+
+    x = np.array([x.point[0] for x in points],\
+    dtype = np.float)
+    y = np.array([y.point[1] for y in points],\
+    dtype = np.float)
+    c = np.array(colors, dtype=np.float)
+    s = np.array([50 for k in range(len(x))], dtype=np.float)
+    x_all = np.concatenate((x_all, x), axis=0)
+    y_all = np.concatenate((y_all, y), axis=0)
+    c_all = c
+    s_all = np.concatenate((s_all, s), axis=0)
+# plt.scatter(x_unclstrd, y_unclstrd, c=c_unclstrd, s=s_unclstrd)
+
+    plt.figure(figsize=(30,30))
+
+    plt.scatter(x_all, y_all, c=c_all, s=s_all, alpha=0.5)
+
+    plt.savefig(out_file_name)
+
+    plt.clf()
+    plt.close()
+
 def get_picture(s, list_of_points=[], list_of_features=[0], factor=50, name=""):
     plt.clf()
     if name == "":
@@ -166,32 +208,59 @@ def rainbow(s, other=""):
 
     plt.clf()
     plt.close()
-    # else:
-    #     for i in range(len(s.part2clusters)):
-    #
-    #         l = len(np.array([x.point[0]\
-    #         for x in s.part2clusters[i].points], dtype = np.float))
-    #         x_allg = np.concatenate((x_allg, np.array([x.point[0]\
-    #         for x in s.part2clusters[i].points], dtype = np.float)), axis=0)
-    #
-    #         y_allg = np.concatenate((y_allg, np.array([y.point[1]\
-    #         for y in s.part2clusters[i].points], dtype = np.float)), axis=0)
-    #
-    #         c_allg = np.concatenate((c_allg, np.array([color for k in \
-    #         range(l)], dtype=np.float)), axis=0)
-    #
-    #         s_allg = np.concatenate((s_allg, np.array([90 for k in \
-    #         range(l)], dtype=np.float)), axis=0)
-    #
-    #         color = (color+0.17)%1
-    #
-    #     plt.scatter(x_allg, y_allg, c=c_allg, s=s_allg, alpha=0.5)
-    #     out_file_name = s.path + "/" +"rainbow_part2" + ".png"
-    #
-    #     plt.savefig(out_file_name)
-    #
-    #     plt.clf()
-    #     plt.close()
+
+# def get_figure(s, other=""):
+#     plt.clf()
+#     out_file_name = s.path + "/" +"rainbow" + other + ".png"
+#     color = float(0)
+#     x_allr = np.array([])
+#     y_allr = np.array([])
+#     c_allr = np.array([])
+#     s_allr = np.array([])
+#     x_allg = np.array([])
+#     y_allg = np.array([])
+#     c_allg = np.array([])
+#     s_allg = np.array([])
+#
+#     plt.figure(figsize=(30,30))
+#     # if other==False:
+#     for i in range(len(s.red_clusters)):
+#         l = len(np.array([x.point[0]\
+#         for x in s.red_clusters[i].points], dtype = np.float))
+#         x_allr = np.concatenate((x_allr, np.array([x.point[0]\
+#         for x in s.red_clusters[i].points], dtype = np.float)), axis=0)
+#         y_allr = np.concatenate((y_allr, np.array([y.point[1]\
+#         for y in s.red_clusters[i].points], dtype = np.float)), axis=0)
+#         c_allr = np.concatenate((c_allr, np.array([to_color() for k in range(l)], dtype=np.float)), axis=0)
+#         s_allr= np.concatenate((s_allr, np.array([90 for k in range(l)], dtype=np.float)), axis=0)
+#         color = (color+0.07)%1
+#
+#     plt.scatter(x_allr, y_allr, c=c_allr, marker='^', s=s_allr, alpha=0.5)
+#
+#     for i in range(len(s.green_clusters)):
+#
+#         l = len(np.array([x.point[0]\
+#         for x in s.green_clusters[i].points], dtype = np.float))
+#         x_allg = np.concatenate((x_allg, np.array([x.point[0]\
+#         for x in s.green_clusters[i].points], dtype = np.float)), axis=0)
+#
+#         y_allg = np.concatenate((y_allg, np.array([y.point[1]\
+#         for y in s.green_clusters[i].points], dtype = np.float)), axis=0)
+#
+#         c_allg = np.concatenate((c_allg, np.array([color for k in \
+#         range(l)], dtype=np.float)), axis=0)
+#
+#         s_allg = np.concatenate((s_allg, np.array([90 for k in \
+#         range(l)], dtype=np.float)), axis=0)
+#
+#         color = (color+0.17)%1
+#
+#     plt.scatter(x_allg, y_allg, c=c_allg, s=s_allg, alpha=0.5)
+#
+#     plt.savefig(out_file_name)
+#
+#     plt.clf()
+#     plt.close()
 
 def show_picture(list_of_points, list_of_features=[], factor=50, dim=2):
     plt.clf()

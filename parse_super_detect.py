@@ -203,7 +203,7 @@ def get_res(red_list, green_list, cntr):
     red_std_size_pts = red_stds[0]
     # colocalization percentage
     sum_of_coloc_r = np.sum(red_array[:,8])
-    per_g_in_r_col = sum_of_coloc_r/len(red_array)  if len(red_array) > 0 else 0
+    per_g_in_r_col = sum_of_coloc_r/len(red_array) if len(red_array) > 0 else 0
 
     # GREEN CLUSTERS
     r_in_g_list = []
@@ -241,7 +241,7 @@ def get_res(red_list, green_list, cntr):
     # size  in points
     green_avg_size_pts = green_means[0]
     green_std_size_pts = green_stds[0]
-    sum_of_coloc_g = np.sum(red_array[:,8])
+    sum_of_coloc_g = np.sum(green_array[:,8])
     per_r_in_g_col = sum_of_coloc_g/len(green_array) if len(green_array) > 0 else 0
 
     # How many clusters?

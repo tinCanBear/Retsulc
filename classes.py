@@ -383,6 +383,7 @@ class Cluster:
         self.angle_y = 0
         self.angle_z = 0
         self.is_mixed = False
+        self.is_colocalized = False
         self.final_color = "no_color_yet" # is the color of the cluster after the appendage of points from the 2nd color.
 
     def add_point(self, point):

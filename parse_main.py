@@ -196,7 +196,7 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
 
     for red_cluster in s.red_clusters:
         for gp in s.green_points:
-            if dist(gp.point,red_cluster.center)<red_cluster.large_diameter:
+            if dist(gp.point,red_cluster.center) < red_cluster.large_diameter:
                 red_cluster.points.append(gp)
                 added_points.append(gp)
                 red_cluster.is_mixed = True
@@ -205,7 +205,7 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
 
     for green_cluster in s.green_clusters:
         for rp in s.red_points:
-            if dist(rp.point,green_cluster.center)<green_cluster.large_diameter:
+            if dist(rp.point,green_cluster.center) < green_cluster.large_diameter:
                 green_cluster.points.append(rp)
                 added_points.append(rp)
                 green_cluster.is_mixed = True
@@ -317,7 +317,12 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
     for j in s.red_clusters:
         j.pca_analysis(dimension, sphere=False)
 
+    for i in s.green_clusters:
+        colocalization(s, i, "green")
+    for j in s.red_clusters:
+        colocalization(s, j, "red")
     rainbow(s, "_final")
+    get_cluster_picture(s, name="final_clusters")
 
     # calculate mean shape
 
@@ -331,16 +336,18 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
 
 
     # save sizes to compute histograms
+
     green_hist = []
     red_hist = []
     hist_lists = [red_hist, green_hist]
+
     # assign lists to pick up the clusters that changed their color (used to be 'red' but now has more green points)
 
     for red_cluster in s.red_clusters:
         line, changed = get_line(s, hist_lists, red_cluster, "red")
         s.print_f(line, s.f_clusters_final)
         if changed:
-           green_output_list.append(line)
+            green_output_list.append(line)
         else:
             red_output_list.append(line)
 
@@ -351,43 +358,6 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
             red_output_list.append(line)
         else:
             green_output_list.append(line)
-        # if red_cluster.size == 0:
-        #     continue
-        # gs = sum([1 for x in red_cluster.points if x.color == "green"])
-        # rds = sum([1 for x in red_cluster.points if x.color == "red"])
-        # if gs > rds: # change of dominant color!!
-        #     leftovers_red.append(red_cluster)
-        #     continue
-        # red_hist.append(red_cluster.size)
-        # red_line = "red" + ", "+\
-        #             str(len(red_cluster.points))+", "+\
-        #             str(sum([1 for x in red_cluster.points if x.color == "red"])) + ", " +\
-        #             str(sum([1 for x in red_cluster.points if x.color == "green"])) + ", " +\
-        #             str(red_cluster.shape_2d) + ", " +\
-        #             str(red_cluster.angle_x) + ", " +\
-        #             str(red_cluster.angle_y) + ", " +\
-        #             str(red_cluster.size) + ", " +\
-        #             str(len(red_cluster.points)/float(red_cluster.size)) + "\n"
-        # s.print_f(red_line, s.f_clusters_final)
-        # red_output_list.append(red_line)
-        # if green_cluster.size == 0:
-        #     continue
-        # gs = sum([1 for x in red_cluster.points if x.color == "green"])
-        # rds = sum([1 for x in red_cluster.points if x.color == "red"])
-        # if gs < rds: # change of dominant color!!
-        #     leftovers_green.append(red_cluster)
-        #     continue
-        # green_hist.append(green_cluster.size)
-        # green_line = "green" + ", "+\
-        #                 str(len(green_cluster.points))+", "+\
-        #                 str(sum([1 for x in green_cluster.points if x.color == "red"])) + ", " +\
-        #                 str(sum([1 for x in green_cluster.points if x.color == "green"])) + ", " +\
-        #                 str(green_cluster.shape_2d) + ", " + str(green_cluster.angle_x) + ", " +\
-        #                 str(green_cluster.angle_y) + ", " +\
-        #                 str(green_cluster.size) + ", " +\
-        #                 str(len(green_cluster.points)/float(green_cluster.size)) + "\n"
-        # s.print_f(green_line, s.f_clusters_final)
-        # green_output_list.append(green_line)
 
     make_histogram(s, hist_lists[0], "red", other="_final")
     make_histogram(s, hist_lists[1], "green", other="_final")
@@ -439,9 +409,9 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
     return red_output_list, green_output_list, red_output_list_pre, green_output_list_pre
 
 def get_line(s, hist_lists, cluster, color, append=True):
-    index_hists = 0 if color == "red" else 1 #hist_lists[0] = red_hist
+    index_hists = 0 if color == "red" else 1  # hist_lists[0] = red_hist
     changed = False
-    other_color = "green" if color=="red" else "red"
+    other_color = "green" if color == "red" else "red"
     this_color = color
     if cluster.size == 0:
         return 0
@@ -453,7 +423,7 @@ def get_line(s, hist_lists, cluster, color, append=True):
         changed = True
     ending = ",0\n"
     if append: # use this variable to distinguish between 1st part and 2nd.
-        ending = ",1\n" if is_good_colocalized(s, cluster, this_color) else ",0\n"
+        ending = ",1\n" if cluster.is_colocalized else ",0\n"
     if append:
         hist_lists[index_hists].append(cluster.size)
     line = this_color + ", "+\
@@ -496,3 +466,39 @@ def is_good_colocalized(s, cluster, color):
             if len(mini_cluster.points) >= 10:
                 return 1 # there exists a cluster of the other color by itself!
         return 0 # clusters are not big enough
+
+def colocalization(s, cluster, color):
+    other_color = "green" if color == "red" else "red"
+    cnt = 0
+    points = []
+    for point in cluster.points:
+        if point.color == other_color:
+            cnt += 1
+            points.append(point.point)
+    if cnt < 10:
+        cluster.points = [x for x in cluster.points if x.color == color]
+        cluster.is_colocalized = False
+    else:
+        mini_c = Sample("","", epsilon = s.mini_eps, min_n = s.mini_minimum_ngbs, path="", \
+           data_type="2d", name="")
+        mini_c.points = points
+        all_points = np.array(mini_c.points)
+        db = DBSCAN(eps = mini_c.epsilon, min_samples = mini_c.min_n).fit(all_points)
+        core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
+        core_samples_mask[db.core_sample_indices_] = True
+        labels = db.labels_
+        mini_c.labels = labels
+        n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
+        mini_c.clusters = [Cluster() for i in range(n_clusters_)]
+        for i in range(len(labels)):
+            if labels[i] != -1:
+                mini_c.clusters[labels[i]].add_point(mini_c.points[i])
+        new_other_points = []
+        for mini_cluster in mini_c.clusters:
+            if len(mini_cluster.points) >= 10:
+                new_other_points += mini_cluster.points
+        for i in range(len(new_other_points)):
+            new_other_points[i] = to_point(new_other_points[i])
+            new_other_points[i].color = other_color
+        cluster.points = [x for x in cluster.points if x.color == color] + new_other_points # update cluster
+        cluster.is_colocalized = True if len(new_other_points) > 0 else False
