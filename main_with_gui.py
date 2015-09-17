@@ -3,9 +3,11 @@ from tkinter import Tk
 from PIL import ImageTk, Image
 from tkinter import filedialog
 from tkinter import messagebox
+from tkinter import ttk
 from parse_super_detect import go
 pic_path = "openclust.jpg"
 fields = ('Epsilon', 'Minimum Neighbors', 'Mini Epsilon', 'Mini Minimum Neighbors', 'Data Type')
+
 def gogo(entries):
 #   name = (entries['Session Name'].get())
    epsilon = (int(entries['Epsilon'].get()))
@@ -23,9 +25,10 @@ def makeform(root, fields):
    entries = {}
    cntr = 0
    for field in fields:
-      row = Frame(root)
-      lab = Label(row, width=22, text=field+": ", anchor='w')
-      ent = Entry(row)
+      if cntr != 4:
+         row = Frame(root)
+         lab = Label(row, width=22, text=field+": ", anchor='w')
+         ent = Entry(row)
       if cntr == 0:
          ent.insert(0, "100")
       elif cntr == 1:
@@ -35,7 +38,10 @@ def makeform(root, fields):
       elif cntr == 3:
          ent.insert(0, "8")
       elif cntr == 4:
-         ent.insert(0, "2d")
+         row = Frame(root)
+         lab = Label(row, width=22, text=field+": ", anchor='w')
+         ent = ttk.Combobox(row)
+         ent['values'] = ('2d', '3d', 'raw_2d', 'raw_3d')
       row.pack(side=TOP, fill=X, padx=5, pady=5)
       lab.pack(side=LEFT)
       ent.pack(side=RIGHT, expand=YES, fill=X)

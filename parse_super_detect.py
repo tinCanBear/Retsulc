@@ -66,20 +66,26 @@ def go(eps, min_ngbs,mini_eps, mini_min_ngbs, d_type, pth):
             #         print("particles counter: {}".format(prtcls_cntr))
 
         if (len(green_filess) + len(raw_green_filess)) > 0:
-            new_directory = directory + "/test_{}_eps{}_min{}".format(time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime()), epsilon, minimum_neighbors)
+            new_directory = directory + "/test_{}_eps{}_min{}_{}".format(time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime()), epsilon, minimum_neighbors, d_type)
             # make output folder and open files
             if not os.path.exists(new_directory):
                 os.mkdir(new_directory)
 
+
+
+
             session_data = open(os.path.normcase(os.path.join(new_directory, session_name + "_final_summary.csv")), "w")
             session_data_pre = open(os.path.normcase(os.path.join(new_directory, session_name + "_pre_summary.csv")), "w")
             done_file = open(os.path.normcase(os.path.join(new_directory, "done.txt")), "w")
-            csv_titles = "test#,#clusters,#red clusters,#green clusters,avg green in red clusters,std green in red clusters,avg red in green clusters,\
+            csv_titles = "test#,total_number_of_points,total_number_of_red_points,total_number_of_green_points,total_number_of_clustered_points,\
+            total_number_of_unclustered_points,total_number_of_clustered_red_points,total_number_of_clustered_green_points,\
+            relative_clustered_points,relative_unclustered_points,relative_red_clustered_points,relative_green_clustered_points,\
+            #clusters,#red clusters,#green clusters,avg green in red clusters,std green in red clusters,avg red in green clusters,\
             std red in green clusters,avg red sphericity,std red sphericity,avg green sphericity,std green sphericity,\
             avg red Xangl,std red Xangl,avg red Yangl,std red Yangl,avg green Xangl,std green Xangl,avg green Yangl,\
             std green Yangl,avg red size,std red size,avg green size,std green size,sample density,avg red density,std red density,\
             avg green density,std green density,red median size,green median size,\
-            avg red pts size,std red pts size,avg green pts size,std green pts size,colocalization %green in red,colocalization %red in green\n"
+            avg red pts size,std red pts size,avg green pts size,std green pts size,colocalization %green in red,colocalization %red in green,test name\n"
 
             session_data.write(csv_titles)
             session_data_pre.write(csv_titles)
@@ -109,9 +115,11 @@ def go(eps, min_ngbs,mini_eps, mini_min_ngbs, d_type, pth):
                         green_list = return_list[1]
                         red_list_pre = return_list[2]
                         green_list_pre = return_list[3]
+                        basics_list = return_list[4]
+                        basics_list_pre = return_list[5]
                         # Write to file
-                        avgd_line = get_res(red_list, green_list, cntr)
-                        avgd_line_pre = get_res(red_list_pre, green_list_pre, cntr)
+                        avgd_line = get_res(red_list, green_list, cntr, proj_name, basics_list)
+                        avgd_line_pre = get_res(red_list_pre, green_list_pre, cntr, proj_name, basics_list_pre)
                         print(avgd_line)
                         session_data.write(avgd_line)
                         session_data_pre.write(avgd_line_pre)
@@ -139,8 +147,10 @@ def go(eps, min_ngbs,mini_eps, mini_min_ngbs, d_type, pth):
                         green_list = return_list[1]
                         red_list_pre = return_list[2]
                         green_list_pre = return_list[3]
-                        avgd_line = get_res(red_list, green_list, cntr)
-                        avgd_line_pre = get_res(red_list_pre, green_list_pre, cntr)
+                        basics_list = return_list[4]
+                        basics_list_pre = return_list[5]
+                        avgd_line = get_res(red_list, green_list, cntr, proj_name, basics_list)
+                        avgd_line_pre = get_res(red_list_pre, green_list_pre, cntr, proj_name, basics_list_pre)
                         print(avgd_line)
                         session_data.write(avgd_line)
                         session_data_pre.write(avgd_line_pre)
@@ -152,7 +162,7 @@ def go(eps, min_ngbs,mini_eps, mini_min_ngbs, d_type, pth):
 
 
 # ("color, #points, #red points, #green points, sphere score, angle_x, angle_y, size, density\n")
-def get_res(red_list, green_list, cntr):
+def get_res(red_list, green_list, cntr, proj_name, b_list):
     len_r = len(red_list)
     len_g = len(green_list)
 
@@ -170,7 +180,7 @@ def get_res(red_list, green_list, cntr):
     for a_list in red_list:
         g_in_r_list.append(a_list[2]/(a_list[1]+a_list[2]))
     if len(g_in_r_list) < 2:
-        avgd_line = "{},N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N\n".format(cntr)
+        avgd_line = "{},N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N\n".format(cntr)
         return avgd_line
 
     avg_per_green_in_red = np.mean(g_in_r_list)
@@ -258,9 +268,33 @@ def get_res(red_list, green_list, cntr):
         clstrs_tot += clst_size*(math.pi)
     clstrs_tot /= sample_size # should be the sample density
 
+    # basics stuff
+    total_number_of_points = b_list[0]
+    total_number_of_red_points = b_list[1]
+    total_number_of_green_points = b_list[2]
+    total_number_of_clustered_points = b_list[3]
+    total_number_of_unclustered_points = b_list[4]
+    total_number_of_clustered_red_points = b_list[5]
+    total_number_of_clustered_green_points = b_list[6]
+    relative_clustered_points = b_list[7]
+    relative_unclustered_points = b_list[8]
+    relative_red_clustered_points = b_list[9]
+    relative_green_clustered_points = b_list[10]
+
     # create the line to be written to .csv file
-    avgd_line = "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},\
+    avgd_line = "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},\
                 {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n".format(cntr\
+                                                                  , total_number_of_points\
+                                                                  , total_number_of_red_points\
+                                                                  , total_number_of_green_points\
+                                                                  , total_number_of_clustered_points\
+                                                                  , total_number_of_unclustered_points\
+                                                                  , total_number_of_clustered_red_points\
+                                                                  , total_number_of_clustered_green_points\
+                                                                  , relative_clustered_points\
+                                                                  , relative_unclustered_points\
+                                                                  , relative_red_clustered_points\
+                                                                  , relative_green_clustered_points\
                                                                   , total_clusters\
                                                                   , number_red\
                                                                   , number_green\
@@ -296,7 +330,8 @@ def get_res(red_list, green_list, cntr):
                                                                   , green_avg_size_pts\
                                                                   , green_std_size_pts\
                                                                   , per_g_in_r_col\
-                                                                  , per_r_in_g_col)
+                                                                  , per_r_in_g_col\
+                                                                  , proj_name)
 
 
     return avgd_line

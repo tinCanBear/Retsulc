@@ -67,7 +67,7 @@ class Point:
      self.green_cluster = -1
      self.red_cluster = -1
      self.color = color
-     self.ditance_from_center= 0
+     self.distance_from_center= 0
      self.opposite_clusters = 0
 
 #***-----------------------SAMPLE----------------------------------***#
@@ -136,7 +136,6 @@ class Sample:
             , \"2d\", \"raw_3d\", \"raw_2d\" or \"old\"")
 
     def parse_3d(self):
-
         with open(self.green_path) as g:
                 g = csv.reader(g, delimiter=',')
                 cnt = 0
@@ -176,7 +175,6 @@ class Sample:
         return
 
     def parse_old(self):
-
         with open(self.green_path) as g:
                 g = csv.reader(g, delimiter=' ')
                 cnt = 0
@@ -200,7 +198,6 @@ class Sample:
 
 
     def parse_raw_3d(self):
-
         with open(self.green_path) as g:
                 g = csv.reader(g, delimiter=',')
                 cnt = 0
@@ -236,7 +233,6 @@ class Sample:
         return
 
     def parse_2d(self):
-
         with open(self.green_path) as g:
                 g = csv.reader(g, delimiter=',')
                 cnt = 0
@@ -277,7 +273,6 @@ class Sample:
 
 
     def parse_raw_2d(self):
-
         with open(self.green_path) as g:
                 g = csv.reader(g, delimiter=',')
                 cnt = 0

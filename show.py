@@ -297,8 +297,10 @@ def make_histogram(s, list, color, other=""):
     if len(list) < 2: # no plotting in this case
         plt.title("less than 2 clusters")
     else:
-        plt.hist(list, normed=True)
-    # plt.hist(list, bins=[0,5,10,25, 50, 100, 150, 200, 300, 400, 500, 600, 1000], normed=True)
+        # plt.hist(list, normed=True)
+        weights = np.ones_like(list)/float(len(list))
+        plt.hist(list, weights = weights)
+        # plt.hist(list, bins=[0,60,120,180, 240, 300, 360, 420, 480, 1000], weights=weights)
         plt.title("{}_{}".format(s.name + other, color))
     plt.savefig(out_file_name)
     plt.clf()

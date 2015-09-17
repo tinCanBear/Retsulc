@@ -130,6 +130,25 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
     plot_knn(s.green_points_dbscan, file_directory, "kdist_green")
     plot_knn(s.red_points_dbscan, file_directory, "kdist_red")
 
+    # Calculate basic stuff (final number of un/clustered points, etc.)
+    total_number_of_points_pre = len(s.points)
+    total_number_of_red_points_pre = len(s.red_points)
+    total_number_of_green_points_pre = len(s.green_points)
+    clustered_points_pre = [x for x in s.points if x.red_cluster != -1 or x.green_cluster != -1]
+    total_number_of_clustered_points_pre = len(clustered_points_pre)
+    total_number_of_unclustered_points_pre = total_number_of_points_pre - total_number_of_clustered_points_pre
+    total_number_of_clustered_red_points_pre = len([x for x in clustered_points_pre if x.color == "red"])
+    total_number_of_clustered_green_points_pre = len([x for x in clustered_points_pre if x.color == "green"])
+
+    relative_clustered_points_pre = float(total_number_of_clustered_points_pre)/total_number_of_points_pre
+    relative_unclustered_points_pre = float(total_number_of_unclustered_points_pre)/total_number_of_points_pre
+    relative_red_clustered_points_pre = float(total_number_of_clustered_red_points_pre)/total_number_of_red_points_pre
+    relative_green_clustered_points_pre = float(total_number_of_clustered_green_points_pre)/total_number_of_green_points_pre
+
+    basics_pre = [total_number_of_points_pre, total_number_of_red_points_pre, total_number_of_green_points_pre, total_number_of_clustered_points_pre,\
+                total_number_of_unclustered_points_pre, total_number_of_clustered_red_points_pre, total_number_of_clustered_green_points_pre,\
+                relative_clustered_points_pre, relative_unclustered_points_pre, relative_red_clustered_points_pre, relative_green_clustered_points_pre]
+
     # make rainbow pic.
     rainbow(s, "_pre")
     green_hist = []
@@ -317,12 +336,44 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
     for j in s.red_clusters:
         j.pca_analysis(dimension, sphere=False)
 
+    # Get rid of unwanted points (find 'truly colocalized' mini clusters)
+
     for i in s.green_clusters:
         colocalization(s, i, "green")
     for j in s.red_clusters:
         colocalization(s, j, "red")
+
+    # Get some pics.
+
     rainbow(s, "_final")
     get_cluster_picture(s, name="final_clusters")
+
+    # Calculate basic stuff (final number of un/clustered points, etc.)
+
+    for cluster in s.red_clusters:
+        for point in cluster.points:
+            point.p2cluster = 1
+    for cluster in s.green_clusters:
+        for point in cluster.points:
+            point.p2cluster = 1
+
+    total_number_of_points = len(s.points)
+    total_number_of_red_points = len(s.red_points)
+    total_number_of_green_points = len(s.green_points)
+    clustered_points = [x for x in s.points if x.p2cluster != -1]
+    total_number_of_clustered_points = len(clustered_points)
+    total_number_of_unclustered_points = total_number_of_points - total_number_of_clustered_points
+    total_number_of_clustered_red_points = len([x for x in clustered_points if x.color == "red"])
+    total_number_of_clustered_green_points = len([x for x in clustered_points if x.color == "green"])
+
+    relative_clustered_points = float(total_number_of_clustered_points)/total_number_of_points
+    relative_unclustered_points = float(total_number_of_unclustered_points)/total_number_of_points
+    relative_red_clustered_points = float(total_number_of_clustered_red_points)/total_number_of_red_points
+    relative_green_clustered_points = float(total_number_of_clustered_green_points)/total_number_of_green_points
+
+    basics = [total_number_of_points, total_number_of_red_points, total_number_of_green_points, total_number_of_clustered_points,\
+                total_number_of_unclustered_points, total_number_of_clustered_red_points, total_number_of_clustered_green_points,\
+                relative_clustered_points, relative_unclustered_points, relative_red_clustered_points, relative_green_clustered_points]
 
     # calculate mean shape
 
@@ -406,7 +457,7 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
                         c1.points = []
                         c2.pca_analysis(dim=2)
         rainbow(s, other="_option1")
-    return red_output_list, green_output_list, red_output_list_pre, green_output_list_pre
+    return red_output_list, green_output_list, red_output_list_pre, green_output_list_pre, basics, basics_pre
 
 def get_line(s, hist_lists, cluster, color, append=True):
     index_hists = 0 if color == "red" else 1  # hist_lists[0] = red_hist
