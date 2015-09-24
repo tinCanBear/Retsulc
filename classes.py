@@ -82,6 +82,9 @@ class Sample:
         self.red_path = red_path
         self.f = ""
         self.f_clusters = ""
+        self.f_clusters_final = ""
+        self.f_clusters_pre = ""
+        self.f_clusters_all = ""
         self.f_csv = ""
         self.points = []
         self.green_points = []
@@ -92,6 +95,8 @@ class Sample:
         self.intensities = []
         self.clustered_points=[]
         self.unclustered_points = []
+        self.all_clustered_points = []
+        self.all_unclustered_points = []
         self.points_size = 0
         self.green_size = 0
         self.red_size = 0
@@ -101,6 +106,8 @@ class Sample:
 
         self.part2clusters = []
         self.clusters = []
+        self.clusters_green = []
+        self.clusters_red = []
         self.green_clusters = []
         self.red_clusters = []
         self.clusters_size = 0

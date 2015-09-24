@@ -6,7 +6,12 @@ import statistics
 import math
 import numpy as np
 from parse_main import main
+import warnings
 
+
+debug = False
+np.seterr(all='ignore')
+warnings.filterwarnings("ignore")
 # main function, get info from "main_with_gui"
 
 def go(eps, min_ngbs,mini_eps, mini_min_ngbs, d_type, pth):
@@ -80,6 +85,7 @@ def go(eps, min_ngbs,mini_eps, mini_min_ngbs, d_type, pth):
 
             session_data = open(os.path.normcase(os.path.join(new_directory, session_name + "_final_summary.csv")), "w")
             session_data_pre = open(os.path.normcase(os.path.join(new_directory, session_name + "_pre_summary.csv")), "w")
+            session_data_all = open(os.path.normcase(os.path.join(new_directory, session_name + "_all_summary.csv")), "w")
             done_file = open(os.path.normcase(os.path.join(new_directory, "done.txt")), "w")
             csv_titles = "test#,total_number_of_points,total_number_of_red_points,total_number_of_green_points,total_number_of_clustered_points,\
             total_number_of_unclustered_points,total_number_of_clustered_red_points,total_number_of_clustered_green_points,\
@@ -93,6 +99,7 @@ def go(eps, min_ngbs,mini_eps, mini_min_ngbs, d_type, pth):
 
             session_data.write(csv_titles)
             session_data_pre.write(csv_titles)
+            session_data_all.write(csv_titles)
             done_file.write("This folder is done with.\n")
             done_file.close()
         # Filtered files:
@@ -121,12 +128,18 @@ def go(eps, min_ngbs,mini_eps, mini_min_ngbs, d_type, pth):
                         green_list_pre = return_list[3]
                         basics_list = return_list[4]
                         basics_list_pre = return_list[5]
+                        basics_all = return_list[6]
+                        red_all = return_list[7]
+                        green_all = return_list[8]
+
                         # Write to file
                         avgd_line = get_res(red_list, green_list, cntr, proj_name, basics_list)
                         avgd_line_pre = get_res(red_list_pre, green_list_pre, cntr, proj_name, basics_list_pre)
+                        avgd_line_all = get_res(red_all, green_all, cntr, proj_name, basics_all)
                         print(avgd_line)
                         session_data.write(avgd_line)
                         session_data_pre.write(avgd_line_pre)
+                        session_data_all.write(avgd_line_all)
                         print("END A FILE") # end of one execution
 
         # Raw files
@@ -153,11 +166,16 @@ def go(eps, min_ngbs,mini_eps, mini_min_ngbs, d_type, pth):
                         green_list_pre = return_list[3]
                         basics_list = return_list[4]
                         basics_list_pre = return_list[5]
+                        basics_all = return_list[6]
+                        red_all = return_list[7]
+                        green_all = return_list[8]
                         avgd_line = get_res(red_list, green_list, cntr, proj_name, basics_list)
                         avgd_line_pre = get_res(red_list_pre, green_list_pre, cntr, proj_name, basics_list_pre)
+                        avgd_line_all = get_res(red_all, green_all, cntr, proj_name, basics_all)
                         print(avgd_line)
                         session_data.write(avgd_line)
                         session_data_pre.write(avgd_line_pre)
+                        session_data_all.write(avgd_line_all)
                         print("END A FILE")
        # old files
         if len(old_filess) > 0:
@@ -218,79 +236,88 @@ def get_res(red_list, green_list, cntr, proj_name, b_list):
     g_in_r_list = []
     for a_list in red_list:
         g_in_r_list.append(a_list[2]/(a_list[1]+a_list[2]))
-    if len(g_in_r_list) < 2:
-        avgd_line = "{},N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N\n".format(cntr)
-        return avgd_line
+    # if len(g_in_r_list) < 2:
+    #     avgd_line = "{},N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N\n".format(cntr)
+    #     return avgd_line
 
-    avg_per_green_in_red = np.mean(g_in_r_list)
-    std_per_green_in_red = statistics.stdev(g_in_r_list)
+    avg_per_green_in_red = np.mean(g_in_r_list) if len(g_in_r_list) > 2 else 0
+    std_per_green_in_red = statistics.stdev(g_in_r_list) if len(g_in_r_list) > 2 else 0
 
     # Easier handling numpy arrays
     red_array = np.array(red_list)
+    # print if in DEBUG:
+    if debug:
+        print(red_array)
     red_means = np.mean(red_array, axis=0)
+    red_check = True if red_array.size else False # True if check is good
+    if debug:
+        print(red_means)
+
     red_stds = np.std(red_array, ddof=1, axis=0)
     red_medians = np.median(red_array, axis = 0)
     # Sphere score
-    red_average_sphere_score = red_means[3]
-    red_std_sphere_score = red_stds[3]
+    red_average_sphere_score = red_means[3] if red_check else 0
+    red_std_sphere_score = red_stds[3] if red_check else 0
     # X angle
-    red_average_angle_x = red_means[4]
-    red_std_angle_x = red_stds[4]
+    red_average_angle_x = red_means[4] if red_check else 0
+    red_std_angle_x = red_stds[4] if red_check else 0
     # Y angle
-    red_average_angle_y = red_means[5]
-    red_std_angle_y = red_stds[5]
+    red_average_angle_y = red_means[5] if red_check else 0
+    red_std_angle_y = red_stds[5] if red_check else 0
     # Size
-    red_average_size = red_means[6]
-    red_std_size = red_stds[6]
+    red_average_size = red_means[6] if red_check else 0
+    red_std_size = red_stds[6] if red_check else 0
     # Density
-    red_avg_naive_density = red_means[7]
-    red_std_naive_density = red_stds[7]
+    red_avg_naive_density = red_means[7] if red_check else 0
+    red_std_naive_density = red_stds[7] if red_check else 0
     # median Size
-    red_average_med_size = red_medians[6]
+    red_average_med_size = red_medians[6] if red_check else 0
     # size  in points
-    red_avg_size_pts = red_means[0]
-    red_std_size_pts = red_stds[0]
+    red_avg_size_pts = red_means[0] if red_check else 0
+    red_std_size_pts = red_stds[0] if red_check else 0
     # colocalization percentage
-    sum_of_coloc_r = np.sum(red_array[:,8])
+    sum_of_coloc_r = np.sum(red_array[:,8]) if len(red_array) > 7 else 0
     per_g_in_r_col = sum_of_coloc_r/len(red_array) if len(red_array) > 0 else 0
 
     # GREEN CLUSTERS
     r_in_g_list = []
     for a_list in green_list:
         r_in_g_list.append(a_list[1]/(a_list[1]+a_list[2]))
-    if len(r_in_g_list) < 2:
-        avgd_line = "{},N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N\n".format(cntr)
-        return avgd_line
+    # if len(r_in_g_list) < 2:
+    #     avgd_line = "{},N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N\n".format(cntr)
+    #     return avgd_line
 
-    avg_per_red_in_green = np.mean(r_in_g_list)
-    std_per_red_in_green = statistics.stdev(r_in_g_list)
+    avg_per_red_in_green = np.mean(r_in_g_list) if len(r_in_g_list) > 2 else 0
+    std_per_red_in_green = statistics.stdev(r_in_g_list) if len(r_in_g_list) > 2 else 0
 
     # Transform to numpy
     green_array = np.array(green_list)
     green_means = np.mean(green_array, axis=0)   # calculates the avg of all the columns of the array
+    green_check = True if green_array.size else False # True if check is good
+
     green_stds = np.std(green_array, ddof=1, axis=0)  # calculates the std (sample; ddof =1) of all the columns of the array
     green_medians = np.median(green_array, axis=0)
     # Sphere score
-    green_average_sphere_score = green_means[3]
-    green_std_sphere_score = green_stds[3]
+    green_average_sphere_score = green_means[3] if green_check else 0
+    green_std_sphere_score = green_stds[3] if green_check else 0
     # X angle
-    green_average_angle_x = green_means[4]
-    green_std_angle_x = green_stds[4]
+    green_average_angle_x = green_means[4] if green_check else 0
+    green_std_angle_x = green_stds[4] if green_check else 0
     # Y angle
-    green_average_angle_y = green_means[5]
-    green_std_angle_y = green_stds[5]
+    green_average_angle_y = green_means[5] if green_check else 0
+    green_std_angle_y = green_stds[5] if green_check else 0
     # Size
-    green_average_size = green_means[6]
-    green_std_size = green_stds[6]
+    green_average_size = green_means[6] if green_check else 0
+    green_std_size = green_stds[6] if green_check else 0
     # Density
-    green_avg_naive_density = green_means[7]
-    green_std_naive_density = green_stds[7]
+    green_avg_naive_density = green_means[7] if green_check else 0
+    green_std_naive_density = green_stds[7] if green_check else 0
     # median Size
-    green_average_med_size = green_medians[6]
+    green_average_med_size = green_medians[6] if green_check else 0
     # size  in points
-    green_avg_size_pts = green_means[0]
-    green_std_size_pts = green_stds[0]
-    sum_of_coloc_g = np.sum(green_array[:,8])
+    green_avg_size_pts = green_means[0] if green_check else 0
+    green_std_size_pts = green_stds[0] if green_check else 0
+    sum_of_coloc_g = np.sum(green_array[:,8]) if len(green_array) > 7 else 0
     per_r_in_g_col = sum_of_coloc_g/len(green_array) if len(green_array) > 0 else 0
 
     # How many clusters?
@@ -301,10 +328,12 @@ def get_res(red_list, green_list, cntr, proj_name, b_list):
     # Sample density
     sample_size = float(2000*2000) # this is for 2d
     clstrs_tot = 0
-    for clst_size in green_array[:,6]: # the 'size' column of the array
-        clstrs_tot += clst_size*(math.pi)
-    for clst_size in red_array[:,6]: # the 'size' column of the array
-        clstrs_tot += clst_size*(math.pi)
+    if green_array != []:
+        for clst_size in green_array[:,6]: # the 'size' column of the array
+            clstrs_tot += clst_size*(math.pi)
+    if red_array != []:
+        for clst_size in red_array[:,6]: # the 'size' column of the array
+            clstrs_tot += clst_size*(math.pi)
     clstrs_tot /= sample_size # should be the sample density
 
     # basics stuff

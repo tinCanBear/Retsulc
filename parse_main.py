@@ -11,6 +11,7 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
     green_file_name = green_name
     red_file_name = red_name
     name = proj_name
+    clusters_file_all_final = "clusters_all" #+ name
     clusters_file_final = "clusters_final" #+ name
     clusters_file_pre = "clusters_pre" #+ name
 
@@ -81,6 +82,9 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
         if labels[i] != -1:
             s.clusters[labels[i]].add_point(s.points[i])
             s.points[i].cluster = labels[i]
+            s.all_clustered_points.append(s.points[i])
+        else:
+            s.all_unclustered_points.append(s.points[i])
 
     for k in range(len(g_labels)):
         if g_labels[k] != -1:
@@ -103,6 +107,7 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
         os.mkdir(file_directory)
 
     s.f = open(file_directory + "summary.txt", "w")
+    s.f_clusters_all = open(file_directory + clusters_file_all_final + ".csv", "w")
     s.f_clusters_final = open(file_directory + clusters_file_final + ".csv", "w")
     s.f_clusters_pre = open(file_directory + clusters_file_pre + ".csv", "w")
     s.print_f("the green file is: \n", s.f)
@@ -123,12 +128,13 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
     for j in s.red_clusters:
         j.pca_analysis(dimension)
     for k in s.clusters:
-        k.pca_analysis
+        k.pca_analysis(dimension)
 
     # plot k-distances
 
     plot_knn(s.green_points_dbscan, file_directory, "kdist_green")
     plot_knn(s.red_points_dbscan, file_directory, "kdist_red")
+    plot_knn(s.points_dbscan, file_directory, "kdist_all")
 
     # Calculate basic stuff (final number of un/clustered points, etc.)
     total_number_of_points_pre = len(s.points)
@@ -149,6 +155,29 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
                 total_number_of_unclustered_points_pre, total_number_of_clustered_red_points_pre, total_number_of_clustered_green_points_pre,\
                 relative_clustered_points_pre, relative_unclustered_points_pre, relative_red_clustered_points_pre, relative_green_clustered_points_pre]
 
+    # organize general clusters (assign colors and clean outliers)
+    for cluster in s. clusters:
+        cluster.clean_outliers(dim=dimension)
+        nm_green_pts = len([1 for x in cluster.points if x.color == "green"])
+        nm_red_pts = len([1 for x in cluster.points if x.color == "red"])
+        if nm_green_pts > nm_red_pts:
+            s.clusters_green.append(cluster)
+        else:
+            s.clusters_red.append(cluster)
+
+
+    # make rainbow pic.
+    rainbow(s, "_preALL", for_all=True)
+    green_hist = []
+    red_hist = []
+    for green_cluster in s.clusters_green:
+        green_hist.append(green_cluster.size)
+    for red_cluster in s.clusters_red:
+        red_hist.append(red_cluster.size)
+    make_histogram(s, red_hist, "red", other="_preALL")
+    make_histogram(s, green_hist, "green", other="_preALL")
+
+
     # make rainbow pic.
     rainbow(s, "_pre")
     green_hist = []
@@ -164,6 +193,7 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
     csv_clusters_titles = "color,#points,#red points,#green points,sphere score,angle_x,angle_y,size,density,colocalized\n"
     s.print_f(csv_clusters_titles, s.f_clusters_pre)
     s.print_f(csv_clusters_titles, s.f_clusters_final)
+    s.print_f(csv_clusters_titles, s.f_clusters_all)
 
     # ____need to return the clusters now 'as-is'_____#
     red_output_list_pre = []
@@ -179,35 +209,6 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
         s.print_f(line, s.f_clusters_pre)
         green_output_list_pre.append(line)
 
-    # for red_cluster in s.red_clusters:
-    #     if red_cluster.size == 0:
-    #         continue
-    #     red_line_pre = "red" + ", "+\
-    #                 str(len(red_cluster.points))+", "+\
-    #                 str(sum([1 for x in red_cluster.points if x.color == "red"])) + ", " +\
-    #                 str(sum([1 for x in red_cluster.points if x.color == "green"])) + ", " +\
-    #                 str(red_cluster.shape_2d) + ", " +\
-    #                 str(red_cluster.angle_x) + ", " +\
-    #                 str(red_cluster.angle_y) + ", " +\
-    #                 str(red_cluster.size) + ", " +\
-    #                 str(len(red_cluster.points)/float(red_cluster.size)) + "\n"
-    #     s.print_f(red_line_pre, s.f_clusters_pre)
-    #     red_output_list_pre.append(red_line_pre)
-    # for green_cluster in s.green_clusters:
-    #     if green_cluster.size == 0:
-    #         continue
-    #     green_line_pre = "green" + ", "+\
-    #                     str(len(green_cluster.points))+", "+\
-    #                     str(sum([1 for x in green_cluster.points if x.color == "red"])) + ", " +\
-    #                     str(sum([1 for x in green_cluster.points if x.color == "green"])) + ", " +\
-    #                     str(green_cluster.shape_2d) + ", " + str(green_cluster.angle_x) + ", " +\
-    #                     str(green_cluster.angle_y) + ", " +\
-    #                     str(green_cluster.size) + ", " +\
-    #                     str(len(green_cluster.points)/float(green_cluster.size)) + "\n"
-    #     s.print_f(green_line_pre, s.f_clusters_pre)
-    #     green_output_list_pre.append(green_line_pre)
-
-    # ____need to return the clusters now 'as-is'_____#
     s.print_f("\n\n-----------------END OF PART I------------------------\n\n", s.f)
 
     added_points = []
@@ -220,7 +221,6 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
                 added_points.append(gp)
                 red_cluster.is_mixed = True
                 gp.opposite_clusters += 1
-
 
     for green_cluster in s.green_clusters:
         for rp in s.red_points:
@@ -347,15 +347,16 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
 
     rainbow(s, "_final")
     get_cluster_picture(s, name="final_clusters")
+    get_cluster_picture(s, name="final_clustersALL", for_all=True)
 
     # Calculate basic stuff (final number of un/clustered points, etc.)
 
     for cluster in s.red_clusters:
         for point in cluster.points:
-            point.p2cluster = 1
+            point.p2allcluster = 1
     for cluster in s.green_clusters:
         for point in cluster.points:
-            point.p2cluster = 1
+            point.p2allcluster = 1
 
     total_number_of_points = len(s.points)
     total_number_of_red_points = len(s.red_points)
@@ -375,10 +376,33 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
                 total_number_of_unclustered_points, total_number_of_clustered_red_points, total_number_of_clustered_green_points,\
                 relative_clustered_points, relative_unclustered_points, relative_red_clustered_points, relative_green_clustered_points]
 
+    # Calculate basic stuff (final number of un/clustered points, etc.) for ALL
+
+    total_number_of_points = len(s.points)
+    total_number_of_red_points = len(s.red_points)
+    total_number_of_green_points = len(s.green_points)
+    clustered_points = [x for x in s.points if x.cluster != -1]
+    total_number_of_clustered_points = len(clustered_points)
+    total_number_of_unclustered_points = total_number_of_points - total_number_of_clustered_points
+    total_number_of_clustered_red_points = len([x for x in clustered_points if x.color == "red"])
+    total_number_of_clustered_green_points = len([x for x in clustered_points if x.color == "green"])
+
+    relative_clustered_points = float(total_number_of_clustered_points)/total_number_of_points
+    relative_unclustered_points = float(total_number_of_unclustered_points)/total_number_of_points
+    relative_red_clustered_points = float(total_number_of_clustered_red_points)/total_number_of_red_points
+    relative_green_clustered_points = float(total_number_of_clustered_green_points)/total_number_of_green_points
+
+    basics_all = [total_number_of_points, total_number_of_red_points, total_number_of_green_points, total_number_of_clustered_points,\
+                total_number_of_unclustered_points, total_number_of_clustered_red_points, total_number_of_clustered_green_points,\
+                relative_clustered_points, relative_unclustered_points, relative_red_clustered_points, relative_green_clustered_points]
+
     # calculate mean shape
 
     green_output_list = []
     red_output_list = []
+
+    green_all_list = []
+    red_all_list = []
 
     mean_green_shape = float(sum([x.shape_2d for x in s.green_clusters]))/len(s.green_clusters) if len(s.green_clusters) > 0 else 0
     mean_red_shape = float(sum([x.shape_2d for x in s.red_clusters]))/len(s.red_clusters) if len(s.red_clusters) > 0 else 0
@@ -392,6 +416,9 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
     red_hist = []
     hist_lists = [red_hist, green_hist]
 
+    green_all_hist = []
+    red_all_hist = []
+    hist_all_lists = [red_all_hist, green_all_hist]
     # assign lists to pick up the clusters that changed their color (used to be 'red' but now has more green points)
 
     for red_cluster in s.red_clusters:
@@ -410,8 +437,27 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
         else:
             green_output_list.append(line)
 
+    for red_cluster in s.clusters_red:
+        line, changed = get_line(s, hist_all_lists, red_cluster, "red")
+        s.print_f(line, s.f_clusters_all)
+        if changed:
+            green_all_list.append(line)
+        else:
+            red_all_list.append(line)
+
+    for green_cluster in s.green_clusters:
+        line, changed = get_line(s, hist_all_lists, green_cluster, "green")
+        s.print_f(line, s.f_clusters_all)
+        if changed:
+            red_all_list.append(line)
+        else:
+            green_all_list.append(line)
+
     make_histogram(s, hist_lists[0], "red", other="_final")
     make_histogram(s, hist_lists[1], "green", other="_final")
+    make_histogram(s, hist_all_lists[0], "red", other="_finalALL")
+    make_histogram(s, hist_all_lists[1], "green", other="_finalALL")
+
     s.print_f(remarks, s.f)
     s.print_f("That's it. Thank you and Bye Bye.", s.f)
     s.f.close()
@@ -457,7 +503,7 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
                         c1.points = []
                         c2.pca_analysis(dim=2)
         rainbow(s, other="_option1")
-    return red_output_list, green_output_list, red_output_list_pre, green_output_list_pre, basics, basics_pre
+    return red_output_list, green_output_list, red_output_list_pre, green_output_list_pre, basics, basics_pre, basics_all, red_all_list, green_all_list
 
 def get_line(s, hist_lists, cluster, color, append=True):
     index_hists = 0 if color == "red" else 1  # hist_lists[0] = red_hist
