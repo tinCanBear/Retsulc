@@ -39,10 +39,12 @@ def go(eps, min_ngbs,mini_eps, mini_min_ngbs, d_type, pth):
         red_filess = []
         raw_green_filess = []
         raw_red_filess = []
+        old_filess = []
 
         nrm_cntr = 0
         raw_cntr = 0
         prtcls_cntr = 0
+        old_cntr = 0
         for name in files:
             if re.findall(r".*?done\.txt", name, re.DOTALL):
                 print("Done file found!")
@@ -59,7 +61,9 @@ def go(eps, min_ngbs,mini_eps, mini_min_ngbs, d_type, pth):
                 print("raw counter: {}".format(raw_cntr))
             if re.findall(r".*?red_r[ao]w\.csv", name, re.DOTALL):
                 raw_red_filess.append(os.path.join(root, name))
-            # if re.findall(r"particles\.csv", name):
+            # if re.findall(r".*?regions.*?\.txt", name, re.DOTALL):
+            #     old_filess.append(os.path.join(root, name))
+            # # if re.findall(r"particles\.csv", name):
             #     if not os.path.join(root, name) in final_particles_files: # NOTICE!!! NOT SUPPORTED YET!
             #         particles_filess.append(os.path.join(root, name))
             #         prtcls_cntr += 1
@@ -155,7 +159,42 @@ def go(eps, min_ngbs,mini_eps, mini_min_ngbs, d_type, pth):
                         session_data.write(avgd_line)
                         session_data_pre.write(avgd_line_pre)
                         print("END A FILE")
+       # old files
+        if len(old_filess) > 0:
+            session_data = open(os.path.normcase(os.path.join(directory, session_name + "_final_summary.csv")), "w")
+            session_data_pre = open(os.path.normcase(os.path.join(directory, session_name + "_pre_summary.csv")), "w")
+            csv_titles = "test#,total_number_of_points,total_number_of_red_points,total_number_of_green_points,total_number_of_clustered_points,\
+            total_number_of_unclustered_points,total_number_of_clustered_red_points,total_number_of_clustered_green_points,\
+            relative_clustered_points,relative_unclustered_points,relative_red_clustered_points,relative_green_clustered_points,\
+            #clusters,#red clusters,#green clusters,avg green in red clusters,std green in red clusters,avg red in green clusters,\
+            std red in green clusters,avg red sphericity,std red sphericity,avg green sphericity,std green sphericity,\
+            avg red Xangl,std red Xangl,avg red Yangl,std red Yangl,avg green Xangl,std green Xangl,avg green Yangl,\
+            std green Yangl,avg red size,std red size,avg green size,std green size,sample density,avg red density,std red density,\
+            avg green density,std green density,red median size,green median size,\
+            avg red pts size,std red pts size,avg green pts size,std green pts size,colocalization %green in red,colocalization %red in green,test name\n"
 
+            session_data.write(csv_titles)
+            session_data_pre.write(csv_titles)
+
+            for file_name in old_filess:
+                cntr += 1
+                print(cntr)
+                file_directory = directory + "/old_analysis_{}".format(cntr) + "/"
+                print(file_directory)
+                proj_name = "test_{}".format(cntr)
+                return_list = main("old", epsilon, minimum_neighbors, mini_epsilon, mini_minimum_neighbors, file_name, "", proj_name, file_directory)
+                red_list = return_list[0]
+                green_list = return_list[1]
+                red_list_pre = return_list[2]
+                green_list_pre = return_list[3]
+                basics_list = return_list[4]
+                basics_list_pre = return_list[5]
+                avgd_line = get_res(red_list, green_list, cntr, proj_name, basics_list)
+                avgd_line_pre = get_res(red_list_pre, green_list_pre, cntr, proj_name, basics_list_pre)
+                print(avgd_line)
+                session_data.write(avgd_line)
+                session_data_pre.write(avgd_line_pre)
+                print("END A FILE")
             session_data.close()
             session_data_pre.close()
         print("END")

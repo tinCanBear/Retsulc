@@ -179,19 +179,29 @@ class Sample:
                 g = csv.reader(g, delimiter=' ')
                 cnt = 0
                 g_cnt = 0
+                r_cnt = 0
                 for row in g:
-                    if (cnt != 0):
+                    if (cnt != 0 and cnt < 200):
                         point = Point(x = str(float(row[0])*100), y = str(float(row[1])*100), z = '0',
                                       color = "green")
-#                        if float(point.point[2]) < 600 or float(point.point[2]) > -600:
                         self.points.append(point)
                         self.green_points.append(point)
                         self.green_points_dbscan.append(point.point)
                         self.points_dbscan.append(point.point)
                         g_cnt += 1
+                    else:
+                        point = Point(x = str(float(row[0])*100), y = str(float(row[1])*100), z = '0',
+                                      color = "red")
+#                        if float(point.point[2]) < 600 or float(point.point[2]) > -600:
+                        self.points.append(point)
+                        self.red_points.append(point)
+                        self.red_points_dbscan.append(point.point)
+                        self.points_dbscan.append(point.point)
+                        r_cnt += 1
                     cnt += 1
 
                 self.green_size = g_cnt
+                self.red_size = r_cnt
 
 
         return
