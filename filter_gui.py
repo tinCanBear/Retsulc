@@ -112,5 +112,5 @@ if __name__ == '__main__':
    b_go = Button(left_panel, text='GO!', command=(lambda e=ents: go(e, listbox)))
    b_go.pack(side=BOTTOM, padx=5, pady=5)
 
-   root.iconbitmap(r'big_flower2.ico') # the icon
+   root.iconbitmap(r'blue_flower2.ico') # the icon
    root.mainloop()
