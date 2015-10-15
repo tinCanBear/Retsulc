@@ -11,6 +11,7 @@ import os
 import math
 import time
 DEBUG = False
+import numpy as np
 pic_path = "fornax.jpg"
 
 sample_length = 20000.0
@@ -23,13 +24,13 @@ def dist(p1, p2):
 
 def rip_it(the_t, files_path, dest_path):
     t = int(the_t)
-    list_of_all_points = []
+    list_of_all_points_a = []
     out_file = open(os.path.normcase(os.path.join(dest_path, "ripleys_t_{}_{}.csv".format(t, time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime())))), "w")
     csv_titles = "color,total_number_of_points,t,Ripleys_K,Ripleys_L,file_name\n"
     out_file.write(csv_titles)
     cnt = 0
     for a_file in files_path:
-        points = []
+        points_a = []
         with open(a_file) as f:
             color_green = "green" if re.findall(r".*?green\.csv", a_file, re.DOTALL) or re.findall(r".*?green_r[ao]w\.csv", a_file, re.DOTALL)\
                 else "red"
@@ -38,27 +39,32 @@ def rip_it(the_t, files_path, dest_path):
             f_cnt = 0
             for row in f:
                 p = (float(row[16]), float(row[17]))
-                points.append(p)
-                list_of_all_points.append(p)
+                points_a.append(p)
+                list_of_all_points_a.append(p)
                 f_cnt += 1
                 cnt += 1
+            points = np.array(points_a)
             rip_cnt = 0
             n = len(points)
             inv_avg = (sample_length**2)/n
             for i in range(n):
+                if DEBUG and i%1000 == 0: print("The color is {} and the i is:\t{}".format(color_green, i))
                 for j in range(n):
-                    if DEBUG: print(i, j, points[i], points[j])
-                    if i < j and dist(points[i], points[j]) < t:
+                    if i >= j: continue
+                    elif math.hypot(points[i][0] - points[j][0], points[i][1] - points[j][1]) < t:
                             rip_cnt += 1
             rip_k_estim = inv_avg*(rip_cnt/n)
             rip_l_estim = math.sqrt(rip_k_estim/math.pi)
             out_file.write("{},{},{},{},{},{}\n".format(color_green, n, t, rip_k_estim, rip_l_estim, a_file))
+    list_of_all_points = np.array(list_of_all_points_a)
     rip_cnt = 0
     n = len(list_of_all_points)
     inv_avg = (sample_length**2)/n
     for i in range(n):
+        if DEBUG and i%500 == 0: print("The color is \"all\" and the i is:\t{}".format(i))
         for j in range(n):
-            if i < j and dist(list_of_all_points[i], list_of_all_points[j]) < t:
+            if i >= j: continue
+            elif math.hypot(list_of_all_points[i][0] - list_of_all_points[j][0], list_of_all_points[i][1] - list_of_all_points[j][1]) < t:
                 rip_cnt += 1
     rip_k_estim = inv_avg*(rip_cnt/n)
     rip_l_estim = math.sqrt(rip_k_estim/math.pi)
