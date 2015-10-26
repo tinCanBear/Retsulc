@@ -61,6 +61,11 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
     red_list = []
     green_list = []
 
+    # open clusters file
+    clusters_file = open(os.path.normcase(os.path.join(dest_path, "filtered_clusters_{}.csv".format(time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime())))), "w")
+    csv_clusters_titles = "color,#points,#red points,#green points,sphere score,angle_x,angle_y,size,density,colocalized,from file\n"
+    clusters_file.write(csv_clusters_titles)
+
     for a_file in files_path:
         if not re.findall(r".*?\.csv", a_file, re.DOTALL):
             return 1
@@ -70,6 +75,7 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
             if DEBUG: print("opened")
             reader = csv.DictReader(csvfile)
             for row in reader:
+                str_row = ""
                 if DEBUG: print(row)
                 if color != "both":
                     if row['color'] != color: continue
@@ -83,6 +89,22 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
                 if float(row['size']) > size_max or float(row['size']) < size_min: continue
                 if color == "green" and row['color'] == "green":  green_list_dicts.append(row)
                 else: red_list_dicts.append(row)
+
+                # write the cluster to the clusters file
+                str_row = row['color'] + ","+\
+                       row['#points'] +","+\
+                       row['#red points'] +","+\
+                       row['#green points'] +","+\
+                       row['sphere score'] +","+\
+                       row['angle_x'] +","+\
+                       row['angle_y'] +","+\
+                       row['size'] +","+\
+                       row['density'] +","+\
+                       row['colocalized'] +","+ get_name(a_file) + "\n"
+                clusters_file.write(str_row)
+
+    # close the clusters file
+    clusters_file.close()
 
     for dic in red_list_dicts:
         this_color = dic['color']
@@ -132,3 +154,14 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
     if DEBUG: print("done")
 
 
+def get_name(file_name):
+    """
+    :param file_name: the path of the file containing the name of the test
+    :param cntr:  default return if not successful
+    :return: the name of the test clean of unrelevant info and file path
+    """
+    pre = file_name.split('/')[-2]
+    name = str(0)
+    if pre is not None:
+        name = pre
+    return name

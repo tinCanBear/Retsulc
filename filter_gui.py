@@ -46,7 +46,9 @@ def add_files(entries):
 
 def choose_dest(entries):
     path = filedialog.askdirectory()
-    entries['destination'].insert(0,path)
+    if path != "":
+       entries['destination'].delete(0, END)
+       entries['destination'].insert(0,path)
 
 
 def makeform(root, fields):
