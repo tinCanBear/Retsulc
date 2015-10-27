@@ -106,8 +106,10 @@ def go(eps, min_ngbs,mini_eps, mini_min_ngbs, d_type, pth):
         if len(green_filess) > 0:
             for green_name in green_filess:
                 for red_name in red_filess:
+                    if debug: print(green_name, red_name)
                     g = green_name.find('green.csv')
                     r = red_name.find('red.csv')
+                    if debug: print("indexes:\t", g, r)
                     green_str = green_name[:g]
                     red_str = red_name[:r]
                     if green_str == red_str:
