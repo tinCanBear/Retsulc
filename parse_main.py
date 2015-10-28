@@ -531,7 +531,7 @@ def get_line(s, hist_lists, cluster, color, append=True):
                 str(cluster.angle_x) + ", " +\
                 str(cluster.angle_y) + ", " +\
                 str(cluster.size) + ", " +\
-                str(len(cluster.points)/float(cluster.size)) + ending
+                str(len(cluster.points)*10000/((float(cluster.size)**3)*(4/3)*math.pi)) + ending
     return line, changed
 
 def is_good_colocalized(s, cluster, color):

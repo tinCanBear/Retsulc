@@ -129,7 +129,7 @@ if __name__ == '__main__':
 
    right_panel = Frame(root)
    left_panel = Frame(root)
-   row_of_buttons = Frame(right_panel)
+   row_of_buttons = Frame(left_panel)
 
 #left panel
    row = Frame(left_panel)
@@ -153,8 +153,8 @@ if __name__ == '__main__':
    b_add_green = Button(row_of_buttons, text='Add green File', command=(lambda e=ent: add_files(e, 'green')))
    b_add_red = Button(row_of_buttons, text='Add red File', command=(lambda e=ent: add_files(e, 'red')))
 
-   b_add_green.pack(side=RIGHT, padx=5, pady=5)
-   b_add_red.pack(side=RIGHT, padx=5, pady=5)
+   b_add_green.pack(side=BOTTOM, padx=5, pady=5)
+   b_add_red.pack(side=BOTTOM, padx=5, pady=5)
 
    row_of_buttons.pack(side=BOTTOM, padx=5, pady=5)
 
