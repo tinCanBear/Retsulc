@@ -3,10 +3,12 @@ import os
 import re
 import time
 import csv
-from parse_super_detect import get_res
+#from parse_super_detect import get_res
 import numpy as np
+import statistics
+import math
 DEBUG = False
-
+debug=False
 
 
 def filter_it(color_a, points, red_points, green_points, density, coloc_a, size, files_path, dest_path, source, name):
@@ -248,11 +250,14 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
                                                                             size_max,\
                                                                             color,\
                                                                             coloc)
-    avgd_line = get_res(red_list, green_list, 0, filters, b_list)
-    xs_line = get_res(xs_bin[0], xs_bin[1], "0->20", filters, bla_list)
-    s_line = get_res(s_bin[0], s_bin[1], "20->300", filters, bla_list)
-    m_line = get_res(m_bin[0], m_bin[1], "300->500", filters, bla_list)
-    l_line = get_res(l_bin[0], l_bin[1], "500->inf", filters, bla_list)
+    avgd_line = get_res(red_list, green_list, 0, filters, b_list, div_by=n, div_red=n, div_green=n)
+    re_line = avgd_line.split(',')
+    print("n is:\t{}".format(n))
+    print("re_line[12-14]:{},{},{}".format(re_line[12],re_line[13],re_line[14]))
+    xs_line = get_res(xs_bin[0], xs_bin[1], "0->20", filters, bla_list, div_by = float(re_line[12])*n, div_red = float(re_line[13])*n, div_green = float(re_line[14])*n)
+    s_line = get_res(s_bin[0], s_bin[1], "20->300", filters, bla_list, div_by = float(re_line[12])*n, div_red = float(re_line[13])*n, div_green = float(re_line[14])*n)
+    m_line = get_res(m_bin[0], m_bin[1], "300->500", filters, bla_list, div_by = float(re_line[12])*n, div_red = float(re_line[13])*n, div_green = float(re_line[14])*n)
+    l_line = get_res(l_bin[0], l_bin[1], "500->inf", filters, bla_list, div_by = float(re_line[12])*n, div_red = float(re_line[13])*n, div_green = float(re_line[14])*n)
 
     out_file = open(os.path.normcase(os.path.join(dest_path, "filtered_summary_{}_{}.csv".format(name, time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime())))), "w")
     csv_titles = "test#,red_green_ratio,_std,rel_clustered_pts,_std,rel_unclustered_pts,_std,rel_red_clustered,_std,rel_green_clustered,_std,----,\
@@ -288,3 +293,189 @@ def get_name(file_name):
     if pre is not None:
         name = pre
     return name
+
+# ("color, #points, #red points, #green points, sphere score, angle_x, angle_y, size, density\n")
+def get_res(red_list, green_list, cntr, proj_name, b_list, div_by=1, div_red=1, div_green=1):
+    len_r = len(red_list)
+    len_g = len(green_list)
+
+    for i in range(len_r):
+        red_list[i] = red_list[i].split(",")[1:] # now we got:#points,  #red points, #green points, sphere score, angle_x, angle_y, size, density
+        for j in range(len(red_list[i])):
+            red_list[i][j] = float(red_list[i][j])
+    for i in range(len_g):
+        green_list[i] = green_list[i].split(",")[1:] # now we got:#points,  #red points, #green points, sphere score, angle_x, angle_y, size, density
+        for j in range(len(green_list[i])):
+            green_list[i][j] = float(green_list[i][j])
+
+    # RED CLUSTERS
+    g_in_r_list = []
+    for a_list in red_list:
+        g_in_r_list.append(a_list[2]/(a_list[1]+a_list[2]))
+    # if len(g_in_r_list) < 2:
+    #     avgd_line = "{},N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N\n".format(cntr)
+    #     return avgd_line
+
+    avg_per_green_in_red = np.mean(g_in_r_list) if len(g_in_r_list) > 2 else 0
+    std_per_green_in_red = statistics.stdev(g_in_r_list) if len(g_in_r_list) > 2 else 0
+
+    # Easier handling numpy arrays
+    red_array = np.array(red_list)
+    # print if in DEBUG:
+    if debug:
+        print(red_array)
+    red_means = np.mean(red_array, axis=0)
+    red_check = True if red_array.size else False # True if check is good
+    if debug:
+        print(red_means)
+
+    red_stds = np.std(red_array, ddof=1, axis=0)
+    red_medians = np.median(red_array, axis = 0)
+    # Sphere score
+    red_average_sphere_score = red_means[3] if red_check else 0
+    red_std_sphere_score = red_stds[3] if red_check else 0
+    # X angle
+    red_average_angle_x = red_means[4] if red_check else 0
+    red_std_angle_x = red_stds[4] if red_check else 0
+    # Y angle
+    red_average_angle_y = red_means[5] if red_check else 0
+    red_std_angle_y = red_stds[5] if red_check else 0
+    # Size
+    red_average_size = red_means[6] if red_check else 0
+    red_std_size = red_stds[6] if red_check else 0
+    # Density
+    red_avg_naive_density = red_means[7] if red_check else 0
+    red_std_naive_density = red_stds[7] if red_check else 0
+    # median Size
+    red_average_med_size = red_medians[6] if red_check else 0
+    # size  in points
+    red_avg_size_pts = red_means[0] if red_check else 0
+    red_std_size_pts = red_stds[0] if red_check else 0
+    # colocalization percentage
+    sum_of_coloc_r = np.sum(red_array[:,8]) if len(red_array) > 7 else 0
+    per_g_in_r_col = sum_of_coloc_r/len(red_array) if len(red_array) > 0 else 0
+
+    # GREEN CLUSTERS
+    r_in_g_list = []
+    for a_list in green_list:
+        r_in_g_list.append(a_list[1]/(a_list[1]+a_list[2]))
+    # if len(r_in_g_list) < 2:
+    #     avgd_line = "{},N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N\n".format(cntr)
+    #     return avgd_line
+
+    avg_per_red_in_green = np.mean(r_in_g_list) if len(r_in_g_list) > 2 else 0
+    std_per_red_in_green = statistics.stdev(r_in_g_list) if len(r_in_g_list) > 2 else 0
+
+    # Transform to numpy
+    green_array = np.array(green_list)
+    green_means = np.mean(green_array, axis=0)   # calculates the avg of all the columns of the array
+    green_check = True if green_array.size else False # True if check is good
+
+    green_stds = np.std(green_array, ddof=1, axis=0)  # calculates the std (sample; ddof =1) of all the columns of the array
+    green_medians = np.median(green_array, axis=0)
+    # Sphere score
+    green_average_sphere_score = green_means[3] if green_check else 0
+    green_std_sphere_score = green_stds[3] if green_check else 0
+    # X angle
+    green_average_angle_x = green_means[4] if green_check else 0
+    green_std_angle_x = green_stds[4] if green_check else 0
+    # Y angle
+    green_average_angle_y = green_means[5] if green_check else 0
+    green_std_angle_y = green_stds[5] if green_check else 0
+    # Size
+    green_average_size = green_means[6] if green_check else 0
+    green_std_size = green_stds[6] if green_check else 0
+    # Density
+    green_avg_naive_density = green_means[7] if green_check else 0
+    green_std_naive_density = green_stds[7] if green_check else 0
+    # median Size
+    green_average_med_size = green_medians[6] if green_check else 0
+    # size  in points
+    green_avg_size_pts = green_means[0] if green_check else 0
+    green_std_size_pts = green_stds[0] if green_check else 0
+    sum_of_coloc_g = np.sum(green_array[:,8]) if len(green_array) > 7 else 0
+    per_r_in_g_col = sum_of_coloc_g/len(green_array) if len(green_array) > 0 else 0
+
+    # How many clusters?
+    number_red = len(red_list)/div_red
+    number_green = len(green_list)/div_green
+    total_clusters = (len(red_list) + len(green_list))/div_by
+
+    # Sample density
+    sample_size = float(2000*2000) # this is for 2d
+    clstrs_tot = 0
+    if green_array != []:
+        for clst_size in green_array[:,6]: # the 'size' column of the array
+            clstrs_tot += clst_size*(math.pi)
+    if red_array != []:
+        for clst_size in red_array[:,6]: # the 'size' column of the array
+            clstrs_tot += clst_size*(math.pi)
+    clstrs_tot /= sample_size # should be the sample density
+
+    # basics stuff
+    total_number_of_points = b_list[0]
+    total_number_of_red_points = b_list[1]
+    total_number_of_green_points = b_list[2]
+    total_number_of_clustered_points = b_list[3]
+    total_number_of_unclustered_points = b_list[4]
+    total_number_of_clustered_red_points = b_list[5]
+    total_number_of_clustered_green_points = b_list[6]
+    relative_clustered_points = b_list[7]
+    relative_unclustered_points = b_list[8]
+    relative_red_clustered_points = b_list[9]
+    relative_green_clustered_points = b_list[10]
+
+    # create the line to be written to .csv file
+    avgd_line = "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},\
+                {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n".format(cntr\
+                                                                  , total_number_of_points\
+                                                                  , total_number_of_red_points\
+                                                                  , total_number_of_green_points\
+                                                                  , total_number_of_clustered_points\
+                                                                  , total_number_of_unclustered_points\
+                                                                  , total_number_of_clustered_red_points\
+                                                                  , total_number_of_clustered_green_points\
+                                                                  , relative_clustered_points\
+                                                                  , relative_unclustered_points\
+                                                                  , relative_red_clustered_points\
+                                                                  , relative_green_clustered_points\
+                                                                  , total_clusters\
+                                                                  , number_red\
+                                                                  , number_green\
+                                                                  , avg_per_green_in_red\
+                                                                  , std_per_green_in_red\
+                                                                  , avg_per_red_in_green\
+                                                                  , std_per_red_in_green\
+                                                                  , red_average_sphere_score\
+                                                                  , red_std_sphere_score\
+                                                                  , green_average_sphere_score\
+                                                                  , green_std_sphere_score\
+                                                                  , red_average_angle_x\
+                                                                  , red_std_angle_x\
+                                                                  , red_average_angle_y\
+                                                                  , red_std_angle_y\
+                                                                  , green_average_angle_x\
+                                                                  , green_std_angle_x\
+                                                                  , green_average_angle_y\
+                                                                  , green_std_angle_y\
+                                                                  , red_average_size\
+                                                                  , red_std_size\
+                                                                  , green_average_size\
+                                                                  , green_std_size\
+                                                                  , clstrs_tot\
+                                                                  , red_avg_naive_density\
+                                                                  , red_std_naive_density\
+                                                                  , green_avg_naive_density\
+                                                                  , green_std_naive_density\
+                                                                  , red_average_med_size\
+                                                                  , green_average_med_size\
+                                                                  , red_avg_size_pts\
+                                                                  , red_std_size_pts\
+                                                                  , green_avg_size_pts\
+                                                                  , green_std_size_pts\
+                                                                  , per_g_in_r_col\
+                                                                  , per_r_in_g_col\
+                                                                  , proj_name)
+
+
+    return avgd_line
