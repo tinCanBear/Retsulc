@@ -8,7 +8,7 @@ DEBUG = False
 
 
 
-def filter_it(color_a, points, red_points, green_points, density, coloc_a, size, files_path, dest_path):
+def filter_it(color_a, points, red_points, green_points, density, coloc_a, size, files_path, dest_path, name):
     MAX = 1000000.
     MIN = -1.
 
@@ -62,7 +62,7 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
     green_list = []
 
     # open clusters file
-    clusters_file = open(os.path.normcase(os.path.join(dest_path, "filtered_clusters_{}.csv".format(time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime())))), "w")
+    clusters_file = open(os.path.normcase(os.path.join(dest_path, "filtered_clusters_{}_{}.csv".format(name, time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime())))), "w")
     csv_clusters_titles = "color,#points,#red points,#green points,sphere score,angle_x,angle_y,size,density,colocalized,from file\n"
     clusters_file.write(csv_clusters_titles)
 
@@ -136,7 +136,7 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
                                                                             coloc)
     avgd_line = get_res(red_list, green_list, 0, filters, b_list)
 
-    out_file = open(os.path.normcase(os.path.join(dest_path, "filtered_summary_{}.csv".format(time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime())))), "w")
+    out_file = open(os.path.normcase(os.path.join(dest_path, "filtered_summary_{}_{}.csv".format(name, time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime())))), "w")
     csv_titles = "test#,total_number_of_points,total_number_of_red_points,total_number_of_green_points,total_number_of_clustered_points,\
     total_number_of_unclustered_points,total_number_of_clustered_red_points,total_number_of_clustered_green_points,\
     relative_clustered_points,relative_unclustered_points,relative_red_clustered_points,relative_green_clustered_points,\

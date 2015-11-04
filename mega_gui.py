@@ -5,11 +5,11 @@ from PIL import ImageTk, Image
 from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import ttk
-from clusters_filter import filter_it
-pic_path = "fireworks.jpg"
+from mega_filter import filter_it
+pic_path = "mega.jpg"
 DELETE_LIST = False
 
-fields = ('color', '#points', '#red points', '#green points', 'density', 'colocalized', 'size', 'destination', 'Name')
+fields = ('color', '#points', '#red points', '#green points', 'density', 'colocalized', 'size', 'destination', 'Source', 'Name')
 
 def go(entries, listbox):
    color = (entries['color'].get())
@@ -21,12 +21,13 @@ def go(entries, listbox):
    size = (entries['size'].get())
    files_path = listbox.get(0, END) # a list of all the files
    dest_path = (entries['destination'].get())
+   source = (entries['Source'].get())
    name = (entries['Name'].get())
    print(files_path)
    if len(files_path) == 0:
         messagebox.showinfo("Give us something to work with!", "The little people who work in this program are lost without" +
                             " some proper file paths.\nPlease help them find some files. (tip: Add Files)")
-   result = filter_it(color, points, red_points, green_points, density, coloc, size, files_path, dest_path, name)
+   result = filter_it(color, points, red_points, green_points, density, coloc, size, files_path, dest_path, source, name)
    if result == 0:
       if DELETE_LIST: listbox.delete(0, END)
       messagebox.showinfo("Work here is DONE!",\
@@ -51,6 +52,12 @@ def choose_dest(entries):
        entries['destination'].delete(0, END)
        entries['destination'].insert(0,path)
 
+def choose_src(entries):
+    path = filedialog.askopenfilename()
+    if path != "":
+       entries['Source'].delete(0, END)
+       entries['Source'].insert(0,path)
+
 
 def makeform(root, fields):
    entries = {}
@@ -68,7 +75,7 @@ def makeform(root, fields):
          ent['values'] = ('yes', 'no', 'all')
          ent.insert(0, 'all')
       else:
-         if cntr != 0 and cntr != 5 and cntr != 7 and cntr != 8:
+         if cntr != 0 and cntr != 5 and cntr != 7 and cntr != 8 and cntr != 9:
             ent.insert(0, "MIN;MAX")
       row.pack(side=TOP, fill=Y, padx=5, pady=5)
       lab.pack(side=LEFT)
@@ -79,7 +86,7 @@ def makeform(root, fields):
 
 if __name__ == '__main__':
    root = Tk()
-   root.wm_title("Retsulc (ver 0.2) - Filter clusters!")
+   root.wm_title("Retsulc (ver 0.2) - Filter and Analyze!")
 
    lab = Label(root, width=40, text="Add file, change the filter parameters and Go!", anchor='w', justify=LEFT)
    lab.pack(side=TOP)
@@ -98,6 +105,8 @@ if __name__ == '__main__':
    ents = makeform(left_panel, fields)
    b_dest = Button(left_panel, text='Choose destination', command=(lambda e=ents: choose_dest(e)))
    b_dest.pack()
+   b_src = Button(left_panel, text='Choose source', command=(lambda e=ents: choose_src(e)))
+   b_src.pack()
 #right panel
    listbox = Listbox(right_panel, width = 100, height = 30)
    listbox.pack(fill=BOTH)
@@ -110,10 +119,10 @@ if __name__ == '__main__':
    b_delete.pack(side=LEFT, padx=5, pady=5)
    row_of_buttons.pack(side=BOTTOM, padx=5, pady=5)
    left_panel.pack(side = LEFT)
-   right_panel.pack(side = RIGHT, expand = "yes")
+   right_panel.pack(side = LEFT, expand = "yes")
 
-   b_go = Button(left_panel, text='GO!', command=(lambda e=ents: go(e, listbox)))
-   b_go.pack(side=BOTTOM, padx=5, pady=5)
+   b_go = Button(row_of_buttons, text='GO!', command=(lambda e=ents: go(e, listbox)))
+   b_go.pack(side=RIGHT, padx=5, pady=5)
 
    root.iconbitmap(r'blue_flower2.ico') # the icon
    root.mainloop()
