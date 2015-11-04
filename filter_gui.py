@@ -7,7 +7,7 @@ from tkinter import messagebox
 from tkinter import ttk
 from clusters_filter import filter_it
 pic_path = "fireworks.jpg"
-
+DELETE_LIST = False
 
 fields = ('color', '#points', '#red points', '#green points', 'density', 'colocalized', 'size', 'destination')
 
@@ -27,7 +27,7 @@ def go(entries, listbox):
                             " some proper file paths.\nPlease help them find some files. (tip: Add Files)")
    result = filter_it(color, points, red_points, green_points, density, coloc, size, files_path, dest_path)
    if result == 0:
-      listbox.delete(0, END)
+      if DELETE_LIST: listbox.delete(0, END)
       messagebox.showinfo("Work here is DONE!",\
           "If you wish choose another folder.")
    elif result == 1:
