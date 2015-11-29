@@ -7,7 +7,7 @@ import math
 import numpy as np
 from parse_main import main
 import warnings
-
+from unclustered import main as unclustered
 
 debug = False
 np.seterr(all='ignore')
@@ -133,7 +133,9 @@ def go(eps, min_ngbs,mini_eps, mini_min_ngbs, d_type, pth):
                         basics_all = return_list[6]
                         red_all = return_list[7]
                         green_all = return_list[8]
-
+                        sample = return_list[9]
+                        # unclustered_analysis
+                        unclustered(sample, data_type, 20, 6, file_directory)
                         # Write to file
                         avgd_line = get_res(red_list, green_list, cntr, proj_name, basics_list)
                         avgd_line_pre = get_res(red_list_pre, green_list_pre, cntr, proj_name, basics_list_pre)

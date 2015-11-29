@@ -503,7 +503,7 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
                         c1.points = []
                         c2.pca_analysis(dim=2)
         rainbow(s, other="_option1")
-    return red_output_list, green_output_list, red_output_list_pre, green_output_list_pre, basics, basics_pre, basics_all, red_all_list, green_all_list
+    return red_output_list, green_output_list, red_output_list_pre, green_output_list_pre, basics, basics_pre, basics_all, red_all_list, green_all_list, s
 
 def get_line(s, hist_lists, cluster, color, append=True):
     index_hists = 0 if color == "red" else 1  # hist_lists[0] = red_hist
