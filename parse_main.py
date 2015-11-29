@@ -353,10 +353,10 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
 
     for cluster in s.red_clusters:
         for point in cluster.points:
-            point.p2allcluster = 1
+            point.p2cluster = 1
     for cluster in s.green_clusters:
         for point in cluster.points:
-            point.p2allcluster = 1
+            point.p2cluster = 1
 
     total_number_of_points = len(s.points)
     total_number_of_red_points = len(s.red_points)
@@ -378,23 +378,23 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
 
     # Calculate basic stuff (final number of un/clustered points, etc.) for ALL
 
-    total_number_of_points = len(s.points)
-    total_number_of_red_points = len(s.red_points)
-    total_number_of_green_points = len(s.green_points)
-    clustered_points = [x for x in s.points if x.cluster != -1]
-    total_number_of_clustered_points = len(clustered_points)
-    total_number_of_unclustered_points = total_number_of_points - total_number_of_clustered_points
-    total_number_of_clustered_red_points = len([x for x in clustered_points if x.color == "red"])
-    total_number_of_clustered_green_points = len([x for x in clustered_points if x.color == "green"])
+    total_number_of_points2 = len(s.points)
+    total_number_of_red_points2 = len(s.red_points)
+    total_number_of_green_points2 = len(s.green_points)
+    clustered_points2 = [x for x in s.points if x.cluster != -1]
+    total_number_of_clustered_points2 = len(clustered_points)
+    total_number_of_unclustered_points2 = total_number_of_points2 - total_number_of_clustered_points2
+    total_number_of_clustered_red_points2 = len([x for x in clustered_points2 if x.color == "red"])
+    total_number_of_clustered_green_points2 = len([x for x in clustered_points2 if x.color == "green"])
 
-    relative_clustered_points = float(total_number_of_clustered_points)/total_number_of_points
-    relative_unclustered_points = float(total_number_of_unclustered_points)/total_number_of_points
-    relative_red_clustered_points = float(total_number_of_clustered_red_points)/total_number_of_red_points
-    relative_green_clustered_points = float(total_number_of_clustered_green_points)/total_number_of_green_points
+    relative_clustered_points2 = float(total_number_of_clustered_points2)/total_number_of_points2
+    relative_unclustered_points2 = float(total_number_of_unclustered_points2)/total_number_of_points2
+    relative_red_clustered_points2 = float(total_number_of_clustered_red_points2)/total_number_of_red_points2
+    relative_green_clustered_points2 = float(total_number_of_clustered_green_points2)/total_number_of_green_points2
 
-    basics_all = [total_number_of_points, total_number_of_red_points, total_number_of_green_points, total_number_of_clustered_points,\
-                total_number_of_unclustered_points, total_number_of_clustered_red_points, total_number_of_clustered_green_points,\
-                relative_clustered_points, relative_unclustered_points, relative_red_clustered_points, relative_green_clustered_points]
+    basics_all = [total_number_of_points2, total_number_of_red_points2, total_number_of_green_points2, total_number_of_clustered_points2,\
+                total_number_of_unclustered_points2, total_number_of_clustered_red_points2, total_number_of_clustered_green_points2,\
+                relative_clustered_points2, relative_unclustered_points2, relative_red_clustered_points2, relative_green_clustered_points2]
 
     # calculate mean shape
 

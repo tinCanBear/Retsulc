@@ -8,8 +8,9 @@ import numpy as np
 import statistics
 import math
 DEBUG = False
-debug=False
-
+DEBUG2 = False
+debug = False
+debug3 = True
 
 def filter_it(color_a, points, red_points, green_points, density, coloc_a, size, files_path, dest_path, source, name):
     MAX = 1000000.
@@ -22,6 +23,10 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
     tot_points = []
     tot_red = []
     tot_green = []
+    unclstrd_tot = []
+    unclstrd_green = []
+    unclstrd_red = []
+    test_names = []
     with open(source, "r") as f:
         f = csv.reader(f, delimiter=',')
         next(f)
@@ -29,6 +34,10 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
             tot_points.append(int(row[1]))
             tot_red.append(int(row[2]))
             tot_green.append(int(row[3]))
+            unclstrd_tot.append(int(row[5]))
+            unclstrd_red.append((int(row[2])-int(row[6])))
+            unclstrd_green.append((int(row[3])-int(row[7])))
+            test_names.append(row[48])
 
 
     if DEBUG: print(points)
@@ -84,17 +93,21 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
     clusters_file = open(os.path.normcase(os.path.join(dest_path, "filtered_clusters_{}_{}.csv".format(name, time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime())))), "w")
     csv_clusters_titles = "color,#points,#red points,#green points,sphere score,angle_x,angle_y,size,density,colocalized,from file\n"
     clusters_file.write(csv_clusters_titles)
-
+    files_counter = 0
     for a_file in files_path:
         if not re.findall(r".*?\.csv", a_file, re.DOTALL):
             return 1
     if dest_path == "": return 2
+    if debug3: print("files: {}", files_path)
+    test_indexes = []
     for a_file in files_path:
-        with open(a_file) as csvfile:
-            if DEBUG: print("opened")
+        files_counter += 1
+        with open(a_file, "r") as csvfile:
             points_counter = [0,0,0]
+            if DEBUG: print("opened")
             reader = csv.DictReader(csvfile)
             for row in reader:
+                if row == []: continue
                 str_row = ""
                 if DEBUG: print(row)
                 if color != "both":
@@ -154,9 +167,11 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
                        row['density'] +","+\
                        row['colocalized'] +","+ get_name(a_file) + "\n"
                 clusters_file.write(str_row)
-            all_unclustered_points_per_f.append(points_counter)
+            if debug3: print("points counter: {}".format(points_counter))
+            all_unclustered_points_per_f.append(points_counter[:])
 
     # close the clusters file
+    if DEBUG2: print(all_unclustered_points_per_f)
     clusters_file.close()
 
     xs_bin = [[],[]] # -20  red, green
@@ -203,7 +218,8 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
     # relative_red_clustered_points = b_list[9]
     # relative_green_clustered_points = b_list[10]
 
-    n = len(tot_points)
+    n = len(all_unclustered_points_per_f)
+    if DEBUG2: print("This is tot_points: {}".format(tot_points))
     rel_clustered = ["NaN" for i in range(n)]
     rel_unclustered = ["NaN" for i in range(n)]
     rel_red_clust = ["NaN" for i in range(n)]
@@ -212,19 +228,32 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
 
     b_list = ["NaN" for i in range(12)]
     bla_list = ["NaN" for i in range(12)]
+    if DEBUG2: print("This is n: {}".format(n))
 
     for i in range(n):
+        if DEBUG2: print("This is i: {}".format(i))
         all_points = tot_points[i]
         all_red_points = tot_red[i]
         all_green_points = tot_green[i]
-        unclustered_points = all_unclustered_points_per_f[i][0]
-        unclustered_reds = all_unclustered_points_per_f[i][1]
-        unclustered_greens = all_unclustered_points_per_f[i][2]
+        unclustered_points = all_unclustered_points_per_f[i][0] + unclstrd_tot[i]
+        unclustered_reds = all_unclustered_points_per_f[i][1] + unclstrd_red[i]
+        unclustered_greens = all_unclustered_points_per_f[i][2] + unclstrd_green[i]
         rel_clustered[i] = float(all_points - unclustered_points)/all_points
         rel_unclustered[i] = float(unclustered_points)/all_points
         rel_red_clust[i] = float(all_red_points - unclustered_reds)/all_red_points
         rel_green_clust[i] = float(all_green_points - unclustered_greens)/all_green_points
         rel_red_green[i] = float(all_red_points)/all_green_points
+        if debug3:
+            print("all_points: {}".format(all_points))
+            print("all_red_points: {}".format(all_red_points))
+            print("all_green_points: {}".format(all_green_points))
+            print("unclustered_points: {}".format(unclustered_points))
+            print("unclustered_reds: {}".format(unclustered_reds))
+            print("unclustered_greens: {}".format(unclustered_greens))
+            print("rel_red_clust: {}".format(rel_red_clust))
+            print("all_unclustered_points: {}".format(all_unclustered_points_per_f[i][0]))
+
+
 
     b_list[0] = np.mean(rel_red_green)
     b_list[1] = np.std(rel_red_green, ddof=1)
@@ -252,8 +281,8 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
                                                                             coloc)
     avgd_line = get_res(red_list, green_list, 0, filters, b_list, div_by=n, div_red=n, div_green=n)
     re_line = avgd_line.split(',')
-    print("n is:\t{}".format(n))
-    print("re_line[12-14]:{},{},{}".format(re_line[12],re_line[13],re_line[14]))
+    if DEBUG: print("n is:\t{}".format(n))
+    if DEBUG: print("re_line[12-14]:{},{},{}".format(re_line[12],re_line[13],re_line[14]))
     xs_line = get_res(xs_bin[0], xs_bin[1], "0->20", filters, bla_list, div_by = float(re_line[12])*n, div_red = float(re_line[13])*n, div_green = float(re_line[14])*n)
     s_line = get_res(s_bin[0], s_bin[1], "20->300", filters, bla_list, div_by = float(re_line[12])*n, div_red = float(re_line[13])*n, div_green = float(re_line[14])*n)
     m_line = get_res(m_bin[0], m_bin[1], "300->500", filters, bla_list, div_by = float(re_line[12])*n, div_red = float(re_line[13])*n, div_green = float(re_line[14])*n)
