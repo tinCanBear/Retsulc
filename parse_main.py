@@ -347,6 +347,7 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
 
     rainbow(s, "_final")
     get_cluster_picture(s, name="final_clusters")
+    get_points_picture(s, name="final_all_points")
     get_cluster_picture(s, name="final_clustersALL", for_all=True)
 
     # Calculate basic stuff (final number of un/clustered points, etc.)

@@ -97,6 +97,48 @@ def get_cluster_picture(s, factor=50, name="", for_all=False):
     plt.clf()
     plt.close()
 
+
+def get_points_picture(s, factor=50, name="", for_all=False):
+    plt.clf()
+    out_file_name = s.path + "/" + name + ".png"
+
+    colors = []
+    points = []
+    for point in s.points:
+        if point.cluster != -1:
+            if point.color == "green":
+                colors.append((0, 1, 0))
+            else:
+                colors.append((1, 0, 0))
+        else:
+            colors.append((0, 0, 1))
+        points.append(point)
+
+    x_all = np.array([])
+    y_all = np.array([])
+    s_all = np.array([])
+
+    x = np.array([x.point[0] for x in points],\
+    dtype = np.float)
+    y = np.array([y.point[1] for y in points],\
+    dtype = np.float)
+    c = np.array(colors, dtype=np.float)
+    s = np.array([50 for k in range(len(x))], dtype=np.float)
+    x_all = np.concatenate((x_all, x), axis=0)
+    y_all = np.concatenate((y_all, y), axis=0)
+    c_all = c
+    s_all = np.concatenate((s_all, s), axis=0)
+# plt.scatter(x_unclstrd, y_unclstrd, c=c_unclstrd, s=s_unclstrd)
+
+    plt.figure(figsize=(30,30))
+
+    plt.scatter(x_all, y_all, c=c_all, s=s_all, alpha=0.5)
+
+    plt.savefig(out_file_name)
+
+    plt.clf()
+    plt.close()
+
 def get_picture(s, list_of_points=[], list_of_features=[0], factor=50, name=""):
     plt.clf()
     if name == "":
