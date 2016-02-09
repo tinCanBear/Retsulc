@@ -129,27 +129,32 @@ class Sample:
         self.parse = which
 
         if which == "3d":
-            return self.parse_3d()
+            return self.parse_3d(16, 17, 18)
+        elif which == "new_3d":
+            return self.parse_3d(15, 16, 17)
         elif which == "2d":
-            return self.parse_2d()
+            return self.parse_2d(16, 17, 18)
+        elif which == "new_2d":
+            return self.parse_2d(15, 16, 17)
         elif which == "raw_3d":
             return self.parse_raw_3d()
         elif which == "raw_2d":
             return self.parse_raw_2d()
         elif which == "old":
             return self.parse_old()
+
         else:
             print("invalid parse selection. argument should be \"3d\"\
-            , \"2d\", \"raw_3d\", \"raw_2d\" or \"old\"")
+            , \"2d\", \"raw_3d\", \"raw_2d\" or \"old\" or \"new_3d\" or \"new_2d\"")
 
-    def parse_3d(self):
+    def parse_3d(self, colx, coly, colz):
         with open(self.green_path) as g:
                 g = csv.reader(g, delimiter=',')
                 cnt = 0
                 g_cnt = 0
                 for row in g:
                     if (cnt != 0):
-                        point = Point(x = row[16], y = row[17], z = row[18],
+                        point = Point(x = row[colx], y = row[coly], z = row[colz],
                                       color = "green")
                         if float(point.point[2]) < 600 or float(point.point[2]) > -600:
                             self.points.append(point)

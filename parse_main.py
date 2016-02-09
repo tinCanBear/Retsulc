@@ -18,7 +18,7 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
     remarks = "....."
     file_directory = file_dir
     #------------------------Dimension----------------------------------------#
-    if data_type != "3d" and data_type != "raw_3d":
+    if data_type != "3d" and data_type != "raw_3d" and data_type != "new_3d":
         dimension = 2
     else:
         dimension = 3
