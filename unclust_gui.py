@@ -51,7 +51,7 @@ def makeform_left(root, fields):
          row = Frame(root)
          lab = Label(row, width=22, text=field+": ", anchor='w')
          ent = ttk.Combobox(row)
-         ent['values'] = ('2d', '3d', 'raw_2d', 'raw_3d')
+         ent['values'] = ('2d', '3d', 'raw_2d', 'raw_3d', 'new_3d', "new_2d")
       row.pack(side=TOP, fill=X, padx=5, pady=5)
       lab.pack(side=LEFT)
       ent.pack(side=RIGHT, expand=YES, fill=X)
