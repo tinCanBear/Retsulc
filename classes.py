@@ -172,7 +172,7 @@ class Sample:
                 cnt = 0
                 for row in r:
                     if (cnt != 0):
-                        point_r = Point(x = row[16], y = row[17], z = row[18],
+                        point_r = Point(x = row[colx], y = row[coly], z = row[colz],
                                       color = "red")
                         if float(point_r.point[2]) < 600 or float(point_r.point[2]) > -600:
                             self.points.append(point_r)
@@ -279,7 +279,7 @@ class Sample:
                 cnt = 0
                 for row in r:
                     if (cnt != 0):
-                        point_r = Point(x = row[16], y = row[17], z = '0',
+                        point_r = Point(x = row[colx], y = row[coly], z = '0',
                                       color = "red")
                         if float(point_r.point[2]) < 600 or float(point_r.point[2]) > -600:
                             self.points.append(point_r)
