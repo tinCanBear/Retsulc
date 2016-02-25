@@ -115,7 +115,7 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
     s.print_f("the red file is: \n", s.f)
     s.print_f(red_file_name + "\n", s.f)
 
-    s.points_summary()
+   # s.points_summary()
 
     # PCA analysis
 
