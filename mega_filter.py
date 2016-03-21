@@ -67,24 +67,8 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
     size_lst = size.split(";")
     size_min = MIN if size_lst[0] == "MIN" else float(size_lst[0])
     size_max = MAX if size_lst[1] == "MAX" else float(size_lst[1])
-    #
-    # points_min_f = float(points_min)
-    # points_max_f = float(points_max)
-    #
-    # red_points_min_f = float(red_points_min)
-    # red_points_max_f = float(red_points_min)
-    #
-    # green_points_min_f = float(green_points_min)
-    # green_points_max_f = float(green_points_min)
-    #
-    # density_min_f = float(density_min)
-    # density_max_f = float(density_min)
-    #
-    # size_min_f = float(size_min)
-    # size_max_f = float(size_max)
 
-    red_list_dicts = []
-    green_list_dicts = []
+    both_list_dicts = []
     red_list = []
     green_list = []
 
@@ -104,7 +88,6 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
             return 1
     if dest_path == "": return 2
     if debug3: print("files: {}", files_path)
-    test_indexes = []
     for a_file in files_path:
         files_counter += 1
         with open(a_file, "r") as csvfile:
@@ -113,7 +96,6 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
             reader = csv.DictReader(csvfile)
             for row in reader:
                 if row == []: continue
-                str_row = ""
                 if DEBUG: print(row)
                 if color != "both":
                     if row['color'] != color:
@@ -157,8 +139,7 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
                     points_counter[1] += int(row['#red points'])
                     points_counter[2] += int(row['#green points'])
                     continue
-                # if color == "green" and row['color'] == "green":  green_list_dicts.append(row)
-                red_list_dicts.append(row)
+                both_list_dicts.append(row)
 
                 # write the cluster to the clusters file
                 str_row = row['color'] + "," + \
@@ -191,7 +172,7 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
     s5_bin = [[], []]  # 200-250
     s6_bin = [[], []]  # 250-300
 
-    for dic in red_list_dicts:
+    for dic in both_list_dicts:
         this_color = dic['color']
         this_size = float(dic['size'])
         line = dic['color'] + "," + \
@@ -251,18 +232,6 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
                 m_bin[0].append(line)
             else:
                 l_bin[0].append(line)
-
-    # total_number_of_points = b_list[0]
-    # total_number_of_red_points = b_list[1]
-    # total_number_of_green_points = b_list[2]
-    # total_number_of_clustered_points = b_list[3]
-    # total_number_of_unclustered_points = b_list[4]
-    # total_number_of_clustered_red_points = b_list[5]
-    # total_number_of_clustered_green_points = b_list[6]
-    # relative_clustered_points = b_list[7]
-    # relative_unclustered_points = b_list[8]
-    # relative_red_clustered_points = b_list[9]
-    # relative_green_clustered_points = b_list[10]
 
     n = len(all_unclustered_points_per_f)
     if DEBUG2: print("This is tot_points: {}".format(tot_points))
@@ -371,9 +340,6 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
     out_file.write(s5_line)
     out_file.write(s6_line)
 
-    # out_file.write("#Test")
-    # for i in range(n):
-    #     line = ""
     out_file.close()
     return 0
 
@@ -413,9 +379,6 @@ def get_res(red_list, green_list, cntr, proj_name, b_list, div_by=1, div_red=1, 
     g_in_r_list = []
     for a_list in red_list:
         g_in_r_list.append(a_list[2] / (a_list[1] + a_list[2]))
-    # if len(g_in_r_list) < 2:
-    #     avgd_line = "{},N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N\n".format(cntr)
-    #     return avgd_line
 
     avg_per_green_in_red = np.mean(g_in_r_list) if len(g_in_r_list) > 2 else 0
     std_per_green_in_red = statistics.stdev(g_in_r_list) if len(g_in_r_list) > 2 else 0
@@ -460,9 +423,6 @@ def get_res(red_list, green_list, cntr, proj_name, b_list, div_by=1, div_red=1, 
     r_in_g_list = []
     for a_list in green_list:
         r_in_g_list.append(a_list[1] / (a_list[1] + a_list[2]))
-    # if len(r_in_g_list) < 2:
-    #     avgd_line = "{},N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N\n".format(cntr)
-    #     return avgd_line
 
     avg_per_red_in_green = np.mean(r_in_g_list) if len(r_in_g_list) > 2 else 0
     std_per_red_in_green = statistics.stdev(r_in_g_list) if len(r_in_g_list) > 2 else 0

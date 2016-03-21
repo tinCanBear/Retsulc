@@ -38,7 +38,8 @@ def plot_knn(points, file_directory, name, x = None, y = [0,850], show=False):
     if y != None:
         plt.ylim(y)
 
-    plt.ylabel('Distance')
+    plt.ylabel('Distance (nm)')
+    plt.xlabel('Number of Localizations')
 
     if show==True:
         plt.show()
@@ -201,6 +202,7 @@ def get_picture(s, list_of_points=[], list_of_features=[0], factor=50, name=""):
     plt.figure(figsize=(30,30))
 
     plt.scatter(x_all, y_all, c=c_all, s=s_all, alpha=0.5)
+    plt.legend()
 
     plt.savefig(out_file_name)
 
@@ -287,64 +289,13 @@ def rainbow(s, other="", for_all = False):
             color = (color+0.17)%1
 
         plt.scatter(x_allg, y_allg, c=c_allg, s=s_allg, alpha=0.5)
-
+        plt.legend()
+    plt.title("Rainbow Picture ({})".format(other))
     plt.savefig(out_file_name)
 
     plt.clf()
     plt.close()
 
-# def get_figure(s, other=""):
-#     plt.clf()
-#     out_file_name = s.path + "/" +"rainbow" + other + ".png"
-#     color = float(0)
-#     x_allr = np.array([])
-#     y_allr = np.array([])
-#     c_allr = np.array([])
-#     s_allr = np.array([])
-#     x_allg = np.array([])
-#     y_allg = np.array([])
-#     c_allg = np.array([])
-#     s_allg = np.array([])
-#
-#     plt.figure(figsize=(30,30))
-#     # if other==False:
-#     for i in range(len(s.red_clusters)):
-#         l = len(np.array([x.point[0]\
-#         for x in s.red_clusters[i].points], dtype = np.float))
-#         x_allr = np.concatenate((x_allr, np.array([x.point[0]\
-#         for x in s.red_clusters[i].points], dtype = np.float)), axis=0)
-#         y_allr = np.concatenate((y_allr, np.array([y.point[1]\
-#         for y in s.red_clusters[i].points], dtype = np.float)), axis=0)
-#         c_allr = np.concatenate((c_allr, np.array([to_color() for k in range(l)], dtype=np.float)), axis=0)
-#         s_allr= np.concatenate((s_allr, np.array([90 for k in range(l)], dtype=np.float)), axis=0)
-#         color = (color+0.07)%1
-#
-#     plt.scatter(x_allr, y_allr, c=c_allr, marker='^', s=s_allr, alpha=0.5)
-#
-#     for i in range(len(s.green_clusters)):
-#
-#         l = len(np.array([x.point[0]\
-#         for x in s.green_clusters[i].points], dtype = np.float))
-#         x_allg = np.concatenate((x_allg, np.array([x.point[0]\
-#         for x in s.green_clusters[i].points], dtype = np.float)), axis=0)
-#
-#         y_allg = np.concatenate((y_allg, np.array([y.point[1]\
-#         for y in s.green_clusters[i].points], dtype = np.float)), axis=0)
-#
-#         c_allg = np.concatenate((c_allg, np.array([color for k in \
-#         range(l)], dtype=np.float)), axis=0)
-#
-#         s_allg = np.concatenate((s_allg, np.array([90 for k in \
-#         range(l)], dtype=np.float)), axis=0)
-#
-#         color = (color+0.17)%1
-#
-#     plt.scatter(x_allg, y_allg, c=c_allg, s=s_allg, alpha=0.5)
-#
-#     plt.savefig(out_file_name)
-#
-#     plt.clf()
-#     plt.close()
 
 def show_picture(list_of_points, list_of_features=[], factor=50, dim=2):
     plt.clf()
@@ -385,7 +336,10 @@ def make_histogram(s, list, color, other=""):
         weights = np.ones_like(list)/float(len(list))
         plt.hist(list, weights = weights)
         # plt.hist(list, bins=[0,60,120,180, 240, 300, 360, 420, 480, 1000], weights=weights)
-        plt.title("{}_{}".format(s.name + other, color))
+        title_color = "Green" if color == "green" else "Red"
+        plt.title("{} Clusters Bins Histogram ({})".format(title_color, other))
+        plt.ylabel('Percentage of {} Clusters %'.format(title_color))
+        plt.xlabel('Bins Sizes (nm)')
     plt.savefig(out_file_name)
     plt.clf()
     plt.close()

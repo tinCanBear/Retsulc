@@ -6,15 +6,16 @@ import math
 import numpy as np
 from parse_main import main
 
+
 # main function, get info from "main_with_gui"
 
 def go(eps, min_ngbs, d_type, pth):
     print(eps, min_ngbs, d_type, pth)
-    data_type = d_type # "2d", etc.
+    data_type = d_type  # "2d", etc.
     epsilon = eps
     minimum_neighbors = min_ngbs
 
-    main_folder = pth    # where all the sub_folders are at #should be session folder
+    main_folder = pth  # where all the sub_folders are at #should be session folder
     session_name = get_name_super(pth)
 
     particles_filess = []
@@ -42,7 +43,7 @@ def go(eps, min_ngbs, d_type, pth):
             if re.findall(r".*?red_r[ao]w\.csv", name, re.DOTALL):
                 raw_red_filess.append(os.path.join(root, name))
             if re.findall(r"particles\.csv", name):
-                if not os.path.join(root, name) in final_particles_files: # NOTICE!!! NOT SUPPORTED YET!
+                if not os.path.join(root, name) in final_particles_files:  # NOTICE!!! NOT SUPPORTED YET!
                     particles_filess.append(os.path.join(root, name))
                     prtcls_cntr += 1
                     print("particles counter: {}".format(prtcls_cntr))
@@ -70,10 +71,11 @@ def go(eps, min_ngbs, d_type, pth):
                     print(file_directory)
                     green_file_name = green_name
                     red_file_name = red_name
-                    proj_name = "test_{}".format(get_name(green_name,cntr))
+                    proj_name = "test_{}".format(get_name(green_name, cntr))
 
                     # Execute main function
-                    return_list = main(data_type, epsilon, minimum_neighbors, green_file_name, red_file_name, proj_name, file_directory)
+                    return_list = main(data_type, epsilon, minimum_neighbors, green_file_name, red_file_name, proj_name,
+                                       file_directory)
                     # Separate return list to Red and Green
                     red_list = return_list[0]
                     green_list = return_list[1]
@@ -81,7 +83,7 @@ def go(eps, min_ngbs, d_type, pth):
                     avgd_line = get_res(red_list, green_list, cntr)
                     print(avgd_line)
                     session_data.write(avgd_line)
-                    print("END A FILE") # end of one execution
+                    print("END A FILE")  # end of one execution
 
     # Raw files
     if len(raw_green_filess) > 0:
@@ -94,13 +96,14 @@ def go(eps, min_ngbs, d_type, pth):
                 if green_str == red_str:
                     cntr += 1
                     print(cntr)
-                    file_directory = main_folder + "/raw_analysis{}".format(get_name(green_name,cntr)) + "/"
+                    file_directory = main_folder + "/raw_analysis{}".format(get_name(green_name, cntr)) + "/"
                     print(file_directory)
                     green_file_name = green_name
                     red_file_name = red_name
-                    proj_name = "test_{}".format(get_name(green_name,cntr))
+                    proj_name = "test_{}".format(get_name(green_name, cntr))
 
-                    return_list = main(data_type, epsilon, minimum_neighbors, green_file_name, red_file_name, proj_name, file_directory)
+                    return_list = main(data_type, epsilon, minimum_neighbors, green_file_name, red_file_name, proj_name,
+                                       file_directory)
                     red_list = return_list[0]
                     green_list = return_list[1]
                     avgd_line = get_res(red_list, green_list, cntr)
@@ -118,18 +121,20 @@ def get_res(red_list, green_list, cntr):
     len_g = len(green_list)
 
     for i in range(len_r):
-        red_list[i] = red_list[i].split(",")[1:] # now we got:#points,  #red points, #green points, sphere score, angle_x, angle_y, size, density, median size
+        red_list[i] = red_list[i].split(",")[
+                      1:]  # now we got:#points,  #red points, #green points, sphere score, angle_x, angle_y, size, density, median size
         for j in range(len(red_list[i])):
             red_list[i][j] = float(red_list[i][j])
     for i in range(len_g):
-        green_list[i] = green_list[i].split(",")[1:] # now we got:#points,  #red points, #green points, sphere score, angle_x, angle_y, size, density, median size
+        green_list[i] = green_list[i].split(",")[
+                        1:]  # now we got:#points,  #red points, #green points, sphere score, angle_x, angle_y, size, density, median size
         for j in range(len(green_list[i])):
             green_list[i][j] = float(green_list[i][j])
 
     # RED CLUSTERS
     g_in_r_list = []
     for a_list in red_list:
-        g_in_r_list.append(a_list[2]/(a_list[1]+a_list[2]))
+        g_in_r_list.append(a_list[2] / (a_list[1] + a_list[2]))
     if len(g_in_r_list) < 2:
         avgd_line = "{},N\a,N\a,N\a,N\a,N\a,N\a,N\a,N\a,N\a,N\a,N\a,N\a,\
                 N\a,N\a,N\a,N\a,N\a,N\a,N\a,N\a,N\a,N\a,N\a,N\a\n".format(cntr)
@@ -167,7 +172,7 @@ def get_res(red_list, green_list, cntr):
     # GREEN CLUSTERS
     r_in_g_list = []
     for a_list in green_list:
-        r_in_g_list.append(a_list[1]/(a_list[1]+a_list[2]))
+        r_in_g_list.append(a_list[1] / (a_list[1] + a_list[2]))
     if len(r_in_g_list) < 2:
         avgd_line = "{},N\a,N\a,N\a,N\a,N\a,N\a,N\a,N\a,N\a,N\a,N\a,N\a,\
                 N\a,N\a,N\a,N\a,N\a,N\a,N\a,N\a,N\a,N\a,N\a,N\a\n".format(cntr)
@@ -177,8 +182,9 @@ def get_res(red_list, green_list, cntr):
 
     # Transform to numpy
     green_array = np.array(green_list)
-    green_means = np.mean(green_array, axis=0)   # calculates the avg of all the columns of the array
-    green_stds = np.std(green_array, ddof=1, axis=0)  # calculates the std (sample; ddof =1) of all the columns of the array
+    green_means = np.mean(green_array, axis=0)  # calculates the avg of all the columns of the array
+    green_stds = np.std(green_array, ddof=1,
+                        axis=0)  # calculates the std (sample; ddof =1) of all the columns of the array
     # Sphere score
     green_average_sphere_score = green_means[3]
     green_std_sphere_score = green_stds[3]
@@ -202,49 +208,48 @@ def get_res(red_list, green_list, cntr):
     green_std_size_pts = green_stds[0]
 
     # Sample density
-    sample_size = float(2000*2000) # this is for 2d
+    sample_size = float(2000 * 2000)  # this is for 2d
     clstrs_tot = 0
     # for clst_size in green_array.T[:,5]:
     #     clstrs_tot += clst_size*(math.pi)
     # for clst_size in red_array.T[:,5]:
     #     clstrs_tot += clst_size*(math.pi)
-    smpl_density = clstrs_tot/sample_size # need to add this to the summary file
+    smpl_density = clstrs_tot / sample_size  # need to add this to the summary file
     # create the line to be written to .csv file
     avgd_line = "{},{},{},{},{},{},{},{},{},{},{},{},{},\
-                {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n".format(cntr\
-                                                                  , avg_per_green_in_red\
-                                                                  , std_per_green_in_red\
-                                                                  , avg_per_red_in_green\
-                                                                  , std_per_red_in_green\
-                                                                  , red_average_sphere_score\
-                                                                  , red_std_sphere_score\
-                                                                  , green_average_sphere_score\
-                                                                  , green_std_sphere_score\
-                                                                  , red_average_angle_x\
-                                                                  , red_std_angle_x\
-                                                                  , red_average_angle_y\
-                                                                  , red_std_angle_y\
-                                                                  , green_average_angle_x\
-                                                                  , green_std_angle_x\
-                                                                  , green_average_angle_y\
-                                                                  , green_std_angle_y\
-                                                                  , red_average_size\
-                                                                  , red_std_size\
-                                                                  , green_average_size\
-                                                                  , green_std_size\
-                                                                  , red_avg_naive_density\
-                                                                  , red_std_naive_density\
-                                                                  , green_avg_naive_density\
-                                                                  , green_std_naive_density
-                                                                  , red_average_med_size\
-                                                                  , red_std_med_size\
-                                                                  , green_average_med_size\
-                                                                  , green_std_med_size\
-                                                                  , red_avg_size_pts\
-                                                                  , red_std_size_pts\
-                                                                  , green_avg_size_pts\
-                                                                  , green_std_size_pts)
-
+                {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n".format(cntr \
+                                                                                      , avg_per_green_in_red \
+                                                                                      , std_per_green_in_red \
+                                                                                      , avg_per_red_in_green \
+                                                                                      , std_per_red_in_green \
+                                                                                      , red_average_sphere_score \
+                                                                                      , red_std_sphere_score \
+                                                                                      , green_average_sphere_score \
+                                                                                      , green_std_sphere_score \
+                                                                                      , red_average_angle_x \
+                                                                                      , red_std_angle_x \
+                                                                                      , red_average_angle_y \
+                                                                                      , red_std_angle_y \
+                                                                                      , green_average_angle_x \
+                                                                                      , green_std_angle_x \
+                                                                                      , green_average_angle_y \
+                                                                                      , green_std_angle_y \
+                                                                                      , red_average_size \
+                                                                                      , red_std_size \
+                                                                                      , green_average_size \
+                                                                                      , green_std_size \
+                                                                                      , red_avg_naive_density \
+                                                                                      , red_std_naive_density \
+                                                                                      , green_avg_naive_density \
+                                                                                      , green_std_naive_density
+                                                                                      , red_average_med_size \
+                                                                                      , red_std_med_size \
+                                                                                      , green_average_med_size \
+                                                                                      , green_std_med_size \
+                                                                                      , red_avg_size_pts \
+                                                                                      , red_std_size_pts \
+                                                                                      , green_avg_size_pts \
+                                                                                      , green_std_size_pts)
 
     return avgd_line
 
@@ -266,6 +271,7 @@ def get_name(file_name, cntr):
             pre = pre[:ind_bott] if ind_bott != -1 else pre
         name = pre
     return name
+
 
 def get_name_super(folder_path):
     pre = folder_path.split('/')[-1]
