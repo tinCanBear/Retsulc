@@ -6,6 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.neighbors import NearestNeighbors
 
+X_LIM = [0,20000]
+Y_LIM = X_LIM
 def plot_knn(points, file_directory, name, x = None, y = [0,850], show=False):
     plt.clf()
 
@@ -43,7 +45,6 @@ def plot_knn(points, file_directory, name, x = None, y = [0,850], show=False):
 
     if show==True:
         plt.show()
-    plt.title("16th Neighbor")
     plt.savefig(file_directory+name+".png")
     plt.clf()
 
@@ -90,8 +91,11 @@ def get_cluster_picture(s, factor=50, name="", for_all=False):
 # plt.scatter(x_unclstrd, y_unclstrd, c=c_unclstrd, s=s_unclstrd)
 
     plt.figure(figsize=(30,30))
+    plt.tick_params(axis='both', which='major', labelsize=55)
 
     plt.scatter(x_all, y_all, c=c_all, s=s_all, alpha=0.5)
+    plt.xlim(X_LIM)
+    plt.ylim(Y_LIM)
 
     plt.savefig(out_file_name)
 
@@ -132,8 +136,11 @@ def get_points_picture(s, factor=50, name="", for_all=False):
 # plt.scatter(x_unclstrd, y_unclstrd, c=c_unclstrd, s=s_unclstrd)
 
     plt.figure(figsize=(30,30))
+    plt.tick_params(axis='both', which='major', labelsize=55)
 
     plt.scatter(x_all, y_all, c=c_all, s=s_all, alpha=0.5)
+    plt.xlim(X_LIM)
+    plt.ylim(Y_LIM)
 
     plt.savefig(out_file_name)
 
@@ -203,8 +210,15 @@ def get_picture(s, list_of_points=[], list_of_features=[0], factor=50, name=""):
 
     plt.scatter(x_all, y_all, c=c_all, s=s_all, alpha=0.5)
     plt.legend()
+    rc_orig_params = plt.rcParams.copy()
+    # plt.rcParams.update({'font.size': 48})
+    plt.tick_params(axis='both', which='major', labelsize=55)
+    plt.xlim(X_LIM)
+    plt.ylim(Y_LIM)
 
     plt.savefig(out_file_name)
+    # plt.rcParams = rc_orig_params
+    # plt.rcParams = plt.rcParams.default
 
     plt.clf()
     plt.close()
@@ -289,10 +303,16 @@ def rainbow(s, other="", for_all = False):
             color = (color+0.17)%1
 
         plt.scatter(x_allg, y_allg, c=c_allg, s=s_allg, alpha=0.5)
-        plt.legend()
-    plt.title("Rainbow Picture ({})".format(other))
-    plt.savefig(out_file_name)
 
+    plt.legend()
+    # rc_orig_params = plt.rcParams.copy()
+    # plt.rcParams.update({'font.size': 48})
+    plt.tick_params(axis='both', which='major', labelsize=55)
+    plt.xlim(X_LIM)
+    plt.savefig(out_file_name)
+    # plt.rcParams = plt.rcParams.default
+
+    # plt.rcParams = rc_orig_params
     plt.clf()
     plt.close()
 
@@ -319,7 +339,6 @@ def show_picture(list_of_points, list_of_features=[], factor=50, dim=2):
     c_all = np.concatenate(cp, cf)
     s_all = np.concatenate(sp, sf)
     plt.figure(figsize=(50,50))
-
     plt.scatter(x_all, y_all, c=c_all, s=s_all, alpha=0.5)
 
     plt.show()
@@ -334,12 +353,10 @@ def make_histogram(s, list, color, other=""):
     else:
         # plt.hist(list, normed=True)
         weights = np.ones_like(list)/float(len(list))
-        plt.hist(list, weights = weights)
+        plt.hist(list, weights = weights, color='slategrey')
         # plt.hist(list, bins=[0,60,120,180, 240, 300, 360, 420, 480, 1000], weights=weights)
-        title_color = "Green" if color == "green" else "Red"
-        plt.title("{} Clusters Bins Histogram ({})".format(title_color, other))
-        plt.ylabel('Percentage of {} Clusters %'.format(title_color))
-        plt.xlabel('Bins Sizes (nm)')
+        plt.ylabel('Percentage of Clusters')
+        plt.xlabel('Mean Diameter (nm)')
     plt.savefig(out_file_name)
     plt.clf()
     plt.close()
