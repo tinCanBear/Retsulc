@@ -76,7 +76,7 @@ def go(eps, min_ngbs, mini_eps, mini_min_ngbs, d_type, pth, mode):
                 #         prtcls_cntr += 1
                 #         print("particles counter: {}".format(prtcls_cntr))
 
-        if (len(green_filess) + len(raw_green_filess)) > 0:
+        if (len(green_filess) + len(raw_green_filess)) or (len(red_filess) + len(raw_red_filess)) > 0:
             new_directory = directory + "/test_{}_eps{}_min{}_{}".format(
                 time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime()), epsilon, minimum_neighbors, d_type)
             # make output folder and open files
@@ -110,8 +110,7 @@ def go(eps, min_ngbs, mini_eps, mini_min_ngbs, d_type, pth, mode):
             for some_file in some_files:
                 cntr += 1
                 print(cntr)
-                file_directory = new_directory + "/analysis_{}_{}".format(get_name(some_file[0], cntr),
-                                                                          some_file[1]) + "/"
+                file_directory = new_directory + "/analysis_{}_{}".format(get_name(some_file[0], cntr),some_file[1]) + "/"
                 print(file_directory)
                 dummy_file = "green_dummy.csv" if some_file[1] == "red" else "red_dummy.csv"
                 proj_name = "test_{}".format(get_name(some_file[0], cntr))
