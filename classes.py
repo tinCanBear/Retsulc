@@ -347,10 +347,10 @@ class Sample:
                " of which " + str(in_cluster_all) + " are in clusters"
         str2 = "There are " + str(number_green) + " green points" \
                + " of which " + str(float(float(in_cluster_green * 100) / float(number_green))) \
-               + "% are in clusters."
+               + "% are in clusters." if number_green > 0 else "Not enough green points for this."
         str3 = "There are " + str(number_red) + " red points" \
                + " of which " + str(float(float(in_cluster_red * 100) / float(number_red))) \
-               + "% are in clusters."
+               + "% are in clusters." if number_red > 0 else "Not enough red points for this."
         allstr = str0 + "\n" + str1 + "\n" + str2 + "\n" + str3 + "\n"
         self.f.write(allstr)
 

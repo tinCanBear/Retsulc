@@ -9,7 +9,7 @@ new_stuff = False
 
 
 def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors, green_name, red_name, proj_name,
-         file_dir):
+         file_dir, mode=2):
     green_file_name = green_name
     red_file_name = red_name
     name = proj_name

@@ -7,7 +7,7 @@ from tkinter import ttk
 from parse_super_detect import go
 
 pic_path = "openclust.jpg"
-fields = ('Epsilon', 'Minimum Neighbors', 'Mini Epsilon', 'Mini Minimum Neighbors', 'Data Type')
+fields = ('Epsilon', 'Minimum Neighbors', 'Mini Epsilon', 'Mini Minimum Neighbors', 'Data Type', 'Mode')
 
 
 def gogo(entries):
@@ -16,12 +16,13 @@ def gogo(entries):
     min_neighbors = (int(entries['Minimum Neighbors'].get()))
     mini_epsilon = (int(entries['Mini Epsilon'].get()))
     mini_min_neighbors = (int(entries['Mini Minimum Neighbors'].get()))
+    prot_mode = 2 if entries['Mode'].get() == "2 protein" else 1
     d_type = (entries['Data Type'].get())
     path = filedialog.askdirectory()
     print(path)
     messagebox.showinfo("Work in progress",
                         "Please wait till' it's done... You'll get a message (for now just click OK).")
-    go(epsilon, min_neighbors, mini_epsilon, mini_min_neighbors, d_type, path)
+    go(epsilon, min_neighbors, mini_epsilon, mini_min_neighbors, d_type, path, prot_mode)
     messagebox.showinfo("Work is DONE!", "You may now enter another session folder.")
 
 
@@ -34,9 +35,9 @@ def makeform(root, fields):
             lab = Label(row, width=22, text=field + ": ", anchor='w')
             ent = Entry(row)
         if cntr == 0:
-            ent.insert(0, "100")
+            ent.insert(0, "200")
         elif cntr == 1:
-            ent.insert(0, "10")
+            ent.insert(0, "16")
         elif cntr == 2:
             ent.insert(0, "50")
         elif cntr == 3:
@@ -46,6 +47,13 @@ def makeform(root, fields):
             lab = Label(row, width=22, text=field + ": ", anchor='w')
             ent = ttk.Combobox(row)
             ent['values'] = ('2d', '3d', 'raw_2d', 'raw_3d', 'new_3d', 'new_2d')
+            ent.insert(0, "new_2d")
+        elif cntr == 5:
+            row = Frame(root)
+            lab = Label(row, width=22, text=field + ": ", anchor='w')
+            ent = ttk.Combobox(row)
+            ent['values'] = ('1 protein', '2 protein')
+            ent.insert(0, "2 protein")
         row.pack(side=TOP, fill=X, padx=5, pady=5)
         lab.pack(side=LEFT)
         ent.pack(side=RIGHT, expand=YES, fill=X)
