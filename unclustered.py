@@ -29,7 +29,7 @@ def main(sample, data_type, mini_eps, mini_minimum_neighbors, file_direc):
             f.write(line.format(red.point[0], red.point[1], red.point[2]))
 
     # Run main again:
-    is_3d = True if ( data_type == "new_3d" ) or (data_type == "3d" ) else False
+    is_3d = True if (data_type == "new_3d") or (data_type == "3d") else False
     data_type = "3d" if is_3d else "2d" # careful here...
     parse_main(data_type, mini_eps, mini_minimum_neighbors, mini_eps, mini_minimum_neighbors, new_green_name, new_red_name, "unclust_p2", file_dir)
 

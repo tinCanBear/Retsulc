@@ -526,7 +526,7 @@ def get_line(s, hist_lists, cluster, color, append=True):
     other_color = "green" if color == "red" else "red"
     this_color = color
     if cluster.size == 0:
-        return 0
+        return "", False
     other_color_count = sum([1 for x in cluster.points if x.color == other_color])
     color_count = sum([1 for x in cluster.points if x.color == color])
     if other_color_count > color_count:  # change of dominant color!!
