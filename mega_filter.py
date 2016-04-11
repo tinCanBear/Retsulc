@@ -459,8 +459,8 @@ def get_res(red_list, green_list, cntr, proj_name, b_list, div_by=1, div_red=1, 
     per_r_in_g_col = sum_of_coloc_g / len(green_array) if len(green_array) > 0 else 0
 
     # How many clusters?
-    number_red = len(red_list) / div_red
-    number_green = len(green_list) / div_green
+    number_red = len(red_list) / div_red if div_red > 0 else 0
+    number_green = len(green_list) / div_green if div_green > 0 else 0
     total_clusters = (len(red_list) + len(green_list)) / div_by
 
     # Sample density
