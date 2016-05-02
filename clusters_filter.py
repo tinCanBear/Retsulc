@@ -92,7 +92,16 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, angle
                     green_list_dicts.append(row)
                 else:
                     red_list_dicts.append(row)
-
+                row_x = 'x'
+                row_y = 'y'
+                row_z = 'z'
+                try:
+                    row_x =  row['x'] + ","
+                    row_y = row['y'] + ","
+                    row_z = row['z'] + ","
+                    break
+                except KeyError:
+                    pass
                 # write the cluster to the clusters file
                 str_row = row['color'] + "," + \
                           row['#points'] + "," + \
@@ -103,9 +112,9 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, angle
                           row['angle_y'] + "," + \
                           row['size'] + "," + \
                           row['density'] + "," + \
-                          row['x'] + "," + \
-                          row['y'] + "," + \
-                          row['z'] + "," + \
+                           row_x + \
+                           row_y + \
+                           row_z + \
                           row['colocalized'] + "," + \
                           get_name(a_file) + "\n"
                 clusters_file.write(str_row)
