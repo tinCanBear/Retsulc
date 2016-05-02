@@ -92,9 +92,9 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, angle
                     green_list_dicts.append(row)
                 else:
                     red_list_dicts.append(row)
-                row_x = 'x'
-                row_y = 'y'
-                row_z = 'z'
+                row_x = 'x' + ","
+                row_y = 'y' + ","
+                row_z = 'z' + ","
                 try:
                     row_x =  row['x'] + ","
                     row_y = row['y'] + ","

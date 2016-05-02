@@ -154,9 +154,9 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, angle
                     points_counter[2] += int(row['#green points'])
                     continue
                 both_list_dicts.append(row)
-                row_x = 'x'
-                row_y = 'y'
-                row_z = 'z'
+                row_x = 'x' + ","
+                row_y = 'y' + ","
+                row_z = 'z' + ","
                 try:
                     row_x =  row['x'] + ","
                     row_y = row['y'] + ","
@@ -176,8 +176,8 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, angle
                           row['size'] + "," + \
                           row['density'] + "," + \
                           row_x + \
-                          row_y + "," + \
-                          row_z + "," + \
+                          row_y + \
+                          row_z + \
                           row['colocalized'] + "," +\
                           get_name(a_file) + "\n"
                 clusters_file.write(str_row)
