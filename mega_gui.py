@@ -11,7 +11,7 @@ pic_path = "mega.jpg"
 DELETE_LIST = False
 
 fields = (
-'color', '#points', '#red points', '#green points', 'density', 'colocalized', 'size', 'destination', 'Source', 'Name')
+'color', '#points', '#red points', '#green points', 'density', 'colocalized', 'angle x', 'angle y', 'size', 'destination', 'Source', 'Name')
 
 
 def go(entries, listbox):
@@ -81,7 +81,7 @@ def makeform(root, fields):
             ent['values'] = ('yes', 'no', 'all')
             ent.insert(0, 'all')
         else:
-            if cntr != 0 and cntr != 5 and cntr != 7 and cntr != 8 and cntr != 9:
+            if cntr != 0 and cntr != 5 and cntr != 9 and cntr != 10 and cntr != 11:
                 ent.insert(0, "MIN;MAX")
         row.pack(side=TOP, fill=Y, padx=5, pady=5)
         lab.pack(side=LEFT)

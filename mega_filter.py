@@ -1,4 +1,5 @@
 __author__ = 'UriA12'
+__author__ = 'UriA12'
 import os
 import re
 import time
@@ -14,7 +15,7 @@ debug = False
 debug3 = True
 
 
-def filter_it(color_a, points, red_points, green_points, density, coloc_a, size, files_path, dest_path, source, name):
+def filter_it(color_a, points, red_points, green_points, density, coloc_a, anglex, angley, size, files_path, dest_path, source, name):
     MAX = 1000000.
     MIN = -1.
 
@@ -64,6 +65,15 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
     density_max = MAX if density_lst[1] == "MAX" else float(density_lst[1])
     if DEBUG: print(size)
 
+    anglex_lst = anglex.split(";")
+    anglex_min = MIN if anglex_lst[0] == "MIN" else float(anglex_lst[0])
+    anglex_max = MAX if anglex_lst[1] == "MAX" else float(anglex_lst[1])
+
+    angley_lst = angley.split(";")
+    angley_min = MIN if angley_lst[0] == "MIN" else float(angley_lst[0])
+    angley_max = MAX if angley_lst[1] == "MAX" else float(angley_lst[1])
+
+
     size_lst = size.split(";")
     size_min = MIN if size_lst[0] == "MIN" else float(size_lst[0])
     size_max = MAX if size_lst[1] == "MAX" else float(size_lst[1])
@@ -80,7 +90,7 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
                                                                                                            "%Y-%m-%d_%H-%M-%S",
                                                                                                            time.gmtime())))),
                          "w")
-    csv_clusters_titles = "color,#points,#red points,#green points,sphere score,angle_x,angle_y,size,density,colocalized,from file\n"
+    csv_clusters_titles = "color,#points,#red points,#green points,sphere score,angle_x,angle_y,size,density,x,y,z,colocalized,from file\n"
     clusters_file.write(csv_clusters_titles)
     files_counter = 0
     for a_file in files_path:
@@ -134,6 +144,10 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
                         points_counter[1] += int(row['#red points'])
                         points_counter[2] += int(row['#green points'])
                         continue
+
+                if float(row['angle_x']) > anglex_max or float(row['angle_x']) < anglex_min: continue
+                if float(row['angle_y']) > angley_max or float(row['angle_y']) < angley_min: continue
+
                 if float(row['size']) > size_max or float(row['size']) < size_min:
                     points_counter[0] += int(row['#points'])
                     points_counter[1] += int(row['#red points'])
@@ -151,7 +165,11 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
                           row['angle_y'] + "," + \
                           row['size'] + "," + \
                           row['density'] + "," + \
-                          row['colocalized'] + "," + get_name(a_file) + "\n"
+                          row['x'] + "," + \
+                          row['y'] + "," + \
+                          row['z'] + "," + \
+                          row['colocalized'] + "," +\
+                          get_name(a_file) + "\n"
                 clusters_file.write(str_row)
             if debug3: print("points counter: {}".format(points_counter))
             all_unclustered_points_per_f.append(points_counter[:])
@@ -160,18 +178,20 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
     if DEBUG2: print(all_unclustered_points_per_f)
     clusters_file.close()
 
-    xs_bin = [[], []]  # -20  red, green
-    s_bin = [[], []]  # 20-300
-    m_bin = [[], []]  # 300-500
-    l_bin = [[], []]  # 500-
+    xs_bin = [[], [], [], []]  # -20  red, green, #points in red, #points in green
+    s_bin = [[], [], [], []]  # 20-300
+    m_bin = [[], [], [], []]  # 300-500
+    l_bin = [[], [], [], []]  # 500-
 
-    s1_bin = [[], []]  # 20-50
-    s2_bin = [[], []]  # 50-100
-    s3_bin = [[], []]  # 100-150
-    s4_bin = [[], []]  # 150-200
-    s5_bin = [[], []]  # 200-250
-    s6_bin = [[], []]  # 250-300
-
+    s1_bin = [[], [], [], []]  # 20-50
+    s2_bin = [[], [], [], []]  # 50-100
+    s3_bin = [[], [], [], []]  # 100-150
+    s4_bin = [[], [], [], []]  # 150-200
+    s5_bin = [[], [], [], []]  # 200-250
+    s6_bin = [[], [], [], []]  # 250-300
+    clustered_points = 0
+    green_clustered_points = 0
+    red_clustered_points = 0
     for dic in both_list_dicts:
         this_color = dic['color']
         this_size = float(dic['size'])
@@ -187,51 +207,72 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
                dic['colocalized'] + "\n"
         if this_color == "green":
             green_list.append(line)
+            green_clustered_points += float(dic['#points'])
             if this_size <= 20:
                 xs_bin[1].append(line)
+                xs_bin[3].append(dic['#points'])
             elif this_size <= 300:
                 s_bin[1].append(line)
+                s_bin[3].append(dic['#points'])
                 if this_size <= 50:
                     s1_bin[1].append(line)
+                    s1_bin[3].append(dic['#points'])
                 elif this_size <= 100:
                     s2_bin[1].append(line)
+                    s2_bin[3].append(dic['#points'])
                 elif this_size <= 150:
                     s3_bin[1].append(line)
+                    s3_bin[3].append(dic['#points'])
                 elif this_size <= 200:
                     s4_bin[1].append(line)
+                    s4_bin[3].append(dic['#points'])
                 elif this_size <= 250:
                     s5_bin[1].append(line)
+                    s5_bin[3].append(dic['#points'])
                 else:
                     s6_bin[1].append(line)
+                    s6_bin[3].append(dic['#points'])
 
             elif this_size <= 500:
                 m_bin[1].append(line)
+                m_bin[3].append(dic['#points'])
             else:
                 l_bin[1].append(line)
-
+                l_bin[3].append(dic['#points'])
         else:
             red_list.append(line)
+            red_clustered_points += float(dic['#points'])
             if this_size <= 20:
                 xs_bin[0].append(line)
+                xs_bin[2].append(dic['#points'])
             elif this_size <= 300:
                 s_bin[0].append(line)
+                s_bin[2].append(dic['#points'])
                 if this_size <= 50:
                     s1_bin[0].append(line)
+                    s2_bin[2].append(dic['#points'])
                 elif this_size <= 100:
                     s2_bin[0].append(line)
+                    s2_bin[2].append(dic['#points'])
                 elif this_size <= 150:
                     s3_bin[0].append(line)
+                    s3_bin[2].append(dic['#points'])
                 elif this_size <= 200:
                     s4_bin[0].append(line)
+                    s4_bin[2].append(dic['#points'])
                 elif this_size <= 250:
                     s5_bin[0].append(line)
+                    s5_bin[2].append(dic['#points'])
                 else:
                     s6_bin[0].append(line)
+                    s6_bin[2].append(dic['#points'])
 
             elif this_size <= 500:
                 m_bin[0].append(line)
+                m_bin[2].append(dic['#points'])
             else:
                 l_bin[0].append(line)
+                l_bin[2].append(dic['#points'])
 
     n = len(all_unclustered_points_per_f)
     if DEBUG2: print("This is tot_points: {}".format(tot_points))
@@ -295,33 +336,34 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
         coloc)
     avgd_line = get_res(red_list, green_list, 0, filters, b_list, div_by=n, div_red=n, div_green=n)
     re_line = avgd_line.split(',')
+    clustered_points = green_clustered_points + red_clustered_points
     if DEBUG: print("n is:\t{}".format(n))
     if DEBUG: print("re_line[12-14]:{},{},{}".format(re_line[12], re_line[13], re_line[14]))
     xs_line = get_res(xs_bin[0], xs_bin[1], "0->20", filters, bla_list, div_by=float(re_line[12]) * n,
-                      div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n)
+                      div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     s_line = get_res(s_bin[0], s_bin[1], "20->300", filters, bla_list, div_by=float(re_line[12]) * n,
-                     div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n)
+                     div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     m_line = get_res(m_bin[0], m_bin[1], "300->500", filters, bla_list, div_by=float(re_line[12]) * n,
-                     div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n)
+                     div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     l_line = get_res(l_bin[0], l_bin[1], "500->inf", filters, bla_list, div_by=float(re_line[12]) * n,
-                     div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n)
+                     div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     s1_line = get_res(s1_bin[0], s1_bin[1], "extended: 20->50", filters, bla_list, div_by=float(re_line[12]) * n,
-                      div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n)
+                      div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     s2_line = get_res(s2_bin[0], s2_bin[1], "extended: 50->100", filters, bla_list, div_by=float(re_line[12]) * n,
-                      div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n)
+                      div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     s3_line = get_res(s3_bin[0], s3_bin[1], "extended: 100->150", filters, bla_list, div_by=float(re_line[12]) * n,
-                      div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n)
+                      div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     s4_line = get_res(s4_bin[0], s4_bin[1], "extended: 150->200", filters, bla_list, div_by=float(re_line[12]) * n,
-                      div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n)
+                      div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     s5_line = get_res(s5_bin[0], s5_bin[1], "extended: 200->250", filters, bla_list, div_by=float(re_line[12]) * n,
-                      div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n)
+                      div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     s6_line = get_res(s6_bin[0], s6_bin[1], "extended: 250->300", filters, bla_list, div_by=float(re_line[12]) * n,
-                      div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n)
+                      div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
 
     out_file = open(os.path.normcase(os.path.join(dest_path, "filtered_summary_{}_{}.csv".format(name, time.strftime(
         "%Y-%m-%d_%H-%M-%S", time.gmtime())))), "w")
     csv_titles = "test#,red_green_ratio,_std,rel_clustered_pts,_std,rel_unclustered_pts,_std,rel_red_clustered,_std,rel_green_clustered,_std,----,\
-    #clusters,#red clusters,#green clusters,avg green in red clusters,std green in red clusters,avg red in green clusters,\
+    #clusters,clusters points weight,#red clusters,red pts weight,#green clusters,green pts weight,avg green in red clusters,std green in red clusters,avg red in green clusters,\
     std red in green clusters,avg red sphericity,std red sphericity,avg green sphericity,std green sphericity,\
     avg red Xangl,std red Xangl,avg red Yangl,std red Yangl,avg green Xangl,std green Xangl,avg green Yangl,\
     std green Yangl,avg red size,std red size,avg green size,std green size,sample density,avg red density,std red density,\
@@ -360,7 +402,7 @@ def get_name(file_name):
 
 
 # ("color, #points, #red points, #green points, sphere score, angle_x, angle_y, size, density\n")
-def get_res(red_list, green_list, cntr, proj_name, b_list, div_by=1, div_red=1, div_green=1):
+def get_res(red_list, green_list, cntr, proj_name, b_list, div_by=1, div_red=1, div_green=1, div_by_pts=0, div_red_pts=0, div_green_pts=0):
     len_r = len(red_list)
     len_g = len(green_list)
 
@@ -460,8 +502,12 @@ def get_res(red_list, green_list, cntr, proj_name, b_list, div_by=1, div_red=1, 
 
     # How many clusters?
     number_red = len(red_list) / div_red if div_red > 0 else 0
+    number_pts_red = sum([red_list[i][0] for i in range(len(red_list))]) / div_red_pts if div_red_pts > 0 else -1
     number_green = len(green_list) / div_green if div_green > 0 else 0
+    number_pts_green = sum([green_list[i][0] for i in range(len(green_list))]) / div_green_pts if div_green_pts > 0 else -1
     total_clusters = (len(red_list) + len(green_list)) / div_by
+    number_pts_clusters = ( sum([red_list[i][0] for i in range(len(red_list))]) + sum(
+        [green_list[i][0] for i in range(len(green_list))])) / div_by_pts if div_by_pts > 0 else -1
 
     # Sample density
     sample_size = float(2000 * 2000)  # this is for 2d
@@ -489,7 +535,7 @@ def get_res(red_list, green_list, cntr, proj_name, b_list, div_by=1, div_red=1, 
 
     # create the line to be written to .csv file
     avgd_line = "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},\
-                {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n".format(cntr \
+                {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n".format(cntr \
                                                                                       , total_number_of_points \
                                                                                       , total_number_of_red_points \
                                                                                       , total_number_of_green_points \
@@ -505,8 +551,11 @@ def get_res(red_list, green_list, cntr, proj_name, b_list, div_by=1, div_red=1, 
                                                                                       , relative_red_clustered_points \
                                                                                       , relative_green_clustered_points \
                                                                                       , total_clusters \
+                                                                                      , number_pts_clusters \
                                                                                       , number_red \
+                                                                                      , number_pts_red \
                                                                                       , number_green \
+                                                                                      , number_pts_green \
                                                                                       , avg_per_green_in_red \
                                                                                       , std_per_green_in_red \
                                                                                       , avg_per_red_in_green \

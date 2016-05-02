@@ -192,7 +192,7 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
     make_histogram(s, red_hist, "red", other="_pre")
     make_histogram(s, green_hist, "green", other="_pre")
 
-    csv_clusters_titles = "color,#points,#red points,#green points,sphere score,angle_x,angle_y,size,density,colocalized\n"
+    csv_clusters_titles = "color,#points,#red points,#green points,sphere score,angle_x,angle_y,size,density,x,y,z,colocalized\n"
     s.print_f(csv_clusters_titles, s.f_clusters_pre)
     s.print_f(csv_clusters_titles, s.f_clusters_final)
     s.print_f(csv_clusters_titles, s.f_clusters_all)
@@ -546,7 +546,10 @@ def get_line(s, hist_lists, cluster, color, append=True):
            str(cluster.angle_x) + ", " + \
            str(cluster.angle_y) + ", " + \
            str(cluster.size) + ", " + \
-           str(len(cluster.points) * 10000 / ((float(cluster.size) ** 3) * (4 / 3) * math.pi)) + ending
+           str(len(cluster.points) * 10000 / ((float(cluster.size) ** 3) * (4 / 3) * math.pi)) + ", " + \
+           str(cluster.center[0]) + ", " + \
+           str(cluster.center[1]) + ", " + \
+           str(cluster.center[2]) + ending
     return line, changed
 
 

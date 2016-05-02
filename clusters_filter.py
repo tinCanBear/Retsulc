@@ -8,7 +8,8 @@ from parse_super_detect import get_res
 DEBUG = False
 
 
-def filter_it(color_a, points, red_points, green_points, density, coloc_a, size, files_path, dest_path, name):
+def filter_it(color_a, points, red_points, green_points, density, coloc_a, anglex, angley, size, files_path, dest_path,
+              name):
     MAX = 1000000.
     MIN = -1.
 
@@ -37,6 +38,14 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
     density_max = MAX if density_lst[1] == "MAX" else float(density_lst[1])
     if DEBUG: print(size)
 
+    anglex_lst = anglex.split(";")
+    anglex_min = MIN if anglex_lst[0] == "MIN" else float(anglex_lst[0])
+    anglex_max = MAX if anglex_lst[1] == "MAX" else float(anglex_lst[1])
+
+    angley_lst = angley.split(";")
+    angley_min = MIN if angley_lst[0] == "MIN" else float(angley_lst[0])
+    angley_max = MAX if angley_lst[1] == "MAX" else float(angley_lst[1])
+
     size_lst = size.split(";")
     size_min = MIN if size_lst[0] == "MIN" else float(size_lst[0])
     size_max = MAX if size_lst[1] == "MAX" else float(size_lst[1])
@@ -52,7 +61,7 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
                                                                                                            "%Y-%m-%d_%H-%M-%S",
                                                                                                            time.gmtime())))),
                          "w")
-    csv_clusters_titles = "color,#points,#red points,#green points,sphere score,angle_x,angle_y,size,density,colocalized,from file\n"
+    csv_clusters_titles = "color,#points,#red points,#green points,sphere score,angle_x,angle_y,size,density,x,y,z,colocalized,from file\n"
     clusters_file.write(csv_clusters_titles)
 
     for a_file in files_path:
@@ -71,11 +80,13 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
                 if float(row['#points']) > points_max or float(row['#points']) < points_min: continue
                 if float(row['#red points']) > red_points_max or float(row['#red points']) < red_points_min: continue
                 if float(row['#green points']) > green_points_max or float(
-                    row['#green points']) < green_points_min: continue
+                        row['#green points']) < green_points_min: continue
                 if float(row['density']) > density_max or float(row['density']) < density_min: continue
                 if coloc != "all":
                     if row['colocalized'] == '0' and coloc == 'yes': continue
                     if row['colocalized'] == '1' and coloc == 'no': continue
+                if float(row['angle_x']) > anglex_max or float(row['angle_x']) < anglex_min: continue
+                if float(row['angle_y']) > angley_max or float(row['angle_y']) < angley_min: continue
                 if float(row['size']) > size_max or float(row['size']) < size_min: continue
                 if color == "green" and row['color'] == "green":
                     green_list_dicts.append(row)
@@ -92,7 +103,11 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, size,
                           row['angle_y'] + "," + \
                           row['size'] + "," + \
                           row['density'] + "," + \
-                          row['colocalized'] + "," + get_name(a_file) + "\n"
+                          row['x'] + "," + \
+                          row['y'] + "," + \
+                          row['z'] + "," + \
+                          row['colocalized'] + "," + \
+                          get_name(a_file) + "\n"
                 clusters_file.write(str_row)
 
     # close the clusters file

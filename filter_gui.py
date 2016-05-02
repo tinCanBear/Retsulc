@@ -10,7 +10,8 @@ from clusters_filter import filter_it
 pic_path = "fireworks.jpg"
 DELETE_LIST = False
 
-fields = ('color', '#points', '#red points', '#green points', 'density', 'colocalized', 'size', 'destination', 'Name')
+fields = ('color', '#points', '#red points', '#green points', 'density', 'colocalized', 'angle x', 'angle y', 'size',
+          'destination', 'Name')
 
 
 def go(entries, listbox):
@@ -20,6 +21,8 @@ def go(entries, listbox):
     green_points = (entries['#green points'].get())
     density = (entries['density'].get())
     coloc = (entries['colocalized'].get())
+    x_angle = (entries['angle x'].get())
+    y_angle = (entries['angle y'].get())
     size = (entries['size'].get())
     files_path = listbox.get(0, END)  # a list of all the files
     dest_path = (entries['destination'].get())
@@ -29,7 +32,7 @@ def go(entries, listbox):
         messagebox.showinfo("Give us something to work with!",
                             "The little people who work in this program are lost without" +
                             " some proper file paths.\nPlease help them find some files. (tip: Add Files)")
-    result = filter_it(color, points, red_points, green_points, density, coloc, size, files_path, dest_path, name)
+    result = filter_it(color, points, red_points, green_points, density, coloc,x_angle ,y_angle ,size, files_path, dest_path, name)
     if result == 0:
         if DELETE_LIST: listbox.delete(0, END)
         messagebox.showinfo("Work here is DONE!", \
@@ -71,7 +74,7 @@ def makeform(root, fields):
             ent['values'] = ('yes', 'no', 'all')
             ent.insert(0, 'all')
         else:
-            if cntr != 0 and cntr != 5 and cntr != 7 and cntr != 8:
+            if cntr != 0 and cntr != 5 and cntr != 9 and cntr != 10:
                 ent.insert(0, "MIN;MAX")
         row.pack(side=TOP, fill=Y, padx=5, pady=5)
         lab.pack(side=LEFT)
