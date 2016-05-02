@@ -21,6 +21,8 @@ def go(entries, listbox):
     green_points = (entries['#green points'].get())
     density = (entries['density'].get())
     coloc = (entries['colocalized'].get())
+    x_angle = (entries['angle x'].get())
+    y_angle = (entries['angle y'].get())
     size = (entries['size'].get())
     files_path = listbox.get(0, END)  # a list of all the files
     dest_path = (entries['destination'].get())
@@ -31,7 +33,7 @@ def go(entries, listbox):
         messagebox.showinfo("Give us something to work with!",
                             "The little people who work in this program are lost without" +
                             " some proper file paths.\nPlease help them find some files. (tip: Add Files)")
-    result = filter_it(color, points, red_points, green_points, density, coloc, size, files_path, dest_path, source,
+    result = filter_it(color, points, red_points, green_points, density, coloc, x_angle, y_angle, size, files_path, dest_path, source,
                        name)
     if result == 0:
         if DELETE_LIST: listbox.delete(0, END)
