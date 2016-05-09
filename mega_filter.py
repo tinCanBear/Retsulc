@@ -161,7 +161,7 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, angle
                     row_x =  row['x'] + ","
                     row_y = row['y'] + ","
                     row_z = row['z'] + ","
-                    break
+                  #  break
                 except KeyError:
                     pass
 

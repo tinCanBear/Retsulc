@@ -99,9 +99,10 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, angle
                     row_x =  row['x'] + ","
                     row_y = row['y'] + ","
                     row_z = row['z'] + ","
-                    break
+                  #  break
                 except KeyError:
                     pass
+                if DEBUG: print("writing to file")
                 # write the cluster to the clusters file
                 str_row = row['color'] + "," + \
                           row['#points'] + "," + \
@@ -117,6 +118,7 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, angle
                            row_z + \
                           row['colocalized'] + "," + \
                           get_name(a_file) + "\n"
+                if DEBUG: print(str_row)
                 clusters_file.write(str_row)
 
     # close the clusters file
