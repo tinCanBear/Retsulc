@@ -11,7 +11,8 @@ pic_path = "mega.jpg"
 DELETE_LIST = False
 
 fields = (
-'color', '#points', '#red points', '#green points', 'density', 'colocalized', 'angle x', 'angle y', 'size', 'destination', 'Source', 'Name')
+    'color', '#points', '#red points', '#green points', 'density', 'colocalized', 'angle x', 'angle y', 'size',
+    'destination', 'Source', 'Name')
 
 
 def go(entries, listbox):
@@ -33,7 +34,8 @@ def go(entries, listbox):
         messagebox.showinfo("Give us something to work with!",
                             "The little people who work in this program are lost without" +
                             " some proper file paths.\nPlease help them find some files. (tip: Add Files)")
-    result = filter_it(color, points, red_points, green_points, density, coloc, x_angle, y_angle, size, files_path, dest_path, source,
+    result = filter_it(color, points, red_points, green_points, density, coloc, x_angle, y_angle, size, files_path,
+                       dest_path, source,
                        name)
     if result == 0:
         if DELETE_LIST: listbox.delete(0, END)
@@ -48,7 +50,8 @@ def go(entries, listbox):
 
 
 def add_files(entries):
-    path = filedialog.askopenfilenames()
+    current_dir = listbox.get(0) if len(listbox.get(0, END)) > 0 else ""
+    path = filedialog.askopenfilenames(initialdir=current_dir)
     for name in path:
         listbox.insert(END, name)
 
