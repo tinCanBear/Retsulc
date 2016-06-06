@@ -1,3 +1,5 @@
+import os
+
 __author__ = 'UriA12'
 from tkinter import *
 from tkinter import Tk
@@ -26,8 +28,8 @@ def go(entries, listbox):
     y_angle = (entries['angle y'].get())
     size = (entries['size'].get())
     files_path = listbox.get(0, END)  # a list of all the files
-    dest_path = (entries['destination'].get())
     source = (entries['Source'].get())
+    dest_path = os.path.dirname((entries['Source'].get())) if (entries['destination'].get()) == "" else (entries['destination'].get())
     name = (entries['Name'].get())
     print(files_path)
     if len(files_path) == 0:
@@ -51,12 +53,14 @@ def go(entries, listbox):
 
 def add_files(entries):
     current_dir = listbox.get(0) if len(listbox.get(0, END)) > 0 else ""
+    current_dir = (entries['Source'].get()) if (entries['Source'].get()) != "" else current_dir
     path = filedialog.askopenfilenames(initialdir=current_dir)
     for name in path:
         listbox.insert(END, name)
 
 
 def choose_dest(entries):
+    current_dir = listbox.get(0) if len(listbox.get(0, END)) > 0 else ""
     path = filedialog.askdirectory()
     if path != "":
         entries['destination'].delete(0, END)
@@ -64,7 +68,8 @@ def choose_dest(entries):
 
 
 def choose_src(entries):
-    path = filedialog.askopenfilename()
+    current_dir = listbox.get(0) if len(listbox.get(0, END)) > 0 else ""
+    path = filedialog.askopenfilename(initialdir=current_dir)
     if path != "":
         entries['Source'].delete(0, END)
         entries['Source'].insert(0, path)
@@ -112,13 +117,14 @@ if __name__ == '__main__':
     lab.pack(side=TOP)
     img = Image.open(pic_path)  # the photo
     photo = ImageTk.PhotoImage(img)
-    panel = Label(left_panel, image=photo)
-    panel.pack(side="bottom", fill="both", expand="yes")
+
     ents = makeform(left_panel, fields)
     b_dest = Button(left_panel, text='Choose destination', command=(lambda e=ents: choose_dest(e)))
     b_dest.pack()
     b_src = Button(left_panel, text='Choose source', command=(lambda e=ents: choose_src(e)))
     b_src.pack()
+    panel = Label(left_panel, image=photo)
+    panel.pack(side="bottom", fill="both", expand="yes")
     # right panel
     listbox = Listbox(right_panel, width=100, height=30)
     listbox.pack(fill=BOTH)
