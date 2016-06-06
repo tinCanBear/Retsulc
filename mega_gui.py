@@ -127,8 +127,12 @@ if __name__ == '__main__':
     # buttons
     b_add = Button(row_of_buttons, text='Add File', command=(lambda e=ents: add_files(e)))
     b_delete = Button(row_of_buttons, text="Remove Selected", command=lambda lb=listbox: lb.delete(ANCHOR))
+    b_delete_all = Button(row_of_buttons, text="Remove All", command=lambda lb=listbox: lb.delete(0, END))
+
     b_add.pack(side=RIGHT, padx=5, pady=5)
     b_delete.pack(side=LEFT, padx=5, pady=5)
+    b_delete_all.pack(side=LEFT, padx=5, pady=5)
+
     row_of_buttons.pack(side=BOTTOM, padx=5, pady=5)
     left_panel.pack(side=LEFT)
     right_panel.pack(side=LEFT, expand="yes")
