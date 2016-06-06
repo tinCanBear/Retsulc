@@ -67,10 +67,23 @@ if __name__ == '__main__':
     root.wm_title("Retsulc (ver 0.2) - Get clusters!")
     img = Image.open(pic_path)
     photo = ImageTk.PhotoImage(img)
-    panel = Label(root, image=photo)
-    panel.pack(side="bottom", fill="both", expand="yes")
-    ents = makeform(root, fields)
-    b2 = Button(root, text='GO!', command=(lambda e=ents: gogo(e)))
-    b2.pack(side=LEFT, padx=5, pady=5)
+
+    right_panel = Frame(root)
+    left_panel = Frame(root)
+    # row_of_buttons = Frame(right_panel)
+
+    panel = Label(right_panel, image=photo)
+    panel.pack(side=BOTTOM, fill="both", expand="yes")
+    # listbox = Listbox(right_panel, width=100, height=30)
+    # listbox.pack(side=RIGHT, fill=BOTH)
+
+    ents = makeform(left_panel, fields)
+    b2 = Button(left_panel, text='GO!', command=(lambda e=ents: gogo(e)))
+    b2.pack(side=BOTTOM, padx=5, pady=5)
+
+    # row_of_buttons.pack(side=BOTTOM, padx=5, pady=5)
+    left_panel.pack(side=LEFT)
+    right_panel.pack(side=RIGHT, expand="yes")
+
     root.iconbitmap(r'big_flower.ico')
     root.mainloop()
