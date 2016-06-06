@@ -350,25 +350,25 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, angle
     if DEBUG: print("n is:\t{}".format(n))
     if DEBUG: print("re_line[12-14]:{},{},{}".format(re_line[12], re_line[13], re_line[14]))
     xs_line = get_res(xs_bin[0], xs_bin[1], "0->20", filters, bla_list, div_by=float(re_line[12]) * n,
-                      div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
+                      div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     s_line = get_res(s_bin[0], s_bin[1], "20->300", filters, bla_list, div_by=float(re_line[12]) * n,
-                     div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
+                     div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     m_line = get_res(m_bin[0], m_bin[1], "300->500", filters, bla_list, div_by=float(re_line[12]) * n,
-                     div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
+                     div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     l_line = get_res(l_bin[0], l_bin[1], "500->inf", filters, bla_list, div_by=float(re_line[12]) * n,
-                     div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
+                     div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     s1_line = get_res(s1_bin[0], s1_bin[1], "extended: 20->50", filters, bla_list, div_by=float(re_line[12]) * n,
-                      div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
+                      div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     s2_line = get_res(s2_bin[0], s2_bin[1], "extended: 50->100", filters, bla_list, div_by=float(re_line[12]) * n,
-                      div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
+                      div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     s3_line = get_res(s3_bin[0], s3_bin[1], "extended: 100->150", filters, bla_list, div_by=float(re_line[12]) * n,
-                      div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
+                      div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     s4_line = get_res(s4_bin[0], s4_bin[1], "extended: 150->200", filters, bla_list, div_by=float(re_line[12]) * n,
-                      div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
+                      div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     s5_line = get_res(s5_bin[0], s5_bin[1], "extended: 200->250", filters, bla_list, div_by=float(re_line[12]) * n,
-                      div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
+                      div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     s6_line = get_res(s6_bin[0], s6_bin[1], "extended: 250->300", filters, bla_list, div_by=float(re_line[12]) * n,
-                      div_red=float(re_line[13]) * n, div_green=float(re_line[14]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
+                      div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
 
     out_file = open(os.path.normcase(os.path.join(dest_path, "filtered_summary_{}_{}.csv".format(name, time.strftime(
         "%Y-%m-%d_%H-%M-%S", time.gmtime())))), "w")
@@ -430,7 +430,7 @@ def get_res(red_list, green_list, cntr, proj_name, b_list, div_by=1, div_red=1, 
     # RED CLUSTERS
     g_in_r_list = []
     for a_list in red_list:
-        g_in_r_list.append(a_list[2] / (a_list[1] + a_list[2]))
+        g_in_r_list.append(a_list[1] / (a_list[0]))
 
     avg_per_green_in_red = np.mean(g_in_r_list) if len(g_in_r_list) > 2 else 0
     std_per_green_in_red = statistics.stdev(g_in_r_list) if len(g_in_r_list) > 2 else 0
@@ -474,7 +474,7 @@ def get_res(red_list, green_list, cntr, proj_name, b_list, div_by=1, div_red=1, 
     # GREEN CLUSTERS
     r_in_g_list = []
     for a_list in green_list:
-        r_in_g_list.append(a_list[1] / (a_list[1] + a_list[2]))
+        r_in_g_list.append(a_list[2] / (a_list[0]))
 
     avg_per_red_in_green = np.mean(r_in_g_list) if len(r_in_g_list) > 2 else 0
     std_per_red_in_green = statistics.stdev(r_in_g_list) if len(r_in_g_list) > 2 else 0
