@@ -8,7 +8,7 @@ import csv
 import numpy as np
 import statistics
 import math
-
+from clusters_filter import filter_it as per_file_filter
 DEBUG = False
 DEBUG2 = False
 debug = False
@@ -18,6 +18,9 @@ debug3 = True
 def filter_it(color_a, points, red_points, green_points, density, coloc_a, anglex, angley, size, files_path, dest_path, source, name):
     MAX = 1000000.
     MIN = -1.
+
+    per_file_filter(color_a, points, red_points, green_points, density, coloc_a, anglex, angley, size, files_path, dest_path, source, "per_file")
+
 
     color = color_a
     coloc = coloc_a
@@ -145,14 +148,23 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, angle
                         points_counter[2] += int(row['#green points'])
                         continue
 
-                if float(row['angle_x']) > anglex_max or float(row['angle_x']) < anglex_min: continue
-                if float(row['angle_y']) > angley_max or float(row['angle_y']) < angley_min: continue
+                if float(row['angle_x']) > anglex_max or float(row['angle_x']) < anglex_min:
+                        points_counter[0] += int(row['#points'])
+                        points_counter[1] += int(row['#red points'])
+                        points_counter[2] += int(row['#green points'])
+                        continue
+                if float(row['angle_y']) > angley_max or float(row['angle_y']) < angley_min:
+                        points_counter[0] += int(row['#points'])
+                        points_counter[1] += int(row['#red points'])
+                        points_counter[2] += int(row['#green points'])
+                        continue
 
                 if float(row['size']) > size_max or float(row['size']) < size_min:
                     points_counter[0] += int(row['#points'])
                     points_counter[1] += int(row['#red points'])
                     points_counter[2] += int(row['#green points'])
                     continue
+
                 both_list_dicts.append(row)
                 row_x = 'x' + ","
                 row_y = 'y' + ","
