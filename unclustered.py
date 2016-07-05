@@ -20,18 +20,29 @@ def main(sample, data_type, mini_eps, mini_minimum_neighbors, file_direc):
 
     # Create files with coordinates:
     with open(new_green_name, "w") as f:
+        green_counter = 0
         f.write(titles)
         for green in green_points:
             f.write(line.format(green.point[0], green.point[1], green.point[2]))
+            green_counter += 1
     with open(new_red_name, "w") as f:
+        red_counter = 0
         f.write(titles)
         for red in red_points:
             f.write(line.format(red.point[0], red.point[1], red.point[2]))
+            red_counter += 1
 
     # Run main again:
+    mode = 2
     is_3d = True if (data_type == "new_3d") or (data_type == "3d") else False
     data_type = "3d" if is_3d else "2d" # careful here...
-    parse_main(data_type, mini_eps, mini_minimum_neighbors, mini_eps, mini_minimum_neighbors, new_green_name, new_red_name, "unclust_p2", file_dir)
+    if red_counter <= 10:
+        new_red_name = "red_dummy.csv"
+        mode = 1
+    if green_counter <= 10:
+        new_green_name = "green_dummy.csv"
+        mode = 1
+    parse_main(data_type, mini_eps, mini_minimum_neighbors, mini_eps, mini_minimum_neighbors, new_green_name, new_red_name, "unclust_p2", file_dir, mode)
 
 
 
