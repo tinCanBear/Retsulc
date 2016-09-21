@@ -40,7 +40,7 @@ def plot_knn(points, file_directory, name, x = None, y = [0,850], show=False):
     if y != None:
         plt.ylim(y)
 
-    plt.ylabel('Distance (nm)')
+    plt.ylabel('Distance (nm)', fontsize=16)
     plt.xlabel('Number of Localizations')
 
     if show==True:

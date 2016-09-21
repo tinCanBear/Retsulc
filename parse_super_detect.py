@@ -112,6 +112,7 @@ def go(eps, min_ngbs, mini_eps, mini_min_ngbs, d_type, pth, mode):
                 print(cntr)
                 file_directory = new_directory + "/analysis_{}_{}".format(get_name(some_file[0], cntr),some_file[1]) + "/"
                 print(file_directory)
+                color = some_file[1]
                 dummy_file = "green_dummy.csv" if some_file[1] == "red" else "red_dummy.csv"
                 proj_name = "test_{}".format(get_name(some_file[0], cntr))
                 # Execute main function
@@ -132,7 +133,7 @@ def go(eps, min_ngbs, mini_eps, mini_min_ngbs, d_type, pth, mode):
                 green_all = return_list[8]
                 sample = return_list[9]
                 # unclustered_analysis
-                # unclustered(sample, data_type, 20, 6, file_directory)
+                unclustered(sample, data_type, 20, 6, file_directory, mode=1, color=color, dummy_file=dummy_file)
                 # Write to file
                 avgd_line = get_res(red_list, green_list, cntr, proj_name, basics_list)
                 avgd_line_pre = get_res(red_list_pre, green_list_pre, cntr, proj_name, basics_list_pre)
@@ -326,7 +327,7 @@ def get_res(red_list, green_list, cntr, proj_name, b_list):
     red_avg_size_pts = red_means[0] if red_check else 0
     red_std_size_pts = red_stds[0] if red_check else 0
     # colocalization percentage
-    sum_of_coloc_r = np.sum(red_array[:, 8]) if len(red_array) > 7 else 0
+    sum_of_coloc_r = np.sum(red_array[:, 11]) if len(red_array) > 7 else 0
     per_g_in_r_col = sum_of_coloc_r / len(red_array) if len(red_array) > 0 else 0
 
     # GREEN CLUSTERS
@@ -369,7 +370,7 @@ def get_res(red_list, green_list, cntr, proj_name, b_list):
     # size  in points
     green_avg_size_pts = green_means[0] if green_check else 0
     green_std_size_pts = green_stds[0] if green_check else 0
-    sum_of_coloc_g = np.sum(green_array[:, 8]) if len(green_array) > 7 else 0
+    sum_of_coloc_g = np.sum(green_array[:, 11]) if len(green_array) > 7 else 0
     per_r_in_g_col = sum_of_coloc_g / len(green_array) if len(green_array) > 0 else 0
 
     # How many clusters?

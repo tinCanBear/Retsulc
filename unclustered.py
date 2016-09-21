@@ -6,7 +6,7 @@ from parse_main import main as parse_main
 import time
 
 DEBUG = False
-def main(sample, data_type, mini_eps, mini_minimum_neighbors, file_direc):
+def main(sample, data_type, mini_eps, mini_minimum_neighbors, file_direc, mode=2, color ="both", dummy_file=""):
     file_dir = file_direc + "/unclus_analysis_{}".format(time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime()))
     os.mkdir(file_dir)
 
@@ -31,7 +31,11 @@ def main(sample, data_type, mini_eps, mini_minimum_neighbors, file_direc):
     # Run main again:
     is_3d = True if (data_type == "new_3d") or (data_type == "3d") else False
     data_type = "3d" if is_3d else "2d" # careful here...
-    parse_main(data_type, mini_eps, mini_minimum_neighbors, mini_eps, mini_minimum_neighbors, new_green_name, new_red_name, "unclust_p2", file_dir)
+    if mode==1 and color=="red":
+        new_green_name=dummy_file
+    if mode==1 and color=="green":
+        new_red_name=dummy_file
+    parse_main(data_type, mini_eps, mini_minimum_neighbors, mini_eps, mini_minimum_neighbors, new_green_name, new_red_name, "unclust_p2", file_dir, mode)
 
 
 
@@ -65,17 +69,21 @@ def get_unclustered_by_filter(red_clusters, green_clusters, color_a="both", red_
     size_max = MAX if size_lst[1] == "MAX" else float(size_lst[1])
 
     for cluster in red_clusters:
-        if color != "both":
-            if "red" != color: res += cluster.points
-        elif float(len(cluster.points)) > red_points_max or float(len(cluster.points)) < red_points_min: res += cluster.points
-        elif len(cluster.points)*10000/((float(cluster.size)**3)*(4/3)*math.pi) > density_max or len(cluster.points)*10000/((float(cluster.size)**3)*(4/3)*math.pi) < density_min: res += cluster.points
-        elif float(cluster.size) > size_max or float(cluster.size) < size_min: res += cluster.points
-
+        try:
+            if color != "both":
+                if "red" != color: res += cluster.points
+            elif float(len(cluster.points)) > red_points_max or float(len(cluster.points)) < red_points_min: res += cluster.points
+            elif len(cluster.points)*10000/((float(cluster.size)**3)*(4/3)*math.pi) > density_max or len(cluster.points)*10000/((float(cluster.size)**3)*(4/3)*math.pi) < density_min: res += cluster.points
+            elif float(cluster.size) > size_max or float(cluster.size) < size_min: res += cluster.points
+        except ZeroDivisionError:
+            pass
     for cluster in green_clusters:
-        if color != "both":
-            if "green" != color: res += cluster.points
-        elif float(len(cluster.points)) > green_points_max or float(len(cluster.points)) < green_points_min: res += cluster.points
-        elif len(cluster.points)*10000/((float(cluster.size)**3)*(4/3)*math.pi) > density_max or len(cluster.points)*10000/((float(cluster.size)**3)*(4/3)*math.pi) < density_min: res += cluster.points
-        elif float(cluster.size) > size_max or float(cluster.size) < size_min: res += cluster.points
-
+        try:
+            if color != "both":
+                if "green" != color: res += cluster.points
+            elif float(len(cluster.points)) > green_points_max or float(len(cluster.points)) < green_points_min: res += cluster.points
+            elif len(cluster.points)*10000/((float(cluster.size)**3)*(4/3)*math.pi) > density_max or len(cluster.points)*10000/((float(cluster.size)**3)*(4/3)*math.pi) < density_min: res += cluster.points
+            elif float(cluster.size) > size_max or float(cluster.size) < size_min: res += cluster.points
+        except ZeroDivisionError:
+            pass
     return res

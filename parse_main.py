@@ -132,10 +132,15 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
         k.pca_analysis(dimension)
 
     # plot k-distances
-
-    plot_knn(s.green_points_dbscan, file_directory, "kdist_green")
-    plot_knn(s.red_points_dbscan, file_directory, "kdist_red")
-    plot_knn(s.points_dbscan, file_directory, "kdist_all")
+    if mode !=1:
+        plot_knn(s.green_points_dbscan, file_directory, "kdist_green")
+        plot_knn(s.red_points_dbscan, file_directory, "kdist_red")
+        plot_knn(s.points_dbscan, file_directory, "kdist_all")
+    else:
+        if len(s.green_points_dbscan) > 20:
+            plot_knn(s.green_points_dbscan, file_directory, "kdist_green")
+        if len(s.red_points_dbscan) > 20:
+            plot_knn(s.red_points_dbscan, file_directory, "kdist_red")
 
     # Calculate basic stuff (final number of un/clustered points, etc.)
     total_number_of_points_pre = len(s.points)
@@ -147,11 +152,11 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
     total_number_of_clustered_red_points_pre = len([x for x in clustered_points_pre if x.color == "red"])
     total_number_of_clustered_green_points_pre = len([x for x in clustered_points_pre if x.color == "green"])
 
-    relative_clustered_points_pre = float(total_number_of_clustered_points_pre) / total_number_of_points_pre
-    relative_unclustered_points_pre = float(total_number_of_unclustered_points_pre) / total_number_of_points_pre
-    relative_red_clustered_points_pre = float(total_number_of_clustered_red_points_pre) / total_number_of_red_points_pre
+    relative_clustered_points_pre = float(total_number_of_clustered_points_pre) / total_number_of_points_pre if total_number_of_points_pre > 0 else 0
+    relative_unclustered_points_pre = float(total_number_of_unclustered_points_pre) / total_number_of_points_pre if total_number_of_points_pre > 0 else 0
+    relative_red_clustered_points_pre = float(total_number_of_clustered_red_points_pre) / total_number_of_red_points_pre if total_number_of_red_points_pre > 0 else 0
     relative_green_clustered_points_pre = float(
-        total_number_of_clustered_green_points_pre) / total_number_of_green_points_pre
+        total_number_of_clustered_green_points_pre) / total_number_of_green_points_pre if total_number_of_green_points_pre > 0 else 0
 
     basics_pre = [total_number_of_points_pre, total_number_of_red_points_pre, total_number_of_green_points_pre,
                   total_number_of_clustered_points_pre, \
@@ -374,10 +379,10 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
     total_number_of_clustered_red_points = len([x for x in clustered_points if x.color == "red"])
     total_number_of_clustered_green_points = len([x for x in clustered_points if x.color == "green"])
 
-    relative_clustered_points = float(total_number_of_clustered_points) / total_number_of_points
-    relative_unclustered_points = float(total_number_of_unclustered_points) / total_number_of_points
-    relative_red_clustered_points = float(total_number_of_clustered_red_points) / total_number_of_red_points
-    relative_green_clustered_points = float(total_number_of_clustered_green_points) / total_number_of_green_points
+    relative_clustered_points = float(total_number_of_clustered_points) / total_number_of_points if total_number_of_points > 0 else 0
+    relative_unclustered_points = float(total_number_of_unclustered_points) / total_number_of_points if total_number_of_points > 0 else 0
+    relative_red_clustered_points = float(total_number_of_clustered_red_points) / total_number_of_red_points if total_number_of_red_points > 0 else 0
+    relative_green_clustered_points = float(total_number_of_clustered_green_points) / total_number_of_green_points if total_number_of_green_points > 0 else 0
 
     basics = [total_number_of_points, total_number_of_red_points, total_number_of_green_points,
               total_number_of_clustered_points, \
@@ -397,10 +402,10 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
     total_number_of_clustered_red_points2 = len([x for x in clustered_points2 if x.color == "red"])
     total_number_of_clustered_green_points2 = len([x for x in clustered_points2 if x.color == "green"])
 
-    relative_clustered_points2 = float(total_number_of_clustered_points2) / total_number_of_points2
-    relative_unclustered_points2 = float(total_number_of_unclustered_points2) / total_number_of_points2
-    relative_red_clustered_points2 = float(total_number_of_clustered_red_points2) / total_number_of_red_points2
-    relative_green_clustered_points2 = float(total_number_of_clustered_green_points2) / total_number_of_green_points2
+    relative_clustered_points2 = float(total_number_of_clustered_points2) / total_number_of_points2 if total_number_of_points2 > 0 else 0
+    relative_unclustered_points2 = float(total_number_of_unclustered_points2) / total_number_of_points2 if total_number_of_points2 > 0 else 0
+    relative_red_clustered_points2 = float(total_number_of_clustered_red_points2) / total_number_of_red_points2 if total_number_of_red_points2 > 0 else 0
+    relative_green_clustered_points2 = float(total_number_of_clustered_green_points2) / total_number_of_green_points2 if total_number_of_green_points2 > 0 else 0
 
     basics_all = [total_number_of_points2, total_number_of_red_points2, total_number_of_green_points2,
                   total_number_of_clustered_points2, \
