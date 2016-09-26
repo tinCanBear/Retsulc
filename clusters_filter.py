@@ -219,6 +219,9 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, angle
                    dic['angle_y'] + "," + \
                    dic['size'] + "," + \
                    dic['density'] + "," + \
+                   dic['x'] + "," + \
+                   dic['y'] + "," + \
+                   dic['z'] + "," + \
                    dic['colocalized'] + "\n"
             if this_color == "green":
                 green_list.append(line)
