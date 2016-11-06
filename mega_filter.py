@@ -474,6 +474,7 @@ def get_res(red_list, green_list, cntr, proj_name, b_list, div_by=1, div_red=1, 
     # Density
     red_avg_naive_density = red_means[7] if red_check else 0
     red_std_naive_density = red_stds[7] if red_check else 0
+    red_med_naive_density = red_medians[7] if red_check else 0
     # median Size
     red_average_med_size = red_medians[6] if red_check else 0
     # size  in points
@@ -482,6 +483,8 @@ def get_res(red_list, green_list, cntr, proj_name, b_list, div_by=1, div_red=1, 
     # colocalization percentage
     sum_of_coloc_r = np.sum(red_array[:, 8]) if len(red_array) > 7 else 0
     per_g_in_r_col = sum_of_coloc_r / len(red_array) if len(red_array) > 0 else 0
+    # size  in points
+    red_med_size_pts = red_medians[0] if red_check else 0
 
     # GREEN CLUSTERS
     r_in_g_list = []
@@ -514,6 +517,7 @@ def get_res(red_list, green_list, cntr, proj_name, b_list, div_by=1, div_red=1, 
     # Density
     green_avg_naive_density = green_means[7] if green_check else 0
     green_std_naive_density = green_stds[7] if green_check else 0
+    green_med_naive_density = green_medians[7] if green_check else 0
     # median Size
     green_average_med_size = green_medians[6] if green_check else 0
     # size  in points
@@ -521,6 +525,9 @@ def get_res(red_list, green_list, cntr, proj_name, b_list, div_by=1, div_red=1, 
     green_std_size_pts = green_stds[0] if green_check else 0
     sum_of_coloc_g = np.sum(green_array[:, 8]) if len(green_array) > 7 else 0
     per_r_in_g_col = sum_of_coloc_g / len(green_array) if len(green_array) > 0 else 0
+
+    # size  in points
+    green_med_size_pts = green_medians[0] if green_check else 0
 
     # How many clusters?
     number_red = len(red_list) / div_red if div_red > 0 else 0
@@ -557,7 +564,7 @@ def get_res(red_list, green_list, cntr, proj_name, b_list, div_by=1, div_red=1, 
 
     # create the line to be written to .csv file
     avgd_line = "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},\
-                {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n".format(cntr \
+                {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n".format(cntr \
                                                                                       , total_number_of_points \
                                                                                       , total_number_of_red_points \
                                                                                       , total_number_of_green_points \
@@ -611,6 +618,10 @@ def get_res(red_list, green_list, cntr, proj_name, b_list, div_by=1, div_red=1, 
                                                                                       , green_std_size_pts \
                                                                                       , per_g_in_r_col \
                                                                                       , per_r_in_g_col \
+                                                                                      , red_med_size_pts \
+                                                                                      , green_med_size_pts \
+                                                                                      , red_med_naive_density\
+                                                                                      , green_med_naive_density\
                                                                                       , proj_name)
 
     return avgd_line
