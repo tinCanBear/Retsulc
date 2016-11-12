@@ -9,18 +9,20 @@ import numpy as np
 import statistics
 import math
 from clusters_filter import filter_it as per_file_filter
+
 DEBUG = False
 DEBUG2 = False
 debug = False
 debug3 = True
 
 
-def filter_it(color_a, points, red_points, green_points, density, coloc_a, anglex, angley, size, files_path, dest_path, source, name):
+def filter_it(color_a, points, red_points, green_points, density, coloc_a, anglex, angley, size, files_path, dest_path,
+              source, name):
     MAX = 1000000.
     MIN = -1.
 
-    per_file_filter(color_a, points, red_points, green_points, density, coloc_a, anglex, angley, size, files_path, dest_path, source, "per_file")
-
+    per_file_filter(color_a, points, red_points, green_points, density, coloc_a, anglex, angley, size, files_path,
+                    dest_path, source, "per_file")
 
     color = color_a
     coloc = coloc_a
@@ -75,7 +77,6 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, angle
     angley_lst = angley.split(";")
     angley_min = MIN if angley_lst[0] == "MIN" else float(angley_lst[0])
     angley_max = MAX if angley_lst[1] == "MAX" else float(angley_lst[1])
-
 
     size_lst = size.split(";")
     size_min = MIN if size_lst[0] == "MIN" else float(size_lst[0])
@@ -149,15 +150,15 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, angle
                         continue
 
                 if float(row['angle_x']) > anglex_max or float(row['angle_x']) < anglex_min:
-                        points_counter[0] += int(row['#points'])
-                        points_counter[1] += int(row['#red points'])
-                        points_counter[2] += int(row['#green points'])
-                        continue
+                    points_counter[0] += int(row['#points'])
+                    points_counter[1] += int(row['#red points'])
+                    points_counter[2] += int(row['#green points'])
+                    continue
                 if float(row['angle_y']) > angley_max or float(row['angle_y']) < angley_min:
-                        points_counter[0] += int(row['#points'])
-                        points_counter[1] += int(row['#red points'])
-                        points_counter[2] += int(row['#green points'])
-                        continue
+                    points_counter[0] += int(row['#points'])
+                    points_counter[1] += int(row['#red points'])
+                    points_counter[2] += int(row['#green points'])
+                    continue
 
                 if float(row['size']) > size_max or float(row['size']) < size_min:
                     points_counter[0] += int(row['#points'])
@@ -170,10 +171,10 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, angle
                 row_y = 'y' + ","
                 row_z = 'z' + ","
                 try:
-                    row_x =  row['x'] + ","
+                    row_x = row['x'] + ","
                     row_y = row['y'] + ","
                     row_z = row['z'] + ","
-                  #  break
+                    #  break
                 except KeyError:
                     pass
 
@@ -190,7 +191,7 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, angle
                           row_x + \
                           row_y + \
                           row_z + \
-                          row['colocalized'] + "," +\
+                          row['colocalized'] + "," + \
                           get_name(a_file) + "\n"
                 clusters_file.write(str_row)
             if debug3: print("points counter: {}".format(points_counter))
@@ -362,25 +363,35 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, angle
     if DEBUG: print("n is:\t{}".format(n))
     if DEBUG: print("re_line[12-14]:{},{},{}".format(re_line[12], re_line[13], re_line[14]))
     xs_line = get_res(xs_bin[0], xs_bin[1], "0->20", filters, bla_list, div_by=float(re_line[12]) * n,
-                      div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
+                      div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points,
+                      div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     s_line = get_res(s_bin[0], s_bin[1], "20->300", filters, bla_list, div_by=float(re_line[12]) * n,
-                     div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
+                     div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points,
+                     div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     m_line = get_res(m_bin[0], m_bin[1], "300->500", filters, bla_list, div_by=float(re_line[12]) * n,
-                     div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
+                     div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points,
+                     div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     l_line = get_res(l_bin[0], l_bin[1], "500->inf", filters, bla_list, div_by=float(re_line[12]) * n,
-                     div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
+                     div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points,
+                     div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     s1_line = get_res(s1_bin[0], s1_bin[1], "extended: 20->50", filters, bla_list, div_by=float(re_line[12]) * n,
-                      div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
+                      div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points,
+                      div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     s2_line = get_res(s2_bin[0], s2_bin[1], "extended: 50->100", filters, bla_list, div_by=float(re_line[12]) * n,
-                      div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
+                      div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points,
+                      div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     s3_line = get_res(s3_bin[0], s3_bin[1], "extended: 100->150", filters, bla_list, div_by=float(re_line[12]) * n,
-                      div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
+                      div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points,
+                      div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     s4_line = get_res(s4_bin[0], s4_bin[1], "extended: 150->200", filters, bla_list, div_by=float(re_line[12]) * n,
-                      div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
+                      div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points,
+                      div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     s5_line = get_res(s5_bin[0], s5_bin[1], "extended: 200->250", filters, bla_list, div_by=float(re_line[12]) * n,
-                      div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
+                      div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points,
+                      div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
     s6_line = get_res(s6_bin[0], s6_bin[1], "extended: 250->300", filters, bla_list, div_by=float(re_line[12]) * n,
-                      div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points, div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
+                      div_red=float(re_line[14]) * n, div_green=float(re_line[16]) * n, div_by_pts=clustered_points,
+                      div_red_pts=red_clustered_points, div_green_pts=green_clustered_points)
 
     out_file = open(os.path.normcase(os.path.join(dest_path, "filtered_summary_{}_{}.csv".format(name, time.strftime(
         "%Y-%m-%d_%H-%M-%S", time.gmtime())))), "w")
@@ -390,7 +401,7 @@ def filter_it(color_a, points, red_points, green_points, density, coloc_a, angle
     avg red Xangl,std red Xangl,avg red Yangl,std red Yangl,avg green Xangl,std green Xangl,avg green Yangl,\
     std green Yangl,avg red size,std red size,avg green size,std green size,sample density,avg red density,std red density,\
     avg green density,std green density,red median size,green median size,\
-    avg red pts size,std red pts size,avg green pts size,std green pts size,colocalization %green in red,colocalization %red in green,test name\n"
+    avg red pts size,std red pts size,avg green pts size,std green pts size,colocalization %green in red,colocalization %red in green,red median pts size, green median pts size,red median density,green median density,test name\n"
     out_file.write(csv_titles)
     out_file.write(avgd_line)
     out_file.write(xs_line)
@@ -424,7 +435,8 @@ def get_name(file_name):
 
 
 # ("color, #points, #red points, #green points, sphere score, angle_x, angle_y, size, density\n")
-def get_res(red_list, green_list, cntr, proj_name, b_list, div_by=1, div_red=1, div_green=1, div_by_pts=0, div_red_pts=0, div_green_pts=0):
+def get_res(red_list, green_list, cntr, proj_name, b_list, div_by=1, div_red=1, div_green=1, div_by_pts=0,
+            div_red_pts=0, div_green_pts=0):
     len_r = len(red_list)
     len_g = len(green_list)
 
@@ -533,9 +545,10 @@ def get_res(red_list, green_list, cntr, proj_name, b_list, div_by=1, div_red=1, 
     number_red = len(red_list) / div_red if div_red > 0 else 0
     number_pts_red = sum([red_list[i][0] for i in range(len(red_list))]) / div_red_pts if div_red_pts > 0 else -1
     number_green = len(green_list) / div_green if div_green > 0 else 0
-    number_pts_green = sum([green_list[i][0] for i in range(len(green_list))]) / div_green_pts if div_green_pts > 0 else -1
+    number_pts_green = sum(
+        [green_list[i][0] for i in range(len(green_list))]) / div_green_pts if div_green_pts > 0 else -1
     total_clusters = (len(red_list) + len(green_list)) / div_by
-    number_pts_clusters = ( sum([red_list[i][0] for i in range(len(red_list))]) + sum(
+    number_pts_clusters = (sum([red_list[i][0] for i in range(len(red_list))]) + sum(
         [green_list[i][0] for i in range(len(green_list))])) / div_by_pts if div_by_pts > 0 else -1
 
     # Sample density
@@ -565,63 +578,112 @@ def get_res(red_list, green_list, cntr, proj_name, b_list, div_by=1, div_red=1, 
     # create the line to be written to .csv file
     avgd_line = "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},\
                 {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n".format(cntr \
-                                                                                      , total_number_of_points \
-                                                                                      , total_number_of_red_points \
-                                                                                      , total_number_of_green_points \
-                                                                                      , total_number_of_clustered_points \
-                                                                                      ,
-                                                                                      total_number_of_unclustered_points \
-                                                                                      ,
-                                                                                      total_number_of_clustered_red_points \
-                                                                                      ,
-                                                                                      total_number_of_clustered_green_points \
-                                                                                      , relative_clustered_points \
-                                                                                      , relative_unclustered_points \
-                                                                                      , relative_red_clustered_points \
-                                                                                      , relative_green_clustered_points \
-                                                                                      , total_clusters \
-                                                                                      , number_pts_clusters \
-                                                                                      , number_red \
-                                                                                      , number_pts_red \
-                                                                                      , number_green \
-                                                                                      , number_pts_green \
-                                                                                      , avg_per_green_in_red \
-                                                                                      , std_per_green_in_red \
-                                                                                      , avg_per_red_in_green \
-                                                                                      , std_per_red_in_green \
-                                                                                      , red_average_sphere_score \
-                                                                                      , red_std_sphere_score \
-                                                                                      , green_average_sphere_score \
-                                                                                      , green_std_sphere_score \
-                                                                                      , red_average_angle_x \
-                                                                                      , red_std_angle_x \
-                                                                                      , red_average_angle_y \
-                                                                                      , red_std_angle_y \
-                                                                                      , green_average_angle_x \
-                                                                                      , green_std_angle_x \
-                                                                                      , green_average_angle_y \
-                                                                                      , green_std_angle_y \
-                                                                                      , red_average_size \
-                                                                                      , red_std_size \
-                                                                                      , green_average_size \
-                                                                                      , green_std_size \
-                                                                                      , clstrs_tot \
-                                                                                      , red_avg_naive_density \
-                                                                                      , red_std_naive_density \
-                                                                                      , green_avg_naive_density \
-                                                                                      , green_std_naive_density \
-                                                                                      , red_average_med_size \
-                                                                                      , green_average_med_size \
-                                                                                      , red_avg_size_pts \
-                                                                                      , red_std_size_pts \
-                                                                                      , green_avg_size_pts \
-                                                                                      , green_std_size_pts \
-                                                                                      , per_g_in_r_col \
-                                                                                      , per_r_in_g_col \
-                                                                                      , red_med_size_pts \
-                                                                                      , green_med_size_pts \
-                                                                                      , red_med_naive_density\
-                                                                                      , green_med_naive_density\
-                                                                                      , proj_name)
+                                                                                                           ,
+                                                                                                           total_number_of_points \
+                                                                                                           ,
+                                                                                                           total_number_of_red_points \
+                                                                                                           ,
+                                                                                                           total_number_of_green_points \
+                                                                                                           ,
+                                                                                                           total_number_of_clustered_points \
+                                                                                                           ,
+                                                                                                           total_number_of_unclustered_points \
+                                                                                                           ,
+                                                                                                           total_number_of_clustered_red_points \
+                                                                                                           ,
+                                                                                                           total_number_of_clustered_green_points \
+                                                                                                           ,
+                                                                                                           relative_clustered_points \
+                                                                                                           ,
+                                                                                                           relative_unclustered_points \
+                                                                                                           ,
+                                                                                                           relative_red_clustered_points \
+                                                                                                           ,
+                                                                                                           relative_green_clustered_points \
+                                                                                                           ,
+                                                                                                           total_clusters \
+                                                                                                           ,
+                                                                                                           number_pts_clusters \
+                                                                                                           , number_red \
+                                                                                                           ,
+                                                                                                           number_pts_red \
+                                                                                                           ,
+                                                                                                           number_green \
+                                                                                                           ,
+                                                                                                           number_pts_green \
+                                                                                                           ,
+                                                                                                           avg_per_green_in_red \
+                                                                                                           ,
+                                                                                                           std_per_green_in_red \
+                                                                                                           ,
+                                                                                                           avg_per_red_in_green \
+                                                                                                           ,
+                                                                                                           std_per_red_in_green \
+                                                                                                           ,
+                                                                                                           red_average_sphere_score \
+                                                                                                           ,
+                                                                                                           red_std_sphere_score \
+                                                                                                           ,
+                                                                                                           green_average_sphere_score \
+                                                                                                           ,
+                                                                                                           green_std_sphere_score \
+                                                                                                           ,
+                                                                                                           red_average_angle_x \
+                                                                                                           ,
+                                                                                                           red_std_angle_x \
+                                                                                                           ,
+                                                                                                           red_average_angle_y \
+                                                                                                           ,
+                                                                                                           red_std_angle_y \
+                                                                                                           ,
+                                                                                                           green_average_angle_x \
+                                                                                                           ,
+                                                                                                           green_std_angle_x \
+                                                                                                           ,
+                                                                                                           green_average_angle_y \
+                                                                                                           ,
+                                                                                                           green_std_angle_y \
+                                                                                                           ,
+                                                                                                           red_average_size \
+                                                                                                           ,
+                                                                                                           red_std_size \
+                                                                                                           ,
+                                                                                                           green_average_size \
+                                                                                                           ,
+                                                                                                           green_std_size \
+                                                                                                           , clstrs_tot \
+                                                                                                           ,
+                                                                                                           red_avg_naive_density \
+                                                                                                           ,
+                                                                                                           red_std_naive_density \
+                                                                                                           ,
+                                                                                                           green_avg_naive_density \
+                                                                                                           ,
+                                                                                                           green_std_naive_density \
+                                                                                                           ,
+                                                                                                           red_average_med_size \
+                                                                                                           ,
+                                                                                                           green_average_med_size \
+                                                                                                           ,
+                                                                                                           red_avg_size_pts \
+                                                                                                           ,
+                                                                                                           red_std_size_pts \
+                                                                                                           ,
+                                                                                                           green_avg_size_pts \
+                                                                                                           ,
+                                                                                                           green_std_size_pts \
+                                                                                                           ,
+                                                                                                           per_g_in_r_col \
+                                                                                                           ,
+                                                                                                           per_r_in_g_col \
+                                                                                                           ,
+                                                                                                           red_med_size_pts \
+                                                                                                           ,
+                                                                                                           green_med_size_pts \
+                                                                                                           ,
+                                                                                                           red_med_naive_density \
+                                                                                                           ,
+                                                                                                           green_med_naive_density \
+                                                                                                           , proj_name)
 
     return avgd_line
