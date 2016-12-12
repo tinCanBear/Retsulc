@@ -7,7 +7,7 @@ from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import ttk
 from unclustered import main
-pic_path = "openclust.jpg"
+pic_path = "SIA_image.gif"
 fields_retsulc = ('Epsilon', 'Minimum Neighbors', 'Mini Epsilon', 'Mini Minimum Neighbors', 'Data Type', 'Red file','Green file', 'destination')
 fields_filt = ('color','#red points', '#green points', 'density', 'size')
 
@@ -136,5 +136,5 @@ if __name__ == '__main__':
    left_panel.pack(side = LEFT)
    right_panel.pack(side = LEFT, expand = "yes")
    row_of_buttons.pack(side=BOTTOM)
-   root.iconbitmap(r'blue_flower2.ico') # the icon
+   root.iconbitmap(r'SIA_icon.ico') # the icon
    root.mainloop()

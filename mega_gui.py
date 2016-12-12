@@ -9,7 +9,7 @@ from tkinter import messagebox
 from tkinter import ttk
 from mega_filter import filter_it
 
-pic_path = "mega.jpg"
+pic_path = "SIA_image.gif"
 DELETE_LIST = False
 
 fields = (
@@ -146,5 +146,5 @@ if __name__ == '__main__':
     b_go = Button(row_of_buttons, text='GO!', command=(lambda e=ents: go(e, listbox)))
     b_go.pack(side=RIGHT, padx=5, pady=5)
 
-    root.iconbitmap(r'blue_flower2.ico')  # the icon
+    root.iconbitmap(r'SIA_icon.ico')  # the icon
     root.mainloop()

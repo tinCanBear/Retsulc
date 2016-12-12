@@ -7,7 +7,7 @@ from tkinter import messagebox
 from tkinter import ttk
 from clusters_filter import filter_it
 
-pic_path = "fireworks.jpg"
+pic_path = "SIA_image.gif"
 DELETE_LIST = False
 
 fields = ('color', '#points', '#red points', '#green points', 'density', 'colocalized', 'angle x', 'angle y', 'size',
@@ -122,5 +122,5 @@ if __name__ == '__main__':
     b_go = Button(left_panel, text='GO!', command=(lambda e=ents: go(e, listbox)))
     b_go.pack(side=BOTTOM, padx=5, pady=5)
 
-    root.iconbitmap(r'blue_flower2.ico')  # the icon
+    root.iconbitmap(r'SIA_icon.ico')  # the icon
     root.mainloop()

@@ -6,7 +6,7 @@ from tkinter import messagebox
 from tkinter import ttk
 from parse_super_detect import go
 
-pic_path = "openclust.jpg"
+pic_path = "SIA_image.gif"
 fields = ('Epsilon', 'Minimum Neighbors', 'Mini Epsilon', 'Mini Minimum Neighbors', 'Data Type', 'Mode')
 
 
@@ -85,5 +85,5 @@ if __name__ == '__main__':
     left_panel.pack(side=LEFT)
     right_panel.pack(side=RIGHT, expand="yes")
 
-    root.iconbitmap(r'big_flower.ico')
+    root.iconbitmap(r'SIA_icon.ico')
     root.mainloop()
