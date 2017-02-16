@@ -8,6 +8,7 @@ from parse_super_detect import go
 
 pic_path = "SIA_image.gif"
 fields = ('Epsilon', 'Minimum Neighbors', 'Mini Epsilon', 'Mini Minimum Neighbors', 'Data Type', 'Mode')
+f_fields = ('color', '#points', '#red points', '#green points', 'density', 'colocalized', 'angle x', 'angle y', 'size')
 
 
 def gogo(entries):
@@ -19,10 +20,22 @@ def gogo(entries):
     prot_mode = 2 if entries['Mode'].get() == "2 protein" else 1
     d_type = (entries['Data Type'].get())
     path = filedialog.askdirectory()
+
+    f_color = (entries['color'].get())
+    f_points = (entries['#points'].get())
+    f_red_points = (entries['#red points'].get())
+    f_green_points = (entries['#green points'].get())
+    f_density = (entries['density'].get())
+    f_coloc = (entries['colocalized'].get())
+    f_x_angle = (entries['angle x'].get())
+    f_y_angle = (entries['angle y'].get())
+    f_size = (entries['size'].get())
+
     print(path)
     messagebox.showinfo("Work in progress",
                         "Please wait till' it's done... You'll get a message (for now just click OK).")
-    go(epsilon, min_neighbors, mini_epsilon, mini_min_neighbors, d_type, path, prot_mode)
+    go(epsilon, min_neighbors, mini_epsilon, mini_min_neighbors, d_type, path, prot_mode, f_color, f_points, f_red_points,
+       f_green_points, f_density, f_coloc, f_x_angle, f_y_angle, f_size)
     messagebox.showinfo("Work is DONE!", "You may now enter another session folder.")
 
 
@@ -60,6 +73,30 @@ def makeform(root, fields):
         entries[field] = ent
         cntr += 1
     return entries
+def make_f_form(root, fields):
+    entries = {}
+    cntr = 0
+    for field in fields:
+        row = Frame(root)
+        lab = Label(row, width=22, text=field + ": ", anchor='w', justify=LEFT)
+        ent = Entry(row)
+        if cntr == 0:
+            ent = ttk.Combobox(row)
+            ent['values'] = ('red', 'green', 'both')
+            ent.insert(0, 'both')
+        if cntr == 5:
+            ent = ttk.Combobox(row)
+            ent['values'] = ('yes', 'no', 'all')
+            ent.insert(0, 'all')
+        else:
+            if cntr != 0 and cntr != 5 and cntr != 9 and cntr != 10 and cntr != 11:
+                ent.insert(0, "MIN;MAX")
+        row.pack(side=TOP, fill=Y, padx=5, pady=5)
+        lab.pack(side=LEFT)
+        ent.pack(side=RIGHT, fill=X)
+        entries[field] = ent
+        cntr += 1
+    return entries
 
 
 if __name__ == '__main__':
@@ -72,17 +109,19 @@ if __name__ == '__main__':
     left_panel = Frame(root)
     # row_of_buttons = Frame(right_panel)
 
-    panel = Label(right_panel, image=photo)
+    panel = Label(left_panel, image=photo)
     panel.pack(side=BOTTOM, fill="both", expand="yes")
     # listbox = Listbox(right_panel, width=100, height=30)
     # listbox.pack(side=RIGHT, fill=BOTH)
 
     ents = makeform(left_panel, fields)
+    f_ents = make_f_form(right_panel, f_fields)
+    ents.update(f_ents)
     b2 = Button(left_panel, text='GO!', command=(lambda e=ents: gogo(e)))
     b2.pack(side=BOTTOM, padx=5, pady=5)
 
     # row_of_buttons.pack(side=BOTTOM, padx=5, pady=5)
-    left_panel.pack(side=LEFT)
+    left_panel.pack(side=LEFT, expand="yes")
     right_panel.pack(side=RIGHT, expand="yes")
 
     root.iconbitmap(r'SIA_icon.ico')

@@ -8,6 +8,7 @@ import numpy as np
 from parse_main import main
 import warnings
 from unclustered import main as unclustered
+from unclustered import get_unclustered_by_filter_main
 
 debug = False
 np.seterr(all='ignore')
@@ -16,7 +17,8 @@ warnings.filterwarnings("ignore")
 
 # main function, get info from "main_with_gui"
 
-def go(eps, min_ngbs, mini_eps, mini_min_ngbs, d_type, pth, mode):
+def go(eps, min_ngbs, mini_eps, mini_min_ngbs, d_type, pth, mode, f_color, f_points, f_red_points,
+       f_green_points, f_density, f_coloc, f_x_angle, f_y_angle, f_size):
     print(eps, min_ngbs, mini_eps, mini_min_ngbs, d_type, pth)
     data_type = d_type  # "2d", etc.
     epsilon = eps
@@ -110,7 +112,8 @@ def go(eps, min_ngbs, mini_eps, mini_min_ngbs, d_type, pth, mode):
             for some_file in some_files:
                 cntr += 1
                 print(cntr)
-                file_directory = new_directory + "/analysis_{}_{}".format(get_name(some_file[0], cntr),some_file[1]) + "/"
+                file_directory = new_directory + "/analysis_{}_{}".format(get_name(some_file[0], cntr),
+                                                                          some_file[1]) + "/"
                 print(file_directory)
                 color = some_file[1]
                 dummy_file = "green_dummy.csv" if some_file[1] == "red" else "red_dummy.csv"
@@ -133,7 +136,14 @@ def go(eps, min_ngbs, mini_eps, mini_min_ngbs, d_type, pth, mode):
                 green_all = return_list[8]
                 sample = return_list[9]
                 # unclustered_analysis
-                unclustered(sample, data_type, 20, 6, file_directory, mode=1, color=color, dummy_file=dummy_file)
+                unclustered_by_filter_points = get_unclustered_by_filter_main(sample.red_clusters,
+                                                                              sample.green_clusters, f_color, f_points,
+                                                                              f_red_points,
+                                                                              f_green_points, f_density, f_coloc,
+                                                                              f_x_angle, f_y_angle, f_size)
+
+                unclustered(sample, data_type, 20, 6, file_directory, mode=1, color=color, dummy_file=dummy_file,
+                            unclustered_by_filter_points=unclustered_by_filter_points)
                 # Write to file
                 avgd_line = get_res(red_list, green_list, cntr, proj_name, basics_list)
                 avgd_line_pre = get_res(red_list_pre, green_list_pre, cntr, proj_name, basics_list_pre)
@@ -177,8 +187,14 @@ def go(eps, min_ngbs, mini_eps, mini_min_ngbs, d_type, pth, mode):
                         red_all = return_list[7]
                         green_all = return_list[8]
                         sample = return_list[9]
+                        unclustered_by_filter_points = get_unclustered_by_filter_main(sample.red_clusters,
+                                                                                      sample.green_clusters, f_color,
+                                                                                      f_points,
+                                                                                      f_red_points, f_green_points,
+                                                                                      f_density, f_coloc, f_x_angle,
+                                                                                      f_y_angle, f_size)
                         # unclustered_analysis
-                        unclustered(sample, data_type, 20, 6, file_directory)
+                        unclustered(sample, data_type, 20, 6, file_directory, unclustered_by_filter_points=unclustered_by_filter_points)
                         # Write to file
                         avgd_line = get_res(red_list, green_list, cntr, proj_name, basics_list)
                         avgd_line_pre = get_res(red_list_pre, green_list_pre, cntr, proj_name, basics_list_pre)
