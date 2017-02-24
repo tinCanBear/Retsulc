@@ -216,6 +216,9 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
         s.print_f(line, s.f_clusters_pre)
         green_output_list_pre.append(line)
 
+    s.pre_red_clusters = s.red_clusters[:]
+    s.pre_green_clusters = s.green_clusters[:]
+
     s.print_f("\n\n-----------------END OF PART I------------------------\n\n", s.f)
 
     added_points = []
@@ -522,6 +525,9 @@ def main(data_type, epsilon, minimum_neighbors, mini_eps, mini_minimum_neighbors
                         c1.points = []
                         c2.pca_analysis(dim=2)
         rainbow(s, other="_option1")
+
+    # s.red_clusters = s.pre_red_clusters
+    # s.green_clusters = s.pre_green_clusters
     return red_output_list, green_output_list, red_output_list_pre, green_output_list_pre, basics, basics_pre, basics_all, red_all_list, green_all_list, s
 
 

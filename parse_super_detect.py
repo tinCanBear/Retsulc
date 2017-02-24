@@ -136,8 +136,8 @@ def go(eps, min_ngbs, mini_eps, mini_min_ngbs, d_type, pth, mode, f_color, f_poi
                 green_all = return_list[8]
                 sample = return_list[9]
                 # unclustered_analysis
-                unclustered_by_filter_points = get_unclustered_by_filter_main(sample.red_clusters,
-                                                                              sample.green_clusters, f_color, f_points,
+                unclustered_by_filter_points = get_unclustered_by_filter_main(sample.pre_red_clusters,
+                                                                              sample.pre_green_clusters, f_color, f_points,
                                                                               f_red_points,
                                                                               f_green_points, f_density, f_coloc,
                                                                               f_x_angle, f_y_angle, f_size)
@@ -187,8 +187,8 @@ def go(eps, min_ngbs, mini_eps, mini_min_ngbs, d_type, pth, mode, f_color, f_poi
                         red_all = return_list[7]
                         green_all = return_list[8]
                         sample = return_list[9]
-                        unclustered_by_filter_points = get_unclustered_by_filter_main(sample.red_clusters,
-                                                                                      sample.green_clusters, f_color,
+                        unclustered_by_filter_points = get_unclustered_by_filter_main(sample.pre_red_clusters,
+                                                                                      sample.pre_green_clusters, f_color,
                                                                                       f_points,
                                                                                       f_red_points, f_green_points,
                                                                                       f_density, f_coloc, f_x_angle,

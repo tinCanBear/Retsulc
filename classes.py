@@ -118,6 +118,8 @@ class Sample:
         self.clusters_red = []
         self.green_clusters = []
         self.red_clusters = []
+        self.pre_red_clusters = []
+        self.pre_green_clusters = []
         self.clusters_size = 0
         self.labels = []
         self.green_labels = []
